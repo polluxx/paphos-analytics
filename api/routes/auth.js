@@ -24,7 +24,7 @@ router.get('/google/callback', function (req, res, next) {
     }]
   }, function(err) {
     if (err) { return next(err); }
-    res.send({ success: true });
+    res.send('<script>window.close()</script>');
   });
 });
 
