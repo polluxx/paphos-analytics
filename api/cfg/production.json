@@ -1,0 +1,24 @@
+{
+  "http": {
+    "port": 5000
+  },
+  "mongo": {
+    "db": "mongodb://127.0.0.1:27017/papholytict"
+  },
+  "tasks": {
+    "enabled": true,
+    "stomp": {
+      "destination": "/queue/papholytict-tasks",
+      "host": "localhost",
+      "port": 61613,
+      "login": "root",
+      "password": "123456"
+    }
+  },
+  "google": {
+    "api": {
+      "client-id": "527279504416-3p7toklagvpicrrm43moita45s54hrpg.apps.googleusercontent.com",
+      "secret": "ClG6H16H3Kyq5Jtdi_SpHpV_"
+    }
+  }
+}
