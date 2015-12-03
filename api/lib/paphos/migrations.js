@@ -77,6 +77,7 @@ function getMigrations(dir, cb) {
 
 function buildMigrationPath(cb, data) {
   var log = logger();
+  log.info('Build migrations path');
   var build = function (path) {
     var last = _.last(path);
     if (last.version !== data.version) {
