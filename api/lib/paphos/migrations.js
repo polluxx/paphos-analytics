@@ -110,24 +110,9 @@ exports.migrateToActual = function (data, path, next) {
   var log = logger();
 
   async.auto({
-    'version': function(next) {
-      log.info('3')
-      getVersion(function() {
-        log.info('4')
-        next();
-      })
-    },
-    'migrations': function(next) {
-      log.info('1')
-      getMigrations(path, function() {
-        log.info('2')
-        next();
-      })
-    },
-    'build': ['version', 'migrations', function(next, data) {
-      log.info('Build');
-      buildMigrationPath(next, data);
-    }],
+    'version': getVersion,
+    'migrations': _.partial(getMigrations, path),
+    'build': ['version', 'migrations', buildMigrationPath],
     'migrate': ['build', function (next, data) {
       async.eachSeries(data.build, function (item, nxt) {
         log.info('Migration to version', item.version, 'started...');
