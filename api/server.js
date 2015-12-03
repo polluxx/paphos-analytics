@@ -57,6 +57,7 @@ exports.init = function (next) {
       mongoose.set('debug', false);
     },
     'migration': ['mongoose', function (next) {
+      app.log.info('Load migrations:', path.join(__dirname, 'migrations'));
       paphos.migrations.migrateToActual(app, path.join(__dirname, 'migrations'), next);
     }],
     'tasks': function(next) {
