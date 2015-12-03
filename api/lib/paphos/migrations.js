@@ -112,7 +112,11 @@ exports.migrateToActual = function (data, path, next) {
   async.auto({
     'version': getVersion,
     'migrations': function(next) {
-      getMigrations(path, next)
+      log.info('1')
+      getMigrations(path, function() {
+        log.info('2')
+        next();
+      })
     },
     'build': ['version', 'migrations', function(next, data) {
       log.info('Build');
