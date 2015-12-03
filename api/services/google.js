@@ -7,7 +7,7 @@ function GoogleService(options) {
   var log = this.log = logger().child({module: 'GoogleService'});
   this.options = options;
 
-  this.redirectUrl = 'http://localhost:5000/api/auth/google/callback';
+  this.redirectUrl = 'http://analytics.5stars.link/api/auth/google/callback';
 
   var oauth2Client = this.client = new OAuth2(options['client-id'], options['secret'], this.redirectUrl);
   google.options({ auth: oauth2Client });
