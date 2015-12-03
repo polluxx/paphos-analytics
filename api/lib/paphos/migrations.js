@@ -66,12 +66,6 @@ function getMigrations(dir, cb) {
         var version = getVersionInt(info[0]),
           requiredVersion = (info.length == 1) ? version - 1 : getVersionInt(info[1]);
 
-        log.info({
-          version: info[0],
-          intVersion: version,
-          requiredVersion: requiredVersion,
-          migrate: migration.migrate
-        });
         return nxt(null, {
           version: info[0],
           intVersion: version,
