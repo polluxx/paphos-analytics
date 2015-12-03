@@ -40,12 +40,14 @@ function getVersion(cb) {
 }
 
 function getMigrations(dir, cb) {
+  var log = logger();
   async.waterfall([
     function (next) {
       fs.readdir(dir, next);
     },
     function (res, next) {
       var names = _.map(res, function (name) {
+        log.info('Check migration file:', path.join(dir, name, 'index.js'));
         return path.join(dir, name, 'index.js');
       });
       async.filter(names, fs.exists, _.partial(next, null));
