@@ -24,8 +24,12 @@ router.get('/google/callback', function (req, res, next) {
     }]
   }, function(err) {
     if (err) { return next(err); }
-    res.send('<script>window.close()</script>');
+    res.redirect('/api/auth/close');
   });
+});
+
+router.get('/close', function (req, res, next) {
+  res.send('<script>window.close()</script>');
 });
 
 
