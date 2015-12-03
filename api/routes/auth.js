@@ -24,7 +24,7 @@ router.get('/google/callback', function (req, res, next) {
     }]
   }, function(err) {
     if (err) { return next(err); }
-    res.redirect('http://localhost:3000/#/analytics/');
+    res.send('<script>window.close()</script>')
   });
 });
 
