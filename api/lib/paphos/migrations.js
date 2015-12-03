@@ -110,7 +110,13 @@ exports.migrateToActual = function (data, path, next) {
   var log = logger();
 
   async.auto({
-    'version': getVersion,
+    'version': function(next) {
+      log.info('3')
+      getVersion(function() {
+        log.info('4')
+        next();
+      })
+    },
     'migrations': function(next) {
       log.info('1')
       getMigrations(path, function() {
