@@ -62,6 +62,7 @@ function getMigrations(dir, cb) {
           return nxt(new Error('Migration module "' + name + '" doesn\'t contain function "getInfo".'));
         }
         var info = migration.getInfo();
+        log.info(info);
 
         var version = getVersionInt(info[0]),
           requiredVersion = (info.length == 1) ? version - 1 : getVersionInt(info[1]);
