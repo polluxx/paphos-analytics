@@ -111,7 +111,9 @@ exports.migrateToActual = function (data, path, next) {
 
   async.auto({
     'version': getVersion,
-    'migrations': _.partial(getMigrations, path),
+    'migrations': function(next) {
+      getMigrations(path, next)
+    },
     'build': ['version', 'migrations', function(next, data) {
       log.info('Build');
       buildMigrationPath(next, data);
