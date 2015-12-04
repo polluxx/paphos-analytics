@@ -69,7 +69,7 @@ AnalyticsService.prototype.syncReports = function(query, next) {
 
   query.siteUrl = encodeURIComponent(query.siteUrl);
 
-  api.searchanalytics.query(query, function(err, data) {
+  api.analytics.query(query, function(err, data) {
     next(err, data);
   });
 };
@@ -77,7 +77,7 @@ AnalyticsService.prototype.syncReports = function(query, next) {
 AnalyticsService.prototype.syncStatisticForDay = function(site, date, next) {
   var app = this.app;
 
-  app.services.Analytics.searchAnalytics({
+  app.services.analytics.searchAnalytics({
     siteUrl: site.siteUrl,
 
     resource: {
