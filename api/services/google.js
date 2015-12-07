@@ -35,7 +35,7 @@ GoogleService.prototype.generateAuthUrl = function (next) {
 };
 
 GoogleService.prototype.getClient = function (tokens) {
-  var oauth2Client = this.client = new OAuth2(options['client-id'], options['secret'], this.redirectUrl);
+  var oauth2Client = this.client = new OAuth2(this.options['client-id'], this.options['secret'], this.redirectUrl);
   google.options({ auth: oauth2Client });
   oauth2Client.setCredentials(tokens);
   return oauth2Client;
