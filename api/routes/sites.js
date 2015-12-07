@@ -15,7 +15,7 @@ router.get('/:id', function (req, res, next) {
     },
     'token': ['site', function(next, data) {
       var expiredDate = moment(data.site.tokens.expiry_date);
-
+console.info(data.site);
       if (!expiredDate.isBefore(moment())) {
       //  return next(null, data.site.tokens.access_token);
       }
