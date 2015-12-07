@@ -17,7 +17,7 @@ router.get('/:id', function (req, res, next) {
       var expiredDate = moment(data.site.tokens.expiry_date);
 
       if (!expiredDate.isBefore(moment())) {
-        return next(null, data.site.tokens.access_token);
+      //  return next(null, data.site.tokens.access_token);
       }
       req.app.services.google.setCredentials(data.site.tokens);
       req.app.services.google.refreshAccessToken(function (err, tokens) {
