@@ -26,7 +26,11 @@ router.get('/:id', function (req, res, next) {
         data.site.save(function(err) {
           if (err) { return next(err); }
 
-          next(null, tokens.access_token);
+          req.app.services.google.syncAccount(tokens, function() {
+
+            next(null, tokens.access_token);
+          });
+
         });
       });
     }]

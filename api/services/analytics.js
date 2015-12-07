@@ -25,7 +25,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
     'analyticSites': function(next) {
       api.management.accountSummaries.list({}, function(err, data) {
         if (err) { return next(err); }
-
+console.info(data)
         var items = [];
         _.each(data.items, function(item) {
           items = items.concat(item.webProperties);
