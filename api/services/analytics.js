@@ -36,13 +36,13 @@ console.info(data)
     'dbSites': ['analyticSites', function(next, data) {
       var urls = _.pluck(data.analyticSites, 'websiteUrl');
       urls = _.map(urls, function(item) {
-        return _.trim(item, '/');
+        return _.trim(item, '/').toLowerCase();
       });
       app.models.sites.find({ siteUrl: { $in: urls } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
       async.each(data.analyticSites, function(site, next) {
-        site.websiteUrl = _.trim(site.websiteUrl, '/');
+        site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase();
         var dbItem = _.find(data.dbSites, { siteUrl: site.websiteUrl });
         if (!dbItem) {
           dbItem = new app.models.sites({ siteUrl: site.websiteUrl });

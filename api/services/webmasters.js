@@ -30,13 +30,13 @@ WebmastersService.prototype.syncAccount = function(tokens, next) {
     'dbSites': ['webmasterSites', function(next, data) {
       var urls = _.pluck(data.webmasterSites, 'siteUrl');
       urls = _.map(urls, function(item) {
-        return _.trim(item, '/');
+        return _.trim(item, '/').toLowerCase();
       });
       app.models.sites.find({ siteUrl: { $in: urls } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
       async.each(data.webmasterSites, function(site, next) {
-        site.siteUrl = _.trim(site.siteUrl, '/');
+        site.siteUrl = _.trim(site.siteUrl, '/').toLowerCase();
         var dbItem = _.find(data.dbSites, { siteUrl: site.siteUrl });
         if (!dbItem) {
           dbItem = new app.models.sites(site);
