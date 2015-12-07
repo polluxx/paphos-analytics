@@ -26,7 +26,7 @@ router.get('/:id', function (req, res, next) {
         data.site.save(function(err) {
           if (err) { return next(err); }
 
-          req.app.services.google.syncAccount(tokens, function() {
+          req.app.services.analytics.syncAccount(tokens, function() {
 
             next(null, tokens.access_token);
           });
