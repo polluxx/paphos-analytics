@@ -21,6 +21,7 @@ router.get('/:id', function (req, res, next) {
       }
       req.app.services.google.setCredentials(data.site.tokens);
       req.app.services.google.refreshAccessToken(function (err, tokens) {
+        console.info(err, tokens)
         data.site.tokens = tokens;
         data.site.save(function(err) {
           if (err) { return next(err); }
