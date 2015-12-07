@@ -25,7 +25,7 @@ GoogleService.prototype.generateAuthUrl = function (next) {
     'https://www.googleapis.com/auth/analytics.readonly'
   ];
 
-  var url = this.client.generateAuthUrl({
+  var url = this.getClient({}).generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
     approval_prompt: 'force'
