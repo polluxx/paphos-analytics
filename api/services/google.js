@@ -8,9 +8,6 @@ function GoogleService(options) {
   this.options = options;
 
   this.redirectUrl = 'http://analytics.5stars.link/api/auth/google/callback';
-
-  var oauth2Client = this.client = new OAuth2(options['client-id'], options['secret'], this.redirectUrl);
-  google.options({ auth: oauth2Client });
 };
 
 GoogleService.prototype.init = function (next) {
@@ -37,8 +34,14 @@ GoogleService.prototype.generateAuthUrl = function (next) {
   next(null, url);
 };
 
+GoogleService.prototype.getClient = function (tokens) {
+  var oauth2Client = this.client = new OAuth2(options['client-id'], options['secret'], this.redirectUrl);
+  google.options({ auth: oauth2Client });
+  oauth2Client.setCredentials(tokens);
+  return oauth2Client;
+};
 GoogleService.prototype.setCredentials = function (tokens) {
-  this.client.setCredentials(tokens);
+  return this.getClient(tokens);
 };
 GoogleService.prototype.refreshAccessToken = function (next) {
   this.client.refreshAccessToken(next);
