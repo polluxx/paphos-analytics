@@ -9,6 +9,7 @@
     "bunyan": "^1.5.1",
     "bunyan-prettystream": "^0.1.3",
     "commander": "^2.9.0",
+    "control": "^0.2.3",
     "convict": "^1.0.1",
     "cors": "^2.7.1",
     "deasync": "^0.1.4",
@@ -19,6 +20,7 @@
     "moment": "^2.10.6",
     "moment-range": "^2.2.0",
     "mongoose": "^4.2.8",
+    "ssh2": "^0.4.14",
     "stompit": "^0.22.0"
   },
   "devDependencies": {},
@@ -34,5 +36,12 @@
   "bugs": {
     "url": "https://github.com/5starsmedia/paphos-analytics/issues"
   },
-  "homepage": "https://github.com/5starsmedia/paphos-analytics#readme"
+  "homepage": "https://github.com/5starsmedia/paphos-analytics#readme",
+  "deployment": {
+    "name": "paphos-analytics",
+    "host": "micro.5stars.link",
+    "user": "root",
+    "repo": "git://github.com/5starsmedia/paphos-analytics.git",
+    "path": "/var/www"
+  }
 }
