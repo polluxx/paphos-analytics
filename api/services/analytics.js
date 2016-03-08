@@ -1,6 +1,9 @@
 var logger = require('../lib/paphos/log.js'),
   _ = require('lodash'),
-  async = require('async');
+  moment = require('moment'),
+  momentRange = require('moment-range'),
+  async = require('async'),
+  limiter = require('limiter');
 
 function AnalyticsService(app, googleService) {
   var log = this.log = logger().child({module: 'AnalyticsService'});
@@ -8,6 +11,7 @@ function AnalyticsService(app, googleService) {
   this.service = googleService;
 
   this.api = googleService.analytics();
+  console.info(this.api )
 };
 
 AnalyticsService.prototype.init = function (next) {
@@ -62,15 +66,50 @@ console.info(data)
   }, next);
 };
 
-AnalyticsService.prototype.syncReports = function(query, next) {
+AnalyticsService.prototype.syncReports = function(site, startDate, endDate, next) {
   var self = this,
     api = this.api,
     app = self.app;
 
-  query.siteUrl = encodeURIComponent(query.siteUrl);
+  var range = moment.range(startDate, endDate);
+  var rateLimiter = limiter.RateLimiter,
+    limitService = new rateLimiter(2, 'second');
 
-  api.analytics.query(query, function(err, data) {
-    next(err, data);
+  range.by('days', function(moment) {
+
+    limitService.removeTokens(1, function(err) {
+      if (err) { return next(err); }
+
+      api.data.ga.get({
+        'ids': 'ga:' + site.analytics.profileId,
+        'start-date': moment.format('YYYY-MM-DD'),
+        'end-date': moment.format('YYYY-MM-DD'),
+        'metrics': 'ga:sessions,ga:users',
+        'dimensions': 'ga:pagePath',
+        'sort': '-ga:users'
+      }, function(err, res) {
+        if (err) { return next(err); }
+
+        async.eachLimit(res.rows, 1, function(item, next) {
+          async.auto({
+            'page': function(next) {
+              app.models.pages.ensureExists(item[0], site, next);
+            },
+            'visits': ['page', function(next, data) {
+              app.models.visitStatistics.ensureExists(data.page, site, moment.toDate(), next);
+            }]
+          }, function(err, data) {
+            if (err) { return next(err); }
+
+            data.visits.sessions = item[1];
+            data.visits.users = item[2];
+            data.visits.save(next);
+          });
+        }, next);
+      });
+
+    });
+
   });
 };
 

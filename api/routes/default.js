@@ -61,13 +61,14 @@ function getDataOptions(req) {
 }
 
 function processGet(model, req, res, next) {
+  if (req.params._id) {
+    req.query._id = req.params._id;
+  }
+
   var filter = getFilter(req),
     options = getDataOptions(req);
 
   if (req.params._id || req.query.alias) {
-    if (req.params._id) {
-      req.query._id = req.params._id;
-    }
     model.findOne(filter, function (err, data) {
       if (err) {
         if (err.name === 'CastError') {
@@ -114,17 +115,17 @@ function processGet(model, req, res, next) {
 module.exports = function processRequest(req, res, next) {
   var resourceName = req.params.resource,
     model = req.app.models[resourceName];
-    if (!model) {
-      return next(req.app.errors.NotFoundError('Resource "' + resourceName + '" not found.'));
-    }
+  if (!model) {
+    return next(req.app.errors.NotFoundError('Resource "' + resourceName + '" not found.'));
+  }
 
-    var method = req.method.toLowerCase();
-    switch (method) {
-      case 'get':
-        processGet(model, req, res, next);
-        break;
-      default:
-        next();
-    }
+  var method = req.method.toLowerCase();
+  switch (method) {
+    case 'get':
+      processGet(model, req, res, next);
+      break;
+    default:
+      next();
+  }
 };
 

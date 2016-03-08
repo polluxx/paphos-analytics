@@ -18,7 +18,8 @@
   "google": {
     "api": {
       "client-id": "493527858676-vnl1e0191hn5o1nro8shnaki3703qldf.apps.googleusercontent.com",
-      "secret": "fc6rzPsmC3FA_OFXGWSsvah2"
+      "secret": "fc6rzPsmC3FA_OFXGWSsvah2",
+      "redirectUrl": "http://localhost:5000/api/auth/google/callback"
     }
   }
 }

@@ -19,9 +19,11 @@ var app = {
     sites: require('./models/site.js'),
     pages: require('./models/page.js'),
     queries: require('./models/query.js'),
-    statistics: require('./models/statistic.js')
+    statistics: require('./models/statistic.js'),
+    visitStatistics: require('./models/visitStatistic.js')
   }
-}
+};
+
 app.services = {
   tasks: new paphos.tasks(app, {
     plugins: path.join(__dirname, 'tasks'),

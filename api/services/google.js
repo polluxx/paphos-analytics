@@ -6,9 +6,7 @@ var logger = require('../lib/paphos/log.js'),
 function GoogleService(options) {
   var log = this.log = logger().child({module: 'GoogleService'});
   this.options = options;
-
-  this.redirectUrl = 'http://analytics.5stars.link/api/auth/google/callback';
-};
+}
 
 GoogleService.prototype.init = function (next) {
   next();
@@ -35,7 +33,7 @@ GoogleService.prototype.generateAuthUrl = function (next) {
 };
 
 GoogleService.prototype.getClient = function (tokens) {
-  var oauth2Client = this.client = new OAuth2(this.options['client-id'], this.options['secret'], this.redirectUrl);
+  var oauth2Client = this.client = new OAuth2(this.options['client-id'], this.options['secret'], this.options['redirectUrl']);
   google.options({ auth: oauth2Client });
   oauth2Client.setCredentials(tokens);
   return oauth2Client;

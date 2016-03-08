@@ -11,6 +11,7 @@ exports.init = function (app) {
   app.server.use('/api/sites', require('./sites.js'));
   app.server.use('/api/pages', require('./pages.js'));
   app.server.use('/api/queries', require('./queries.js'));
+  app.server.use('/api/visits', require('./visits.js'));
 
 
   app.server.get('/api/:resource', resourceRoute);

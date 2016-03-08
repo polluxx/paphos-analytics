@@ -7,8 +7,8 @@ var async = require('async'),
 exports['sites.scanSite'] = function (app, msg, cb) {
   var log = app.log;
 
-  var endDate = moment.max(moment(), moment().endOf('month')),
-    startDate = moment(endDate).subtract(1, 'month');
+  var endDate = moment().subtract(1, 'day'),
+    startDate = moment(endDate).subtract(90, 'day');
 
     async.auto({
     'site': function (next) {
@@ -32,7 +32,7 @@ exports['sites.scanSite'] = function (app, msg, cb) {
     'reports': ['token', function (next, data) {
       var currentDate = moment(startDate);
 
-      app.services.analytics.syncReports(data.site, next);
+      app.services.analytics.syncReports(data.site, startDate, endDate, next);
     }],
     'query': ['token', function (next, data) {
       var currentDate = moment(startDate);

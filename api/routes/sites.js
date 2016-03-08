@@ -68,9 +68,8 @@ router.post('/:id/scan', function (req, res, next) {
     if (!item) {
       return next(req.app.errors.NotFoundError('Item not found.'));
     }
-
     req.app.services.tasks.publish('sites.scanSite', { _id: item._id });
-    res.status(204);
+    res.status(204).end();
   });
 });
 
