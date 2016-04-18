@@ -1,0 +1,50 @@
+<bz-form model="item" name="editForm" model-state="error" submit="saveItem(item)">
+  <div class="modal-header">
+    <h3 class="modal-title">
+      <span ng-if="!item._id">Новый url</span>
+      <span ng-if="item._id">Редактирование эксперимента</span>
+    </h3>
+  </div>
+  <div class="modal-body">
+
+    <bz-form-control label="Проект" field="projectId">
+
+      <select required name="projectId" ng-options="project._id as project.siteUrl for project in projects" ng-model="item.projectId" class="c-select form-control"></select>
+
+    </bz-form-control>
+
+    <bz-form-control label="Url страницы" field="url">
+
+      <input type="text" name="url" required class="form-control" ng-model="item.url" />
+
+    </bz-form-control>
+
+    <bz-form-control label="Старое значение {{experiment.variableParameterName}}" field="oldValue">
+
+      <input type="text" name="oldValue" required class="form-control" ng-model="item.oldValue" />
+
+    </bz-form-control>
+
+    <bz-form-control label="Новое значение {{experiment.variableParameterName}}" field="newValue">
+
+      <input type="text" name="newValue" required class="form-control" ng-model="item.newValue" />
+
+    </bz-form-control>
+
+    <bz-form-control label="Период эксперимента" field="period">
+
+      <input name="period" type="text" class="form-control datepicker" required bz-date-range="item.period" placeholder=""/>
+
+    </bz-form-control>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="submit" ng-disabled="editForm.$invalid">
+
+      <span ng-if="!item._id">Создать</span>
+      <span ng-if="item._id">Сохранить</span>
+
+    </button>
+    <button class="btn btn-secondary" type="button" ng-click="$close()">Отмена</button>
+  </div>
+</bz-form>

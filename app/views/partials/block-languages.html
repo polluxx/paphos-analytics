@@ -1,0 +1,6 @@
+<ul class="list-dots">
+    <li ng-repeat="language in languages track by language.code" ng-switch="currentLanguage == language.code">
+        <strong ng-switch-when="true" ng-bind="language.title"></strong>
+        <a ng-switch-default href="" ng-click="changeLanguage(language.code)" ng-bind="language.title"></a>
+    </li>
+</ul>

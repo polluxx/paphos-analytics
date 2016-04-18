@@ -1,0 +1,36 @@
+<nav class="navbar navbar-light bg-faded">
+
+    <div class="container pr">
+        <a href="" class="navbar-brand" ui-sref="dashboard.main"></a>
+
+
+      <ul class="nav navbar-nav pull-right">
+        <li class="nav-item dropdown dropdown-account" ui-sref-active="active" uib-dropdown>
+          <a uib-dropdown-toggle class="nav-link dropdown-toggle" href="" bz-current-user="user">
+            <span>
+              <span ng-bind="user.username"></span>
+              <br/>
+              <small ng-bind="user.dashboard.name"></small>
+            </span>
+          </a>
+          <ul class="dropdown-menu row">
+            <li>
+              <a href="" ui-sref="signout">Logout</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+        <ul class="nav navbar-nav">
+            <li class="nav-item" ui-sref-active="active">
+                <a class="nav-link" ui-sref="services.main">Services</a>
+            </li>
+            <li class="nav-item" ui-sref-active="active">
+                <a class="nav-link" ui-sref="analytics.dashboard">Analytics</a>
+            </li>
+            <!--li class="nav-item" ui-sref-active="active" ng-repeat="item in mainMenu">
+                <a class="nav-link" ui-sref="service.main({ name: item.name })" ng-bind="item.title"></a>
+            </li-->
+        </ul>
+    </div>
+</nav>

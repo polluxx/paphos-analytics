@@ -1,0 +1,56 @@
+<div class="page-header">
+
+  <h1>
+    Проекты
+  </h1>
+
+  <div class="page-actions">
+
+    <a href="" class="btn btn-primary" ui-sref="analytics.dashboard.new-project">Новый проект</a>
+
+  </div>
+</div>
+
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Проект</th>
+    <th class="text-center">Предупреждения</th>
+    <th class="text-center">Аудит</th>
+    <th class="text-center">Видимость</th>
+    <th class="text-center" width="250">Успешные страницы / Неуспешные страницы</th>
+    <th class="text-center">Посещаемость сегодня</th>
+    <th class="text-center">Посещаемость вчера</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="site in sites track by $index">
+    <td>
+      <a href="" ui-sref="analytics.project.info({ projectId: site._id })">{{site.siteUrl}}</a>
+    </td>
+    <td class="text-center">
+      &mdash;
+    </td>
+    <td class="text-center">
+      &mdash;
+    </td>
+    <td class="text-center">
+      &mdash;
+    </td>
+    <td class="text-center">
+      &mdash;
+    </td>
+    <td class="text-center">
+
+      &mdash;
+
+    </td>
+    <td class="text-center">
+
+      &mdash;
+
+    </td>
+  </tr>
+  </tbody>
+</table>

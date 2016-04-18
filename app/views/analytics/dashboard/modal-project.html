@@ -1,0 +1,26 @@
+<bz-form model="item" name="editForm" model-state="error" submit="saveItem(item)">
+  <div class="modal-header">
+    <h3 class="modal-title">Новый проект</h3>
+  </div>
+  <div class="modal-body">
+
+    <bz-form-control label="Домен" field="siteUrl" help="Например: v-androide.com">
+
+      <input type="text" name="siteUrl" required ng-pattern="/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/" class="form-control" ng-model="item.siteUrl" />
+
+      <ng-messages class="text-danger" for="editForm.siteUrl.$error" role="alert">
+        <ng-message when="pattern">Invalid domain name</ng-message>
+      </ng-messages>
+    </bz-form-control>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="submit" ng-disabled="editForm.$invalid">
+
+      <span ng-if="!item._id">Создать</span>
+      <span ng-if="item._id">Сохранить</span>
+
+    </button>
+    <button class="btn btn-secondary" type="button" ng-click="$close()">Отмена</button>
+  </div>
+</bz-form>

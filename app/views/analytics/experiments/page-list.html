@@ -1,0 +1,58 @@
+<div class="page-header">
+
+  <h1>
+    Эксперименты
+  </h1>
+
+  <div class="page-actions">
+
+    <a href="" class="btn btn-primary" ui-sref="experiments.new-experiment">Новый эксперимент</a>
+
+  </div>
+</div>
+
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Название</th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Количество страниц которые участвуют в эксперименте">Страницы</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Количество проектов которые участвуют в эксперименте">Проекты</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Рост средней позиции ключей страницы по Яндексу">Позиции, Яндекс</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Рост средней позиции ключей страницы по Google">Позиции, Google</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Рост трафика с Яндекса">Трафик, Яндекс</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Рост трафика с Google">Трафик, Google</span>
+    </th>
+    <th class="text-center">
+      <span tooltip-animation="false" uib-tooltip="Общий рост трафика">Трафик</span>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="experiment in experiments track by experiment._id">
+    <td class="text-left">
+      <a href="" ui-sref="experiment({ experimentId: experiment._id })">
+        {{experiment.title}}
+      </a>
+    </td>
+    <td class="text-center">3</td>
+    <td class="text-center">1</td>
+    <td class="text-center">&mdash;</td>
+    <td class="text-center">&mdash;</td>
+    <td class="text-center">&mdash;</td>
+    <td class="text-center">&mdash;</td>
+    <td class="text-center">&mdash;</td>
+  </tr>
+  </tbody>
+</table>

@@ -18,9 +18,12 @@ function($stateProvider, $urlRouterProvider) {
                 }
             }
         })
-        .state('private', {
-            url:"/"
-        })
+      .state('private', { // complete
+        abstract: true,
+        views: {
+          'dashboard': {templateUrl: 'app/views/master-dashboard.html'}
+        }
+      })
     ;
 
     $stateProvider.state("home", {

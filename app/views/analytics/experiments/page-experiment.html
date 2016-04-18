@@ -1,0 +1,76 @@
+<div class="page-header">
+
+  <h1>
+    Эксперимент "{{item.title}}"
+  </h1>
+
+  <div class="page-actions">
+
+    <a href="" class="btn btn-primary" ui-sref="experiment.new-url">Добавить в эксперимент</a>
+
+  </div>
+</div>
+
+<div style="max-width:100%; overflow-x: auto">
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Дата запуска</th>
+    <th>Дата окончания</th>
+    <th>Проект</th>
+    <th>Старое значение</th>
+    <th>Новое значение</th>
+    <!--th>Частотность в Яндексе</th>
+    <th>Частотность в Google</th>
+    <th>Начальная позиция в Яндексе -dateStart-</th>
+    <th>Начальная позиция в Google -dateStart-</th>
+    <th>Текущая позиция в Яндексе -dateEnd-</th>
+    <th>Текущая позиция в Google -dateEnd-</th>
+    <th>Изменение позиции в Яндексе</th>
+    <th>Изменение позиции в Google</th-->
+    <th>Начальный трафик в Яндексе -dateStart-</th>
+    <th>Начальный трафик в Google -dateStart-</th>
+    <th>Текущий трафик в Яндексе -dateEnd-</th>
+    <th>Текущий трафик в Google -dateEnd-</th>
+    <th>Изменение трафика в Яндексе</th>
+    <th>Изменение трафика в Google</th>
+    <th>Начальный общий трафик -dateStart-</th>
+    <th>Текущий общий трафик -dateEnd-</th>
+    <th>Изменение трафика</th>
+    <th>Эффективность эксперимента</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="url in urls track by url._id">
+    <td>
+      {{url.period.startDate|date:"dd.MM.yyyy"}}
+    </td>
+    <td>
+      {{url.period.endDate|date:"dd.MM.yyyy"}}
+    </td>
+    <td>
+      {{url.projectId}}
+    </td>
+    <td>
+      {{url.oldValue}}
+    </td>
+    <td>
+      {{url.newValue}}
+    </td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+  </tr>
+  </tbody>
+</table>
+
+
+</div>

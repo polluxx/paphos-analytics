@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-($stateProvider, $urlRouterProvider) => {
+function($stateProvider, $urlRouterProvider) {
 
 console.info('asd')
   $stateProvider
@@ -9,7 +9,7 @@ console.info('asd')
       abstract: true,
       url: '/analytics',
       views: {
-        'master-view': {templateUrl: 'views/masters/service.html'}
+        'master-view': {templateUrl: 'app/views/masters/service.html'}
       }
     })
 
@@ -17,26 +17,26 @@ console.info('asd')
       url: '/experiments',
       parent: 'analytics',
       views: {
-        'main-content': {controller: 'aeExperimentsListCtrl', templateUrl: 'views/analytics/experiments/page-list.html'}
+        'main-content': {controller: 'aeExperimentsListCtrl', templateUrl: 'app/views/analytics/experiments/page-list.html'}
       }
     })
 
     .state('analytics.dashboard', {
       url: '',
       views: {
-        'main-content': {controller: 'adDashboardCtrl', templateUrl: 'views/analytics/dashboard/page-dashboard.html'}
+        'main-content': {controller: 'adDashboardCtrl', templateUrl: 'app/views/analytics/dashboard/page-dashboard.html'}
       }
     })
     .state('analytics.dashboard.new-project', {
       url: '/new-project',
-      onEnter: ($stateParams, $state, $uibModal) => {
+      onEnter: function($stateParams, $state, $uibModal) {
         $uibModal.open({
           backdropClass: 'modal-backdrop',
           windowClass: 'modal-right',
           animation: true,
-          templateUrl: 'views/analytics/dashboard/modal-project.html',
+          templateUrl: 'app/views/analytics/dashboard/modal-project.html',
           resolve: {
-            item: aSiteModel => new aSiteModel()
+            item: function(aSiteModel) { return new aSiteModel() }
           },
           controller: 'adEditProjectModelCtrl'
         }).result.finally(() => $state.go('^'));
@@ -46,7 +46,7 @@ console.info('asd')
       url: '/:projectId',
       abstract: true,
       views: {
-        'main-content': {controller: 'apProjectViewCtrl', templateUrl: 'views/analytics/projects/page-project.html'}
+        'main-content': {controller: 'apProjectViewCtrl', templateUrl: 'app/views/analytics/projects/page-project.html'}
       },
       resolve: {
         item: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId })
@@ -54,15 +54,15 @@ console.info('asd')
     })
     .state('analytics.project.info', {
       url: '',
-      templateUrl: 'views/analytics/projects/page-info.html'
+      templateUrl: 'app/views/analytics/projects/page-info.html'
     })
     .state('analytics.project.pages', {
       url: '/pages',
-      templateUrl: 'views/analytics/projects/page-pages.html'
+      templateUrl: 'app/views/analytics/projects/page-pages.html'
     })
     .state('analytics.project.positions', {
       url: '/positions',
-      templateUrl: 'views/analytics/projects/page-positions.html'
+      templateUrl: 'app/views/analytics/projects/page-positions.html'
     })
 
     .state('experiments.new-experiment', {
@@ -72,7 +72,7 @@ console.info('asd')
           backdropClass: 'modal-backdrop',
           windowClass: 'modal-right',
           animation: true,
-          templateUrl: 'views/analytics/experiments/modal-experiment.html',
+          templateUrl: 'app/views/analytics/experiments/modal-experiment.html',
           resolve: {
             item: aExperimentModel => new aExperimentModel({
               variableParameterName: 'title',
@@ -89,7 +89,7 @@ console.info('asd')
       url: '/experiments/:experimentId',
       parent: 'analytics',
       views: {
-        'main-content': {controller: 'aeExperimentCtrl', templateUrl: 'views/analytics/experiments/page-experiment.html'}
+        'main-content': {controller: 'aeExperimentCtrl', templateUrl: 'app/views/analytics/experiments/page-experiment.html'}
       },
       resolve: {
         item: (aExperimentModel, $stateParams) => aExperimentModel.get({ _id: $stateParams.experimentId })
@@ -104,7 +104,7 @@ console.info('asd')
           backdropClass: 'modal-backdrop',
           windowClass: 'modal-right',
           animation: true,
-          templateUrl: 'views/analytics/experiments/modal-experimentUrl.html',
+          templateUrl: 'app/views/analytics/experiments/modal-experimentUrl.html',
           resolve: {
             experiment: aExperimentModel => aExperimentModel.get({ _id: $stateParams.experimentId }),
             item: aExperimentUrlModel => new aExperimentUrlModel({

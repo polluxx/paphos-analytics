@@ -13,7 +13,7 @@ module
 ;
 
 // config
-module.config(($stateProvider) => {
+module.config(function($stateProvider) {
 
 });
 

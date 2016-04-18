@@ -1,0 +1,129 @@
+<bz-form model="item" name="editForm" model-state="error" submit="saveItem(item)">
+  <div class="modal-header">
+    <h3 class="modal-title">
+      <span ng-if="!item._id">Новый эксперимент</span>
+      <span ng-if="item._id">Редактирование эксперимента</span>
+    </h3>
+  </div>
+  <div class="modal-body">
+
+    <bz-form-control label="Название эксперимента" field="title" help="Например: Добавление года в конец заголовка">
+
+      <input type="text" name="title" required class="form-control" ng-model="item.title" />
+
+    </bz-form-control>
+
+    <bz-form-control label="Выбор изменяемого параметра" field="siteUrl" help="При выборе этих параметров они будут автоматически подгружаться поля с базы данных">
+
+      <div class="c-inputs-stacked">
+      <label class="c-input c-radio">
+        <input type="radio" ng-checked="item.variableParameterName == 'title'" ng-model="item.variableParameterName" value="title" />
+        <span class="c-indicator"></span>
+        Title
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.variableParameterName" value="description" />
+        <span class="c-indicator"></span>
+        Description
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.variableParameterName" value="h1" />
+        <span class="c-indicator"></span>
+        H1
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-checked="item.variableParameterName != 'title' && item.variableParameterName != 'description' && item.variableParameterName != 'h1'" ng-click="item.variableParameterName = ''" value="custom" />
+        <span class="c-indicator"></span>
+        Ввод самостоятельного параметра
+      </label>
+      </div>
+
+    </bz-form-control>
+
+    <div ng-show="item.variableParameterName != 'title' && item.variableParameterName != 'description' && item.variableParameterName != 'h1'">
+      <bz-form-control label="Название изменяемого параметра" field="variableParameterName" help='При выборе этого значения в базу данных Экспериментов будет добавлено "Произвольная изменяемая величина".'>
+
+        <input type="text" name="variableParameterName" ng-required="item.variableParameterName != 'title' && item.variableParameterName != 'description' && item.variableParameterName != 'h1'" class="form-control" ng-model="item.variableParameterName" />
+
+      </bz-form-control>
+
+      <div class="alert alert-danger">
+        <strong>Внимание!</strong>
+        Обновление этого параметра нужно делать вручную.
+      </div>
+    </div>
+
+    <bz-form-control label="Выбор параметра для учета" field="siteUrl" help="При выборе этих параметров они будут автоматически подгружаться поля с базы данных">
+
+      <div class="c-inputs-stacked">
+      <label class="c-input c-radio" ng-repeat="(key, title) in trackingParameters track by key">
+        <input type="radio" ng-model="item.trackingParameterName" value="{{key}}" />
+        <span class="c-indicator"></span>
+        {{title}}
+      </label>
+        <label class="c-input c-radio">
+          <input type="radio" ng-checked="trackingParametersKeys.indexOf(item.trackingParameterName) == -1" ng-click="item.trackingParameterName = ''" />
+          <span class="c-indicator"></span>
+          Ввод самостоятельного параметра
+        </label>
+      </div>
+
+    </bz-form-control>
+
+
+    <div ng-show="trackingParametersKeys.indexOf(item.trackingParameterName) == -1">
+      <bz-form-control label="Название параметра для учета" field="trackingParameterName" help='При выборе этого значения в базу данных Экспериментов будет добавлено "Произвольная учетная величина".'>
+
+        <input type="text" name="trackingParameterName" ng-required="trackingParametersKeys.indexOf(item.trackingParameterName) == -1" class="form-control" ng-model="item.trackingParameterName" />
+
+      </bz-form-control>
+
+      <div class="alert alert-danger">
+        <strong>Внимание!</strong>
+        Обновление этого параметра нужно делать вручную. Обратите внимание на выбор единицы временной шкалы. В базе данных в зависимости от этого будет создано соответствующее количество полей, которые должны быть заполнены вручную
+      </div>
+    </div>
+
+    <bz-form-control label="Выбор времени эксперимента" field="siteUrl">
+
+      <div>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.trackingTime" name="trackingTime" value="day" />
+        <span class="c-indicator"></span>
+        день
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.trackingTime" name="trackingTime" value="week" />
+        <span class="c-indicator"></span>
+        неделя
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.trackingTime" name="trackingTime" value="month" />
+        <span class="c-indicator"></span>
+        месяц
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.trackingTime" name="trackingTime" value="quarter" />
+        <span class="c-indicator"></span>
+        квартал
+      </label>
+      <label class="c-input c-radio">
+        <input type="radio" ng-model="item.trackingTime" name="trackingTime" value="year" />
+        <span class="c-indicator"></span>
+        год
+      </label>
+      </div>
+
+    </bz-form-control>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="submit" ng-disabled="editForm.$invalid">
+
+      <span ng-if="!item._id">Создать</span>
+      <span ng-if="item._id">Сохранить</span>
+
+    </button>
+    <button class="btn btn-secondary" type="button" ng-click="$close()">Отмена</button>
+  </div>
+</bz-form>

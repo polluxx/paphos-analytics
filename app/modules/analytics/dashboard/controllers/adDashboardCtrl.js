@@ -1,5 +1,5 @@
 export default
 /*@ngInject*/
-function ($scope, item) {
+function ($scope) {
 
 }
