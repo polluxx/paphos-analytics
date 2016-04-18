@@ -13,18 +13,28 @@
     "convict": "^1.0.1",
     "cors": "^2.7.1",
     "deasync": "^0.1.4",
-    "express": "^4.13.3",
     "googleapis": "^2.1.6",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^3.2.2",
+    "gulp-sourcemaps": "^1.6.0",
     "limiter": "^1.1.0",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "moment-range": "^2.2.0",
     "mongoose": "^4.2.8",
+    "rollup": "^0.25.8",
+    "rollup-plugin-commonjs": "^2.2.1",
+    "rollup-plugin-node-resolve": "^1.5.0",
     "ssh2": "^0.4.14",
-    "stompit": "^0.22.0"
+    "stompit": "^0.22.0",
+    "watchify": "^3.7.0",
+    "express": "*",
+    "paphos-core": "*"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node api/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

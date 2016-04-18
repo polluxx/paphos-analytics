@@ -1,0 +1,34 @@
+{
+  "name": "base-service",
+  "description": "Basic service module",
+  "main": "",
+  "authors": [
+    "Polluxx <yuriy.kosakivsky@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/polluxx/paphos_basic_service",
+  "moduleType": ["es6"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "bootstrap": "4",
+    "angular": "~1.5.1",
+    "angular-cookies": "~1.5.1"
+  },
+  "dependencies": {
+    "bootstrap": "4",
+    "angular": "~1.5.1",
+    "angular-ui-router": "~0.2.15",
+    "angular-bootstrap": "~0.14.3",
+    "angular-cookies": "~1.5.1",
+    "angular-resource": "~1.5.1",
+    "lodash": "~4.1.0",
+    "angular-animate":"~1.5.1",
+    "ngAnalytics": "*"
+  }
+}
