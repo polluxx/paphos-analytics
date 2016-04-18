@@ -1,4 +1,4 @@
-var logger = require('../lib/paphos/log.js'),
+var logger = require('paphos-core').log,
   _ = require('lodash'),
   moment = require('moment'),
   momentRange = require('moment-range'),

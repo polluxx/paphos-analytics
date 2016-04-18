@@ -1,7 +1,9 @@
+var paphos = require('paphos-core');
+
 exports.init = function (app) {
 
  // var access = require('../middleware/access.js'),
-  var resourceRoute = require('./default.js');
+  //var resourceRoute = require('./default.js');
 
   app.server.get('/api', function(req, res, next){
     res.json({ success: true });
@@ -14,11 +16,11 @@ exports.init = function (app) {
   app.server.use('/api/visits', require('./visits.js'));
 
 
-  app.server.get('/api/:resource', resourceRoute);
-  app.server.get('/api/:resource/:_id', resourceRoute);
+  app.server.get('/api/:resource', paphos.defaultRoute);
+  app.server.get('/api/:resource/:_id', paphos.defaultRoute);
+  app.server.post('/api/:resource', paphos.defaultRoute);
 
 /*
-  app.server.post('/api/:resource', access(), resourceRoute);
   app.server.put('/api/:resource/:_id', access(), resourceRoute);
   app.server.delete('/api/:resource/:_id', access(), resourceRoute);
 */

@@ -4,7 +4,7 @@ var router = require('express').Router(),
   moment = require('moment'),
   _ = require('lodash'),
   async = require('async');
-
+/*
 router.get('/:id', function (req, res, next) {
   var fields = ['isActive'],
     update = _.pick(req.body, fields);
@@ -39,7 +39,7 @@ console.info(data.site);
 
     res.json(data.site);
   });
-});
+});*/
 
 router.post('/find', function (req, res, next) {
   var urls = _.map(req.body, function(item) {

@@ -7,7 +7,7 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   config = require('./config.js'),
   routes = require('./routes'),
-  paphos = require('./lib/paphos'),
+  paphos = require('paphos-core'),
   GoogleService = require('./services/google.js'),
   WebmastersService = require('./services/webmasters.js'),
   AnalyticsService = require('./services/analytics.js');
@@ -20,6 +20,8 @@ var app = {
     pages: require('./models/page.js'),
     queries: require('./models/query.js'),
     statistics: require('./models/statistic.js'),
+    experiments: require('./models/experiment.js'),
+    experimentUrls: require('./models/experimentUrl.js'),
     visitStatistics: require('./models/visitStatistic.js')
   }
 };
@@ -60,7 +62,7 @@ exports.init = function (next) {
     },
     'migration': ['mongoose', function (next) {
       app.log.info('Load migrations:', path.join(__dirname, 'migrations'));
-      paphos.migrations.migrateToActual(app, path.join(__dirname, 'migrations'), next);
+      paphos.migrations.migrateToActual(mongoose, app, path.join(__dirname, 'migrations'), next);
     }],
     'tasks': function(next) {
       if (!config.get('tasks.enabled')) {

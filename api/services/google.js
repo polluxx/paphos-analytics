@@ -1,4 +1,4 @@
-var logger = require('../lib/paphos/log.js'),
+var logger = require('paphos-core').log,
   async = require('async'),
   google = require('googleapis'),
   OAuth2 = google.auth.OAuth2;
