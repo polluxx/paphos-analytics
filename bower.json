@@ -28,7 +28,6 @@
     "angular-cookies": "~1.5.1",
     "angular-resource": "~1.5.1",
     "lodash": "~4.1.0",
-    "angular-animate":"~1.5.1",
-    "ngAnalytics": "*"
+    "angular-animate":"~1.5.1"
   }
 }

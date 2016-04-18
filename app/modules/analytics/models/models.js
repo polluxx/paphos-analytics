@@ -1,7 +1,5 @@
 var appName = 'module.analytics.models';
 
-import _ from 'lodash';
-
 var module = angular.module(appName, [
   'ngResource'
 ]);
