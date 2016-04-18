@@ -2,7 +2,17 @@ let appName = 'base';
 
 var module = angular.module(appName,
   [
-    'ui.router'
+    'ui.router',
+    'ngAnimate',
+    'ngMessages',
+    'ngCookies',
+    'ngAnalytics',
+    'permission',
+    'satellizer',
+    'ui.bootstrap',
+    'pascalprecht.translate',
+    'checklist-model',
+    'toaster'
   ]
 );
 

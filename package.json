@@ -32,7 +32,9 @@
     "express": "*",
     "paphos-core": "*"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp-ng-inject": "^0.1.0"
+  },
   "scripts": {
     "start": "node api/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
