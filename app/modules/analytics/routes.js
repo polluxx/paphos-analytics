@@ -49,11 +49,11 @@ console.info('asd')
         'main-content': {controller: 'apProjectViewCtrl', templateUrl: 'app/views/analytics/projects/page-project.html'}
       },
       resolve: {
-        item: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId })
+        item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })
     .state('analytics.project.info', {
-      url: '',
+      url: '/info',
       templateUrl: 'app/views/analytics/projects/page-info.html'
     })
     .state('analytics.project.pages', {
@@ -116,6 +116,22 @@ console.info('asd')
             })
           },
           controller: 'aeEditExperimentUrlCtrl'
+        }).result.finally(() => $state.go('^'));
+      }
+    })
+
+    .state('analytics.dashboard.settings', {
+      url: '/settings',
+      onEnter: function($stateParams, $state, $uibModal) {
+        $uibModal.open({
+          backdropClass: 'modal-backdrop',
+          windowClass: 'modal-right',
+          animation: true,
+          templateUrl: 'app/views/analytics/dashboard/modal-settings.html',
+          resolve: {
+            item: function(aSiteModel) { return new aSiteModel() }
+          },
+          controller: 'asSettingsCtrl'
         }).result.finally(() => $state.go('^'));
       }
     })

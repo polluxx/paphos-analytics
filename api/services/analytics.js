@@ -3,7 +3,9 @@ var logger = require('paphos-core').log,
   moment = require('moment'),
   momentRange = require('moment-range'),
   async = require('async'),
-  limiter = require('limiter');
+  limiter = require('limiter'),
+  request = require('request'),
+  xml2json = require('xml2json');
 
 function AnalyticsService(app, googleService) {
   var log = this.log = logger().child({module: 'AnalyticsService'});
@@ -29,7 +31,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
     'analyticSites': function(next) {
       api.management.accountSummaries.list({}, function(err, data) {
         if (err) { return next(err); }
-console.info(data)
+
         var items = [];
         _.each(data.items, function(item) {
           items = items.concat(item.webProperties);
@@ -40,18 +42,16 @@ console.info(data)
     'dbSites': ['analyticSites', function(next, data) {
       var urls = _.pluck(data.analyticSites, 'websiteUrl');
       urls = _.map(urls, function(item) {
-        return _.trim(item, '/').toLowerCase();
+        return _.trim(item, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
       });
       app.models.sites.find({ siteUrl: { $in: urls } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
       async.each(data.analyticSites, function(site, next) {
-        site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase();
+        site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
         var dbItem = _.find(data.dbSites, { siteUrl: site.websiteUrl });
-        if (!dbItem) {
-          dbItem = new app.models.sites({ siteUrl: site.websiteUrl });
-        }
-        if (!site.profiles.length) {
+
+        if (!dbItem || !site.profiles.length) {
           return next();
         }
         dbItem.services.analytics = true;
@@ -152,5 +152,27 @@ AnalyticsService.prototype.syncStatisticForDay = function(site, date, next) {
     }, next);
   });
 };
+
+AnalyticsService.prototype.getYandexUpdates = function(next) {
+  var app = this.app;
+  
+  request(app.config.get('yandex.updates'), function(err, resp, body) {
+    if(err) return next(err);
+
+    var response = {
+      status: resp.statusCode,
+      body: xml2json.toJson(resp.body)
+    };
+    next(null, response);
+  })
+
+
+}
+
+AnalyticsService.prototype.getTokens = function(site, next) {
+
+  return next(null, "ya29..ygKxpanqGQHy3Z89rhy0_PMOtRPn5gFcv7Npl7VwjJcqhr9Ko31XWXdV2MTdVDq3BQ");
+
+}
 
 module.exports = AnalyticsService;

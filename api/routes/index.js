@@ -1,4 +1,5 @@
-var paphos = require('paphos-core');
+var paphos = require('paphos-core'),
+    path = require('path');
 
 exports.init = function (app) {
 
@@ -19,7 +20,7 @@ exports.init = function (app) {
   app.server.get('/api/:resource', paphos.defaultRoute);
   app.server.get('/api/:resource/:_id', paphos.defaultRoute);
   app.server.post('/api/:resource', paphos.defaultRoute);
-
+  
 /*
   app.server.put('/api/:resource/:_id', access(), resourceRoute);
   app.server.delete('/api/:resource/:_id', access(), resourceRoute);

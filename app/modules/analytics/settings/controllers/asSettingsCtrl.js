@@ -1,7 +1,7 @@
 export default
-class asSettingsCtrl {
+
   /*@ngInject*/
-  constructor($scope, $http, $timeout, ngAnalyticsService, SatellizerPopup, $auth, aSiteModel, aAuthModel) {
+  function($scope, $http, $timeout, ngAnalyticsService, SatellizerPopup, $auth, aSiteModel, aAuthModel) {
 
     $scope.authenticate = function (provider) {
       $auth.authenticate(provider).then(data => {
@@ -127,5 +127,5 @@ class asSettingsCtrl {
     $scope.$on('$gaReportSuccess', function (e, report, element) {
       console.log(report, element);
     });
+
   }
-}

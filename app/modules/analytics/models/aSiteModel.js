@@ -12,7 +12,9 @@ function aSiteModel($resource, ANALYTICS_API) {
     'updateSite': {method: 'PUT'},
     'scanSite': {method: 'POST', params: { method: 'scan' }},
 
-    'find': {method: 'POST', params: { method: 'find' }, isArray: true }
+    'find': {method: 'POST', params: { method: 'find' }, isArray: true },
+
+    'yandexUpdates': {method: 'GET', params: { method: 'yandexUpdates' }, isArray: false}
   });
 
   return resource;

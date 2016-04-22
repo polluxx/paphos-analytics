@@ -42,14 +42,30 @@ console.info(data.site);
 });*/
 
 router.post('/find', function (req, res, next) {
-  var urls = _.map(req.body, function(item) {
-    return _.trim(item, '/');
-  });
-  req.app.models.sites.find({ siteUrl: { $in: urls } }, function(err, data) {
-    data = _.map(urls, function(item) {
-      return _.find(data, { siteUrl: item }) ||  { siteUrl: item, isUnknown: true };
-    });
+  req.app.models.sites.find(req.params, function(err, data) {
     res.json(data)
+  });
+});
+
+router.get('/yandexUpdates', function(req, res, next) {
+  req.app.services.analytics.getYandexUpdates(function (err, resp) {
+    if(err) return next(err);
+
+    res.json(resp);
+    next();
+  });
+});
+
+router.put('/', function (req, res, next) {
+  var fields = ['siteUrl'],
+    insert = _.pick(req.body, fields);
+  console.log(insert);
+  req.app.models.sites.collection.insert(insert, function(err, data) {
+    console.log(err);
+    if(err) {
+      return next(err);
+    }
+    res.status(204).send();
   });
 });
 

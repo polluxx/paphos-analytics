@@ -4,16 +4,20 @@ export default
 
     $scope.item = item;
 
-    $scope.saveItem = (item) => {
+    $scope.saveItem = function(item) {
       var savedItem = angular.copy(item);
+      if(!savedItem['siteUrl']) return;
 
-      let saveFunc = savedItem._id ? savedItem.$save : savedItem.$create;
+      savedItem['id'] = savedItem['siteUrl'];
+
+      let saveFunc = _.pluck(savedItem, '_id') ? savedItem.$save : savedItem.$create;
 
       $scope.loading = true;
       return saveFunc.call(item, res => {
         $scope.$close();
       }, () => {
         $scope.loading = false;
+        $scope.tableParams.reload();
       });
     };
 

@@ -27,7 +27,7 @@
   <tbody>
   <tr ng-repeat="site in sites track by $index">
     <td>
-      <a href="" ui-sref="analytics.project.info({ projectId: site._id })">{{site.siteUrl}}</a>
+      <a href="#" ui-sref="analytics.project.info({ projectId: site._id, token: site.tokens.authToken })">{{site.siteUrl}}</a>
     </td>
     <td class="text-center">
       &mdash;

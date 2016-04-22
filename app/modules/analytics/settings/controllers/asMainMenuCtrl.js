@@ -14,7 +14,7 @@ function ($scope, aSiteModel) {
     {siteUrl: 'http://v-androide.com/'},
     {siteUrl: 'http://vseowode.ru/'}
   ];
-
+  
   var loadSites = () => {
     $scope.hasUnknown = false;
     aSiteModel.find(_.pluck(sites, 'siteUrl'), res => {

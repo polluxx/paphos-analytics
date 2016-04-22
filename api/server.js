@@ -58,9 +58,10 @@ exports.init = function (next) {
         app.log.error(err);
         next(err);
       });
-      mongoose.set('debug', false);
+      mongoose.set('debug', true);
     },
     'migration': ['mongoose', function (next) {
+      //return next();
       app.log.info('Load migrations:', path.join(__dirname, 'migrations'));
       paphos.migrations.migrateToActual(mongoose, app, path.join(__dirname, 'migrations'), next);
     }],

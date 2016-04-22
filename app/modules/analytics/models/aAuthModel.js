@@ -16,10 +16,14 @@ function aAuthModel($resource, ANALYTICS_API, SatellizerPopup, $window) {
     callback = callback || angular.noop;
 
     resource.authGoogle(res => {
-      var openPopup = SatellizerPopup.open(res.url, 'Google Auth', { width: 452, height: 633 }, $window.location.origin).pollPopup();
 
+      var openPopup = SatellizerPopup.open(res.url, 'Google Auth', { width: 452, height: 633 }, $window.location.origin).pollPopup();
+      console.log(openPopup);
       openPopup.then(function(token) {
         callback(token);
+      })
+      .catch(function(err) {
+        console.log(err);
       });
     });
   };

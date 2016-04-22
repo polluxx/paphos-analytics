@@ -1,0 +1,59 @@
+
+<ng-messages class="text-danger" for="report.$error" role="alert">
+  <ng-message when="code">{{report.$error.message}}</ng-message>
+</ng-messages>
+
+
+<div bz-loading-container="loading">
+
+  <!--<ng-analytics-chart ng-if="current.chart" chart="current.chart"></ng-analytics-chart>-->
+  <ng-analytics-report ng-if="current.queries.length" report-data="report.data" queries="current.queries"></ng-analytics-report>
+
+  <canvas class="chart chart-line" chart-data="chart.data"
+          chart-labels="chart.labels" chart-legend="true" chart-series="chart.series"
+          options="chart.options" legend="true" height="150">
+  </canvas>
+
+  <div>
+    <ul>
+      <li ng-repeat="serie in chart.series">
+        <label>{{serie}}
+          <input ng-click="rechart(serie)" type="radio" ng-model="$parent" name="serie" value="{{serie}}" required />
+        </label>
+        </li>
+      </ul>
+  </div>
+
+
+  <div class="row" ng-if="table.total.length">
+    <div class="col-xs-12">
+
+      <h5>Всего:</h5>
+
+    </div>
+    <div class="col-xs-6 col-md-3" ng-repeat="item in table.total">
+
+      <div class="panel status panel-info">
+        <div class="panel-heading">
+          <h1 class="panel-title text-center">{{item.value | number: 2}}</h1>
+        </div>
+        <div class="text-center">
+          <small>{{item.uiName}}</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div>
+    <table ng-table-dynamic="tableParams with headers" class="table table-striped">
+
+      <tr data-ng-repeat="(j,cols) in $data">
+        <td data-ng-repeat="(n, col) in cols track by $index" class="asc" >
+          <span>{{col}}</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</div>

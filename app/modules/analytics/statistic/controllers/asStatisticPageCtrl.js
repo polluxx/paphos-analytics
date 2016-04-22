@@ -1,7 +1,7 @@
 export default
-class asStatisticPageCtrl {
+
   /*@ngInject*/
-  constructor($scope, page, $timeout) {
+  function($scope, page, $timeout) {
 
 
     console.info(page);
@@ -40,4 +40,3 @@ class asStatisticPageCtrl {
     }, true);
 
   }
-}

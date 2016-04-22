@@ -15,11 +15,8 @@
 
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" type="submit" ng-disabled="editForm.$invalid">
-
-      <span ng-if="!item._id">Создать</span>
-      <span ng-if="item._id">Сохранить</span>
-
+    <button class="btn btn-primary" type="submit" ng-click="saveItem(item)" ng-disabled="editForm.$invalid">
+      {{!item._id ? 'Создать' : 'Сохранить'}}
     </button>
     <button class="btn btn-secondary" type="button" ng-click="$close()">Отмена</button>
   </div>

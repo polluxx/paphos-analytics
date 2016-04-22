@@ -12,6 +12,7 @@ router.get('/google', function (req, res, next) {
 });
 
 router.get('/google/callback', function (req, res, next) {
+  console.log(req.query);
   async.auto({
     'tokens': function(next) {
       req.app.services.google.getToken(req.query.code, next);

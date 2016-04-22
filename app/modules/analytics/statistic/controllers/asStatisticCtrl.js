@@ -1,7 +1,7 @@
 export default
-class asStatisticCtrl {
+
   /*@ngInject*/
-  constructor($scope, aVisitModel, aSiteModel, ngAnalyticsService, $timeout) {
+  function($scope, aVisitModel, aSiteModel, ngAnalyticsService, $timeout) {
 
     $scope.current = {
       site: null,
@@ -11,7 +11,7 @@ class asStatisticCtrl {
       }
     };
 
-
+    
     var sites = [
       {siteUrl: 'http://v-androide.com/'},
       {siteUrl: 'http://vseowode.ru/'}
@@ -96,4 +96,3 @@ class asStatisticCtrl {
     }, true);
 
   }
-}

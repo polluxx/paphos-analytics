@@ -3,16 +3,16 @@
     "port": 5000
   },
   "mongo": {
-    "db": "mongodb://127.0.0.1:27017/papholytict"
+    "db": "mongodb://mongo:27017/papholytict"
   },
   "tasks": {
-    "enabled": true,
+    "enabled": false,
     "stomp": {
       "destination": "/queue/papholytict-tasks",
-      "host": "localhost",
+      "host": "rabbitmq",
       "port": 61613,
-      "login": "root",
-      "password": "123456"
+      "login": "guest",
+      "password": "guest"
     }
   },
   "google": {
@@ -21,5 +21,8 @@
       "secret": "fc6rzPsmC3FA_OFXGWSsvah2",
       "redirectUrl": "http://localhost:5000/api/auth/google/callback"
     }
+  },
+  "yandex": {
+    "updates": "http://api.promosite.ru/public/all.xml"
   }
 }
