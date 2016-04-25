@@ -1,5 +1,9 @@
 export default
 /*@ngInject*/
-function($scope, item, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
   console.log(item);
+  console.log(project);
+  $scope.item = item;
+  $scope.project = project;
+
 }

@@ -67,13 +67,14 @@ console.info('asd')
 
     .state('pages', {
       parent: 'analytics',
-      url: '/pages/:pageId',
+      url: '/project/:projectId/page/:pageId',
       views: {
         'main-content': {controller: 'apPagesViewCtrl', templateUrl: 'app/views/analytics/projects/page-statistic.html'}
       },
       resolve: {
         //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
-        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })}
+        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })},
+        project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })
 
