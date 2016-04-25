@@ -16,9 +16,9 @@
 
   <div>
     <ul>
-      <li ng-repeat="serie in chart.series">
-        <label>{{serie}}
-          <input ng-click="rechart(serie)" type="radio" ng-model="$parent" name="serie" value="{{serie}}" required />
+      <li ng-repeat="(index,serie) in chartLines">
+        <label>{{serie.name}}
+          <input ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-model ng-checked="serie.$enabled" />
         </label>
         </li>
       </ul>

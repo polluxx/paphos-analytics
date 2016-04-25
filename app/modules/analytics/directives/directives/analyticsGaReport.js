@@ -21,6 +21,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           maintainAspectRatio: true
         }
       };
+      scope.chartLines = {};
 
       scope.current = {
         queries: [],
@@ -180,7 +181,11 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             })
           };
 
-          rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+
+          scope.$watch("site.yandexUpdates", function(yandexData) {
+            rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+          });
+
 
           scope.tableParams.reload();
 
@@ -208,7 +213,20 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             scope.chart.series = _.keys(groups);
             scope.chart.data = _.map(groups, (group, key) => {
               return _.map(group, row => parseInt(row[2]));
-            })
+            });
+
+
+            scope.dataChart = angular.copy(scope.chart.data);
+            scope.seriesChart = angular.copy(scope.chart.series);
+
+            scope.seriesChart.forEach(series => {
+              scope.chartLines[series] = {
+                name: series,
+                $enabled: true
+              };
+            });
+
+
           }
           scope.hideChart = dimensions.length > 2;
         });
@@ -260,21 +278,19 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         return tmpScope;
       }
 
-      console.log(scope.chart);
-      var dataChart = scope.chart.data;
-      var seriesChart = scope.chart.series;
-      scope.rechart = function(chartLine) {
-        console.log(seriesChart);
-        console.log(chartLine);
+      scope.rechart = function(chartLines) {
+        var checked = _.filter(chartLines, selection => { return selection.$enabled; }).map(checked => { return checked.name; });
+        var intersect = [];
 
-        var index = dataChart.indexOf(chartLine);
-        scope.chart.data = [dataChart[index]];
-        scope.chart.series = [seriesChart[index]];
-        if(chartLine === "All traffic") {
-          scope.chart.data = dataChart;
-          scope.chart.series = seriesChart;
-        }
 
+        scope.seriesChart.forEach((item, index) => {
+          if(~checked.indexOf(item)) intersect.push(index);
+        });
+
+        scope.chart.data = scope.dataChart.filter(returnIntersection);
+        scope.chart.series = scope.seriesChart.filter(returnIntersection);
+
+        function returnIntersection(item, index) { return ~intersect.indexOf(index); }
       }
 
       /*scope.$on('$gaReportSuccess', function (e, report, element) {

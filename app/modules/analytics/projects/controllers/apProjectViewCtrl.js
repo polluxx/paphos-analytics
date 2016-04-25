@@ -2,6 +2,8 @@ export default
   /*@ngInject*/
   function($scope, item, ngAnalyticsService, aSiteModel) {
 
+    console.log(item);
+
     item.token = {profile_id: item.analytics.profileId};
     item.id = item._id;
     angular.extend($scope, {
