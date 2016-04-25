@@ -65,6 +65,18 @@ console.info('asd')
       templateUrl: 'app/views/analytics/projects/page-positions.html'
     })
 
+    .state('pages', {
+      parent: 'analytics',
+      url: '/pages/:pageId',
+      views: {
+        'main-content': {controller: 'apPagesViewCtrl', templateUrl: 'app/views/analytics/projects/page-statistic.html'}
+      },
+      resolve: {
+        //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
+        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })}
+      }
+    })
+
     .state('experiments.new-experiment', {
       url: '/new-experiment',
       onEnter: ($stateParams, $state, $uibModal) => {

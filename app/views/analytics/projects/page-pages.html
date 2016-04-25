@@ -1,1 +1,12 @@
-asdas
+<div class="row">
+  <div class="col-md-12">
+
+    <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
+
+      <tr ng-repeat="row in $data">
+        <td data-title="'Name'"><a href="#" ui-sref="pages({ pageId: row._id, token: site.tokens.authToken })">{{row.title}}</a></td>
+        <td data-title="'Age'">{{row.alias}}</td>
+      </tr>
+    </table>
+  </div>
+ </div>

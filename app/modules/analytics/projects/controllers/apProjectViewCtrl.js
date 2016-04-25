@@ -1,8 +1,8 @@
+
+
 export default
   /*@ngInject*/
-  function($scope, item, ngAnalyticsService, aSiteModel) {
-
-    console.log(item);
+  function($scope, item, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
 
     item.token = {profile_id: item.analytics.profileId};
     item.id = item._id;
@@ -44,8 +44,25 @@ export default
       },
       getPages: function() {
 
+
+        this.tableParams = new NgTableParams({}, {
+          getData: function(params) {
+            var host = "v-androide.com";
+            return $http({method: 'GET', url: "http://" + host + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
+              .then(function (resp) {
+                $scope.pages = resp.data;
+                console.log($scope.pages);
+
+                params.total(1 * params.count());
+                console.log(params);
+                return $scope.pages;
+              });
+          }
+      });
       }
     });
 
     $scope.getAuth();
+
+    $scope.pages = $scope.getPages();
   }
