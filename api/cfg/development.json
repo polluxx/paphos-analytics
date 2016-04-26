@@ -6,7 +6,7 @@
     "db": "mongodb://mongo:27017/papholytict"
   },
   "tasks": {
-    "enabled": false,
+    "enabled": true,
     "stomp": {
       "destination": "/queue/papholytict-tasks",
       "host": "rabbitmq",
