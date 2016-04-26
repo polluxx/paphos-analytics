@@ -4,7 +4,7 @@ var module = angular.module(appName, [
   'ngResource'
 ]);
 
-module.constant('ANALYTICS_API', 'http://localhost:5000/api');
+module.constant('ANALYTICS_API', '/api');
 
 // models
 import aAuthModel from './aAuthModel.js';
