@@ -2,7 +2,6 @@ export default
 /*@ngInject*/
 function($stateProvider, $urlRouterProvider) {
 
-console.info('asd')
   $stateProvider
     .state('analytics', {
       parent: 'private',
