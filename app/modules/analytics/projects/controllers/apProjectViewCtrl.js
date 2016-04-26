@@ -3,6 +3,8 @@
 export default
   /*@ngInject*/
   function($scope, item, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+    console.log(item);
+    if(!item.analytics) return;
 
     item.token = {profile_id: item.analytics.profileId};
     item.id = item._id;
@@ -21,7 +23,7 @@ export default
         dimensions: 'ga:source, ga:date'
       },
       getAuth: function() {
-        if (!item.tokens) return reject('No tokens provided!');
+        if (!item.tokens) return console.error('No tokens provided!');
 
         $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
           if(isReady) {
@@ -47,7 +49,7 @@ export default
 
         this.tableParams = new NgTableParams({}, {
           getData: function(params) {
-            
+
             return $http({method: 'GET', url: "http://" + item.siteUrl + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
               .then(function (resp) {
                 $scope.pages = resp.data;
