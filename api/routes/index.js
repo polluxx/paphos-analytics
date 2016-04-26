@@ -20,7 +20,12 @@ exports.init = function (app) {
   app.server.get('/api/:resource', paphos.defaultRoute);
   app.server.get('/api/:resource/:_id', paphos.defaultRoute);
   app.server.post('/api/:resource', paphos.defaultRoute);
-  
+
+
+  app.server.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/../../index.html'));
+  });
+
 /*
   app.server.put('/api/:resource/:_id', access(), resourceRoute);
   app.server.delete('/api/:resource/:_id', access(), resourceRoute);

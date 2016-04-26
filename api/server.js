@@ -115,6 +115,14 @@ exports.start = function (next) {
 
       app.log.debug('Http server starting at', config.get('http.port'), '...');
 
+
+      app.server.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
+      app.server.use('/app', express.static(path.join(__dirname, '../app')));
+      app.server.use('/dist', express.static(path.join(__dirname, '../dist')));
+      app.server.use('/assets', express.static(path.join(__dirname, '../assets')));
+      app.server.use('/locale', express.static(path.join(__dirname, '../app/locale')));
+      app.server.use('/views', express.static(path.join(__dirname, '../app/views')));
+
       routes.init(app);
 
       app.httpServer.listen(config.get('http.port'), next);
