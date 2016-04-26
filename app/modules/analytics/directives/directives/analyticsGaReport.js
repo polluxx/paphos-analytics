@@ -80,7 +80,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         };
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
-
         $timeout(() => {
           scope.current.chart = {
             reportType: 'ga',
@@ -90,7 +89,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               'start-date': scope.date.startDate.format('YYYY-MM-DD'),
               'end-date': scope.date.endDate.format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
-              //'filters': filters,
+              'filters': report.filters,
               // 'max-results': maxResults,
               // 'sampling-level': samplingLevel,
               // 'segments': segment
@@ -110,7 +109,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               'start-date': scope.date.startDate.format('YYYY-MM-DD'),
               'end-date': scope.date.endDate.format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
-              //'filters': filters,
+              'filters': report.filters,
               // 'max-results': maxResults,
               // 'sampling-level': samplingLevel,
               // 'segments': segment
@@ -225,8 +224,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
                 $enabled: true
               };
             });
-
-
           }
           scope.hideChart = dimensions.length > 2;
         });
