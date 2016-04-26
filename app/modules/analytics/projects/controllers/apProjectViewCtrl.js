@@ -47,8 +47,8 @@ export default
 
         this.tableParams = new NgTableParams({}, {
           getData: function(params) {
-            var host = "v-androide.com";
-            return $http({method: 'GET', url: "http://" + host + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
+            
+            return $http({method: 'GET', url: "http://" + item.siteUrl + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
               .then(function (resp) {
                 $scope.pages = resp.data;
                 console.log($scope.pages);
