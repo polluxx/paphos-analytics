@@ -155,7 +155,7 @@ AnalyticsService.prototype.syncStatisticForDay = function(site, date, next) {
 
 AnalyticsService.prototype.getYandexUpdates = function(next) {
   var app = this.app;
-  
+
   request(app.config.get('yandex.updates'), function(err, resp, body) {
     if(err) return next(err);
 
@@ -166,12 +166,6 @@ AnalyticsService.prototype.getYandexUpdates = function(next) {
     next(null, response);
   })
 
-
-}
-
-AnalyticsService.prototype.getTokens = function(site, next) {
-
-  return next(null, "ya29..ygKxpanqGQHy3Z89rhy0_PMOtRPn5gFcv7Npl7VwjJcqhr9Ko31XWXdV2MTdVDq3BQ");
 
 }
 
