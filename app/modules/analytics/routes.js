@@ -72,7 +72,7 @@ function($stateProvider, $urlRouterProvider) {
       },
       resolve: {
         //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
-        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })},
+        item: function(aPageModel, $stateParams) { return aPageModel.get({ _id: $stateParams.pageId })},
         project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })

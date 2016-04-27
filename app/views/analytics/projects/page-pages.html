@@ -1,10 +1,15 @@
 <div class="row">
+  <div class="page-actions">
+
+    <!--a href="" class="btn btn-primary" ng-click="refreshPages()">Обновить</a-->
+
+  </div>
+
   <div class="col-md-12">
 
     <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
       <tr ng-repeat="row in $data">
-        <td data-title="'Name'"><a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id })">{{row.title}}</a></td>
-        <td data-title="'Age'">{{row.alias}}</td>
+        <td data-title="'Title'"filter="{title: 'text'}" sortable="'title'"><a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id })">{{row.title}}</a></td>
       </tr>
     </table>
   </div>

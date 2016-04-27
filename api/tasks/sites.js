@@ -21,22 +21,24 @@ exports['sites.scanSite'] = function (app, msg, cb) {
           app.services.google.setCredentials(tokens);
           if (tokens.refresh_token) {
             data.site.tokens = tokens;
+
+            log.info('Tokens refreshed: '+JSON.stringify(tokens));
             return data.site.save(next);
           }
           next();
         });
-        return
+        return;
       }
       next();
     }],
     'reports': ['token', function (next, data) {
       var currentDate = moment(startDate);
-
+      return next();
       app.services.analytics.syncReports(data.site, startDate, endDate, next);
     }],
     'query': ['token', function (next, data) {
       var currentDate = moment(startDate);
-return next();
+      return next();
       async.whilst(function () {
         return !currentDate.isAfter(endDate);
       }, function (next) {
@@ -46,4 +48,23 @@ return next();
       }, next);
     }]
   }, cb);
+};
+
+exports['sites.scanAll'] = function (app, msg, cb) {
+  var log = app.log;
+
+  async.auto({
+    sites: function (next) {
+      app.models.sites.find({}, next);
+    },
+    scan: ['sites', (next, data) => {
+      if(!data.sites) return next('No data to process.');
+
+      data.sites.forEach(record => {
+        app.services.tasks.publish('sites.scanSite', { _id: record._id });
+      });
+      next();
+    }]
+  }, cb);
+
 };

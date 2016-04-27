@@ -20,5 +20,9 @@ router.get('/:id/queries', function (req, res, next) {
   });
 });
 
+router.get('refresh', function(req, res, next) {
+  app.services.tasks.publish('pages.scan');
+  res.json({message: 'done'});
+});
 
 module.exports = router;

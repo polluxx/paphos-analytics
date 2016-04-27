@@ -6,54 +6,84 @@ var async = require('async'),
   limiter = require('limiter');
 
 exports['pages.scan'] = function(app, message, callback) {
-
-  var rateLimiter = limiter.RateLimiter,
-    limitService = new rateLimiter(2, 'second');
+  var log = app.log,
+    rateLimiter = limiter.RateLimiter,
+    limitService = new rateLimiter(1, 'second');
 
   async.auto({
     projects: function (next) {
-
-      console.log('pages task start');
-
       app.models.sites.find({}, next);
     },
-    pages: ['projects', function(next, data) {
-      console.log('pages DB get start');
-      if(!data.projects) return next('No projects provided!');
+    pages: ['projects', function(next, res) {
+      
+      if(!res.projects) return next('No projects provided!');
 
-      var projects = data.projects.map(function(project) { console.log(project); return project.siteUrl }),
-        page = 1, err = null;
+      var pager = {}, err = null,
+        insertOptions = {
+          upsert: true,
+          multi: false
+        },
+        insertData = {},
+        insertCondition = {},
+        url,
+        end = false;
 
-        projects.forEach(function(project) {
+      res.projects.forEach(function(project) {
+          pager[project] = {page:1};
 
-          //while(page <= 100 && err === null) {
-            console.log(page);
-            limitService.removeTokens(1, function (err) {
-              if (err) {
-                return next(err);
-              }
 
-              console.info('Start getting project: '+project+" page: "+page);
-              request
-                .get('http://' + project + "/api/posts?perPage=100&page="+page, {
-                  page: page,
-                  perPage: 100,
-                  fields: ['category', 'alias', 'title']
-                })
-                .on('response', function (data) {
-                  console.log(data.toJSON());
-                })
-                .on('error', function (err) {
+          //do {
+            for(var i=0;i<100;i++) {
+              limitService.removeTokens(1, function (err) {
+                if (err) {
                   return next(err);
-                });
-            });
-            //page++;
-          //}
+                }
 
-          //next();
 
-        });
-        //next();
+                if (end) return;
+
+                log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager[project].page + " ------");
+
+                request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title&page=" + pager[project].page},
+                  function (err, data, body) {
+                    pager[project].page++;
+                    if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
+
+                    data = JSON.parse(body);
+
+
+                    console.log("DATA: " + data.length);
+
+                    if (!data.length) end = true;
+
+                    data.forEach(page => {
+
+                      if (!page.category) return;
+
+                      url = [page.category.parentAlias, page.category.alias, page.alias].join("/");
+                      insertCondition.url = url;
+                      insertData = {
+                        url: url,
+                        title: page.title,
+                        searchPage: pager[project].page,
+                        siteId: project._id
+                      };
+
+                      app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
+                        if (err) {
+                          log.error("Error when trying to insert data to DB: " + err);
+
+                        }
+                      });
+
+                    });
+
+                  });
+              });
+            }
+          //} while(end || pager[project].page <= 2);
+      });
+
       }]
     });
 

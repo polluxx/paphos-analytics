@@ -7,7 +7,6 @@ function GoogleService(options, hostName) {
   var log = this.log = logger().child({module: 'GoogleService'});
   this.options = options;
   this.hostName = "http://localhost";
-  console.log(hostName);
   if(hostName) this.hostName = hostName;
 }
 

@@ -180,10 +180,13 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             })
           };
 
-
-          scope.$watch("site.yandexUpdates", function(yandexData) {
+          
+          if(scope.site.yandexUpdates !== undefined) {
+            rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+          }
+          /*scope.$watch("site.yandexUpdates", function(yandexData) {
             rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
-          });
+          });*/
 
 
           scope.tableParams.reload();

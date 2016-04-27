@@ -4,10 +4,9 @@ var mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
   url: {type: String, required: true},
-
-  site: {
-    _id: mongoose.Schema.Types.ObjectId,
-  },
+  searchPage: {type: Number},
+  title: {type: String},
+  siteId: mongoose.Schema.Types.ObjectId,
 
   removed: {type: Date},
   createDate: {type: Date, required: true, default: Date.now}
@@ -17,10 +16,10 @@ var schema = new mongoose.Schema({
   collection: 'pages'
 });
 
-schema.index({ url: 1, 'site._id': 1 }, { unique: true });
+schema.index({ url: 1, 'siteId': 1 }, { unique: true });
 
 schema.statics.ensureExists = function (url, site, cb) {
-  var match = { url: url, 'site._id': site._id},
+  var match = { url: url, 'siteId': site._id},
     model = this;
 
   this.findOne(match, function(err, item) {

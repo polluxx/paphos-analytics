@@ -7,7 +7,8 @@ function aPageModel($resource, ANALYTICS_API) {
     'get': {method: 'GET'},
     'save': {method: 'PUT'},
     'create': {method: 'POST'},
-    'update': {method: 'PATCH'}
+    'update': {method: 'PATCH'},
+    'refresh': {method: 'GET', params: { method: 'refresh' }, isArray: false}
   });
 
   return resource;

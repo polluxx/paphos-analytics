@@ -1,18 +1,13 @@
 export default
 /*@ngInject*/
 function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
-  /* tmp */
-  item = item.data[0];
-
-  item.url = [item.category.parentAlias, item.category.alias, item.alias].join("/");
-  /* tmp */
-
   project.token = {profile_id: project.analytics.profileId};
   project.id = project._id;
 
   $scope.item = item;
   $scope.project = project;
 
+  console.log(project);
 
   angular.extend($scope, {
       item: $scope.item,

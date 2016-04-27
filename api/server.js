@@ -58,7 +58,7 @@ exports.init = function (next) {
         app.log.error(err);
         next(err);
       });
-      mongoose.set('debug', true);
+      mongoose.set('debug', false);
     },
     'migration': ['mongoose', function (next) {
       //return next();

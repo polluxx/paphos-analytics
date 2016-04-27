@@ -58,7 +58,8 @@ function aPageModel($resource, ANALYTICS_API) {
     'get': {method: 'GET'},
     'save': {method: 'PUT'},
     'create': {method: 'POST'},
-    'update': {method: 'PATCH'}
+    'update': {method: 'PATCH'},
+    'refresh': {method: 'GET', params: { method: 'refresh' }, isArray: false}
   });
 
   return resource;
@@ -171,7 +172,7 @@ module$3.config(function($stateProvider) {
 
 });
 
-function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
     console.log(item);
     if(!item.analytics) return;
 
@@ -214,22 +215,20 @@ function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, $http, 
         });
       },
       getPages: function() {
-
-
         this.tableParams = new NgTableParams({}, {
           getData: function(params) {
-
-            return $http({method: 'GET', url: "http://" + item.siteUrl + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
-              .then(function (resp) {
-                $scope.pages = resp.data;
-                console.log($scope.pages);
-
-                params.total(1 * params.count());
-                console.log(params);
-                return $scope.pages;
-              });
+            return aPageModel.query({ page: 1, perPage: 100/*, 'siteId': item._id*/}, function(resp) {
+              $scope.pages = resp;
+              params.total(1 * params.count());
+              return $scope.pages;
+            });
           }
-      });
+        });
+      },
+      refreshPages: function() {
+        aPageModel.refresh(function(resp) {
+          console.log(resp);
+        });
       }
     });
 
@@ -239,18 +238,13 @@ function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, $http, 
   }
 
 function apPagesViewCtrl($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
-  /* tmp */
-  item = item.data[0];
-
-  item.url = [item.category.parentAlias, item.category.alias, item.alias].join("/");
-  /* tmp */
-
   project.token = {profile_id: project.analytics.profileId};
   project.id = project._id;
 
   $scope.item = item;
   $scope.project = project;
 
+  console.log(project);
 
   angular.extend($scope, {
       item: $scope.item,
@@ -893,10 +887,13 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
             })
           };
 
-
-          scope.$watch("site.yandexUpdates", function(yandexData) {
+          
+          if(scope.site.yandexUpdates !== undefined) {
+            rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+          }
+          /*scope.$watch("site.yandexUpdates", function(yandexData) {
             rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
-          });
+          });*/
 
 
           scope.tableParams.reload();
@@ -1093,7 +1090,7 @@ function routes($stateProvider, $urlRouterProvider) {
       },
       resolve: {
         //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
-        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })},
+        item: function(aPageModel, $stateParams) { return aPageModel.get({ _id: $stateParams.pageId })},
         project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })
