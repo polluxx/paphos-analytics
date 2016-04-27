@@ -11,4 +11,7 @@ RUN npm install && bower install --allow-root
 
 EXPOSE 5000
 
+#VOLUME /src
+#WORKDIR /src
+
 CMD dockerize -wait http://mongo:27017 -wait http://rabbitmq:15672 -timeout 60s  npm start

@@ -36,7 +36,7 @@ app.services = {
     destination: config.get('tasks.stomp.destination')
   }),
 
-  google: googleSevice = new GoogleService(config.get('google.api')),
+  google: googleSevice = new GoogleService(config.get('google.api'), config.get('url')),
   webmasters: new WebmastersService(app, googleSevice),
   analytics: new AnalyticsService(app, googleSevice)
 };

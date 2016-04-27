@@ -3,9 +3,12 @@ var logger = require('paphos-core').log,
   google = require('googleapis'),
   OAuth2 = google.auth.OAuth2;
 
-function GoogleService(options) {
+function GoogleService(options, hostName) {
   var log = this.log = logger().child({module: 'GoogleService'});
   this.options = options;
+  this.hostName = "http://localhost";
+  console.log(hostName);
+  if(hostName) this.hostName = hostName;
 }
 
 GoogleService.prototype.init = function (next) {
@@ -33,7 +36,7 @@ GoogleService.prototype.generateAuthUrl = function (next) {
 };
 
 GoogleService.prototype.getClient = function (tokens) {
-  var oauth2Client = this.client = new OAuth2(this.options['client-id'], this.options['secret'], this.options['redirectUrl']);
+  var oauth2Client = this.client = new OAuth2(this.options['client-id'], this.options['secret'], this.hostName + this.options['redirectUrl']);
   google.options({ auth: oauth2Client });
   oauth2Client.setCredentials(tokens);
   return oauth2Client;

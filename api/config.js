@@ -27,6 +27,18 @@ var conf = convict({
       env: 'HTTP_PORT'
     }
   },
+  url: {
+    doc: 'The application environment url.',
+    format: String,
+    default: 'http://localhost:3000',
+    env: 'SERVICE_URL'
+  },
+  apiUrl: {
+    doc: 'The application environment api url.',
+    format: String,
+    default: 'http://localhost:3000/api',
+    env: 'SERVICE_API_URL'
+  },
   log: {
     stdout: {
       enabled: {
