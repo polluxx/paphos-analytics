@@ -114,9 +114,6 @@ var module$2 = angular.module(appName$2, [
 
 module$2.constant('ANALYTICS_API', '/api');
 
-console.log(ANALYTICS_API);
-
-
 module$2
   .factory('aAuthModel', aAuthModel)
   .factory('aPageModel', aPageModel)

@@ -35,7 +35,7 @@ exports['pages.scan'] = function(app, message, callback) {
 
               console.info('Start getting project: '+project+" page: "+page);
               request
-                .get('http://' + project + "/api/posts", {
+                .get('http://' + project + "/api/posts?perPage=100&page="+page, {
                   page: page,
                   perPage: 100,
                   fields: ['category', 'alias', 'title']
