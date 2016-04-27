@@ -30,14 +30,14 @@ var conf = convict({
   url: {
     doc: 'The application environment url.',
     format: String,
-    default: 'http://localhost:3000',
-    env: 'SERVICE_URL'
+    default: 'http://localhost:5000',
+    env: 'ANALYTICS_SERVICE_URL'
   },
   apiUrl: {
     doc: 'The application environment api url.',
     format: String,
-    default: 'http://localhost:3000/api',
-    env: 'SERVICE_API_URL'
+    default: 'http://localhost:5000/api',
+    env: 'ANALYTICS_SERVICE_API_URL'
   },
   log: {
     stdout: {

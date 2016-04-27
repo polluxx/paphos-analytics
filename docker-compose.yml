@@ -22,5 +22,5 @@ web:
   environment:
     - RABBITMQ_USER=root
     - RABBITMQ_PASS=123456
-    - "SERVICE_URL=http://localhost:5000"
-    - "SERVICE_API_URL=http://localhost:5000/api"
+    - "ANALYTICS_SERVICE_URL=http://localhost:5000"
+    - "ANALYTICS_SERVICE_API_URL=http://localhost:5000/api"
