@@ -112,7 +112,10 @@ var module$2 = angular.module(appName$2, [
   'ngResource'
 ]);
 
-module$2.constant('ANALYTICS_API', 'http://localhost:5000/api');
+module$2.constant('ANALYTICS_API', '/api');
+
+console.log(ANALYTICS_API);
+
 
 module$2
   .factory('aAuthModel', aAuthModel)
@@ -171,7 +174,9 @@ module$3.config(function($stateProvider) {
 
 });
 
-function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel) {
+function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+    console.log(item);
+    if(!item.analytics) return;
 
     item.token = {profile_id: item.analytics.profileId};
     item.id = item._id;
@@ -190,7 +195,7 @@ function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel) {
         dimensions: 'ga:source, ga:date'
       },
       getAuth: function() {
-        if (!item.tokens) return reject('No tokens provided!');
+        if (!item.tokens) return console.error('No tokens provided!');
 
         $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
           if(isReady) {
@@ -213,11 +218,61 @@ function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel) {
       },
       getPages: function() {
 
+
+        this.tableParams = new NgTableParams({}, {
+          getData: function(params) {
+
+            return $http({method: 'GET', url: "http://" + item.siteUrl + "/api/posts?page=1&perPage=100&fields=category,alias,title"})
+              .then(function (resp) {
+                $scope.pages = resp.data;
+                console.log($scope.pages);
+
+                params.total(1 * params.count());
+                console.log(params);
+                return $scope.pages;
+              });
+          }
+      });
       }
     });
 
     $scope.getAuth();
+
+    $scope.pages = $scope.getPages();
   }
+
+function apPagesViewCtrl($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+  /* tmp */
+  item = item.data[0];
+
+  item.url = [item.category.parentAlias, item.category.alias, item.alias].join("/");
+  /* tmp */
+
+  project.token = {profile_id: project.analytics.profileId};
+  project.id = project._id;
+
+  $scope.item = item;
+  $scope.project = project;
+
+
+  angular.extend($scope, {
+      item: $scope.item,
+      current: {
+        site: $scope.item.url,
+        date: {
+          startDate: moment().subtract(6, 'day'),
+          endDate: moment()
+        }
+      },
+      query: {
+        ids: 'ga:' + $scope.project.analytics.profileId,
+        metrics: 'ga:pageviews',
+        dimensions: 'ga:source, ga:date',
+        filters: 'ga:pagePath=@' + $scope.item.url
+      }
+    }
+  );
+}
 
 var appName$4 = 'module.analytics.projects';
 
@@ -226,6 +281,7 @@ let module$4 = angular.module(appName$4, [
 
 module$4
   .controller('apProjectViewCtrl', apProjectViewCtrl)
+  .controller('apPagesViewCtrl', apPagesViewCtrl)
 ;
 
 // config
@@ -681,6 +737,7 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
           maintainAspectRatio: true
         }
       };
+      scope.chartLines = {};
 
       scope.current = {
         queries: [],
@@ -739,7 +796,6 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
         };
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
-
         $timeout(() => {
           scope.current.chart = {
             reportType: 'ga',
@@ -749,7 +805,7 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
               'start-date': scope.date.startDate.format('YYYY-MM-DD'),
               'end-date': scope.date.endDate.format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
-              //'filters': filters,
+              'filters': report.filters,
               // 'max-results': maxResults,
               // 'sampling-level': samplingLevel,
               // 'segments': segment
@@ -769,7 +825,7 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
               'start-date': scope.date.startDate.format('YYYY-MM-DD'),
               'end-date': scope.date.endDate.format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
-              //'filters': filters,
+              'filters': report.filters,
               // 'max-results': maxResults,
               // 'sampling-level': samplingLevel,
               // 'segments': segment
@@ -840,7 +896,11 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
             })
           };
 
-          rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+
+          scope.$watch("site.yandexUpdates", function(yandexData) {
+            rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+          });
+
 
           scope.tableParams.reload();
 
@@ -868,7 +928,18 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
             scope.chart.series = _.keys(groups);
             scope.chart.data = _.map(groups, (group, key) => {
               return _.map(group, row => parseInt(row[2]));
-            })
+            });
+
+
+            scope.dataChart = angular.copy(scope.chart.data);
+            scope.seriesChart = angular.copy(scope.chart.series);
+
+            scope.seriesChart.forEach(series => {
+              scope.chartLines[series] = {
+                name: series,
+                $enabled: true
+              };
+            });
           }
           scope.hideChart = dimensions.length > 2;
         });
@@ -920,21 +991,19 @@ function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $f
         return tmpScope;
       }
 
-      console.log(scope.chart);
-      var dataChart = scope.chart.data;
-      var seriesChart = scope.chart.series;
-      scope.rechart = function(chartLine) {
-        console.log(seriesChart);
-        console.log(chartLine);
+      scope.rechart = function(chartLines) {
+        var checked = _.filter(chartLines, selection => { return selection.$enabled; }).map(checked => { return checked.name; });
+        var intersect = [];
 
-        var index = dataChart.indexOf(chartLine);
-        scope.chart.data = [dataChart[index]];
-        scope.chart.series = [seriesChart[index]];
-        if(chartLine === "All traffic") {
-          scope.chart.data = dataChart;
-          scope.chart.series = seriesChart;
-        }
 
+        scope.seriesChart.forEach((item, index) => {
+          if(~checked.indexOf(item)) intersect.push(index);
+        });
+
+        scope.chart.data = scope.dataChart.filter(returnIntersection);
+        scope.chart.series = scope.seriesChart.filter(returnIntersection);
+
+        function returnIntersection(item, index) { return ~intersect.indexOf(index); }
       }
 
       /*scope.$on('$gaReportSuccess', function (e, report, element) {
@@ -957,7 +1026,6 @@ module$8.directive('analyticsGaReport', analyticsGaReport);
 
 function routes($stateProvider, $urlRouterProvider) {
 
-console.info('asd')
   $stateProvider
     .state('analytics', {
       parent: 'private',
@@ -1018,6 +1086,19 @@ console.info('asd')
     .state('analytics.project.positions', {
       url: '/positions',
       templateUrl: 'app/views/analytics/projects/page-positions.html'
+    })
+
+    .state('pages', {
+      parent: 'analytics',
+      url: '/project/:projectId/page/:pageId',
+      views: {
+        'main-content': {controller: 'apPagesViewCtrl', templateUrl: 'app/views/analytics/projects/page-statistic.html'}
+      },
+      resolve: {
+        //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
+        item: function($http, $stateParams) { return $http.get("http://v-androide.com/api/posts?page=1&perPage=1&_id="+$stateParams.pageId, { perPage: 1, _id: $stateParams.pageId, fields: ['category','alias','title'] })},
+        project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
+      }
     })
 
     .state('experiments.new-experiment', {
