@@ -1,25 +1,4 @@
-
-aAuthModel.$inject = ["$resource", "ANALYTICS_API", "SatellizerPopup", "$window"];
-aPageModel.$inject = ["$resource", "ANALYTICS_API"];
-aSiteModel.$inject = ["$resource", "ANALYTICS_API"];
-aVisitModel.$inject = ["$resource", "ANALYTICS_API"];
-aExperimentModel.$inject = ["$resource", "ANALYTICS_API"];
-aExperimentUrlModel.$inject = ["$resource", "ANALYTICS_API"];
-adDashboardCtrl.$inject = ["$scope", "aSiteModel"];
-  adEditProjectModelCtrl.$inject = ["$scope", "item"];
-  apProjectViewCtrl.$inject = ["$scope", "item", "ngAnalyticsService", "aSiteModel", "aPageModel", "NgTableParams"];
-apPagesViewCtrl.$inject = ["$scope", "item", "project", "ngAnalyticsService", "aSiteModel", "$http", "NgTableParams"];
-asMainMenuCtrl.$inject = ["$scope", "aSiteModel"];
-  asSettingsCtrl.$inject = ["$scope", "$http", "$timeout", "ngAnalyticsService", "SatellizerPopup", "$auth", "aSiteModel", "aAuthModel"];
-  asStatisticCtrl.$inject = ["$scope", "aVisitModel", "aSiteModel", "ngAnalyticsService", "$timeout"];
-  asStatisticPageCtrl.$inject = ["$scope", "page", "$timeout"];
-  aeExperimentsListCtrl.$inject = ["$scope", "aExperimentModel"];
-  aeExperimentCtrl.$inject = ["$scope", "item", "aExperimentUrlModel"];
-  aeEditExperimentModelCtrl.$inject = ["$scope", "item"];
-  aeEditExperimentUrlCtrl.$inject = ["$scope", "item", "experiment", "aSiteModel"];
-analyticsGaReport.$inject = ["$parse", "$modal", "toaster", "$timeout", "NgTableParams", "$filter", "$q"];
-routes.$inject = ["$stateProvider", "$urlRouterProvider"];
-routesConfig.$inject = ["$stateProvider", "$urlRouterProvider"];var config = {};
+var config = {};
 
 function aAuthModel($resource, ANALYTICS_API, SatellizerPopup, $window) {
   var resource = $resource(ANALYTICS_API + '/auth/:_id/:method', {
@@ -189,9 +168,9 @@ module$3
 ;
 
 // config
-module$3.config(["$stateProvider", function($stateProvider) {
+module$3.config(function($stateProvider) {
 
-}]);
+});
 
 function apProjectViewCtrl($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
     console.log(item);
@@ -297,9 +276,9 @@ module$4
 ;
 
 // config
-module$4.config(["$stateProvider", function($stateProvider) {
+module$4.config(function($stateProvider) {
 
-}]);
+});
 
 function asSettingsCtrl($scope, $http, $timeout, ngAnalyticsService, SatellizerPopup, $auth, aSiteModel, aAuthModel) {
 
@@ -468,9 +447,9 @@ module$5
 ;
 
 // config
-module$5.config(["$stateProvider", function($stateProvider) {
+module$5.config(function($stateProvider) {
 
-}]);
+});
 
 function asStatisticCtrl($scope, aVisitModel, aSiteModel, ngAnalyticsService, $timeout) {
 
@@ -619,9 +598,9 @@ module$6
 ;
 
 // config
-module$6.config(["$stateProvider", function($stateProvider) {
+module$6.config(function($stateProvider) {
 
-}]);
+});
 
 function aeExperimentsListCtrl($scope, aExperimentModel) {
 
@@ -724,9 +703,9 @@ module$7
 ;
 
 // config
-module$7.config(["$stateProvider", function($stateProvider) {
+module$7.config(function($stateProvider) {
 
-}]);
+});
 
 function analyticsGaReport ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
   var number = 0;
@@ -1067,18 +1046,18 @@ function routes($stateProvider, $urlRouterProvider) {
     })
     .state('analytics.dashboard.new-project', {
       url: '/new-project',
-      onEnter: ["$stateParams", "$state", "$uibModal", function($stateParams, $state, $uibModal) {
+      onEnter: function($stateParams, $state, $uibModal) {
         $uibModal.open({
           backdropClass: 'modal-backdrop',
           windowClass: 'modal-right',
           animation: true,
           templateUrl: 'app/views/analytics/dashboard/modal-project.html',
           resolve: {
-            item: ["aSiteModel", function(aSiteModel) { return new aSiteModel() }]
+            item: function(aSiteModel) { return new aSiteModel() }
           },
           controller: 'adEditProjectModelCtrl'
         }).result.finally(() => $state.go('^'));
-      }]
+      }
     })
     .state('analytics.project', {
       url: '/:projectId',
@@ -1087,7 +1066,7 @@ function routes($stateProvider, $urlRouterProvider) {
         'main-content': {controller: 'apProjectViewCtrl', templateUrl: 'app/views/analytics/projects/page-project.html'}
       },
       resolve: {
-        item: ["aSiteModel", "$stateParams", function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}]
+        item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })
     .state('analytics.project.info', {
@@ -1111,8 +1090,8 @@ function routes($stateProvider, $urlRouterProvider) {
       },
       resolve: {
         //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
-        item: ["aPageModel", "$stateParams", function(aPageModel, $stateParams) { return aPageModel.get({ _id: $stateParams.pageId })}],
-        project: ["aSiteModel", "$stateParams", function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}]
+        item: function(aPageModel, $stateParams) { return aPageModel.get({ _id: $stateParams.pageId })},
+        project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
       }
     })
 
@@ -1173,18 +1152,18 @@ function routes($stateProvider, $urlRouterProvider) {
 
     .state('analytics.dashboard.settings', {
       url: '/settings',
-      onEnter: ["$stateParams", "$state", "$uibModal", function($stateParams, $state, $uibModal) {
+      onEnter: function($stateParams, $state, $uibModal) {
         $uibModal.open({
           backdropClass: 'modal-backdrop',
           windowClass: 'modal-right',
           animation: true,
           templateUrl: 'app/views/analytics/dashboard/modal-settings.html',
           resolve: {
-            item: ["aSiteModel", function(aSiteModel) { return new aSiteModel() }]
+            item: function(aSiteModel) { return new aSiteModel() }
           },
           controller: 'asSettingsCtrl'
         }).result.finally(() => $state.go('^'));
-      }]
+      }
     })
   ;
 };
@@ -1216,7 +1195,7 @@ class MainServiceCtrl {
     }
 }
 
-function routesConfig($stateProvider, $urlRouterProvider) {
+var routesConfig = ($stateProvider, $urlRouterProvider) => {
 
     // $urlRouterProvider.otherwise(function($inject) {
     //     var $state = $inject.get('$state');
