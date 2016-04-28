@@ -73,8 +73,8 @@ function($stateProvider, $urlRouterProvider) {
       },
       resolve: {
         //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
-        item: function(aPageModel, $stateParams) { return aPageModel.get({ _id: $stateParams.pageId })},
-        project: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
+        item: (aPageModel, $stateParams) => aPageModel.get({ _id: $stateParams.pageId }).$promise,
+        project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
     })
 

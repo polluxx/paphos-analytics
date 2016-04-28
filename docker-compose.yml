@@ -12,10 +12,10 @@ rabbitmq:
     - RABBITMQ_USER=root
     - RABBITMQ_PASS=123456
 web:
-  image: polluxx/paphos-analytics
+  #image: polluxx/paphos-analytics
   #volumes:
   #- .:/src
-  #build: .
+  build: .
   ports:
     - "5000:5000"
   links:
