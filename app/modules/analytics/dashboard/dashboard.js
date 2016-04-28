@@ -1,6 +1,7 @@
 var appName = 'module.analytics.dashboard';
 
 let module = angular.module(appName, [
+  'ngTable'
 ]);
 
 // controllers
