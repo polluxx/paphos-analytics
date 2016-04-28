@@ -10,7 +10,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize
 
 COPY ./ /src
 WORKDIR /src
-RUN npm install && bower install --allow-root
+RUN npm install && bower install --allow-root && NODE_ENV=production gulp
 
 EXPOSE 5000
 
