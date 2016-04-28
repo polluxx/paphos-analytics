@@ -122,6 +122,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
       var profileId;
       scope.$watchGroup(['site.id', 'date.startDate'], () => {
+        if (!scope.site) {
+          return;
+        }
         profileId = scope.site.token.profile_id;
 
         scope.current.queries = [];
@@ -180,7 +183,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             })
           };
 
-          
+
           if(scope.site.yandexUpdates !== undefined) {
             rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
           }

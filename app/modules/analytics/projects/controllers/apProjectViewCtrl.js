@@ -23,18 +23,17 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     dimensions: 'ga:source, ga:date'
   };
 
-  $scope.getAuth = () => {
-    if (!item.tokens) return console.error('No tokens provided!');
 
-    $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
-      if (isReady) {
-        ngAnalyticsService.setToken(item.tokens.access_token);
-        ngAnalyticsService.authorize();
+  $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
+    if (isReady) {
+      if (!item.tokens) return console.error('No tokens provided!');
 
-        this.getYandexUpdates();
-      }
-    });
-  };
+      ngAnalyticsService.setToken(item.tokens.access_token);
+      ngAnalyticsService.authorize();
+
+      $scope.getYandexUpdates();
+    }
+  });
 
   $scope.getYandexUpdates = () => {
     aSiteModel.yandexUpdates(function (resp) {
@@ -46,24 +45,4 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
       $scope.item.yandexUpdates = JSON.parse(resp.body);
     });
   };
-
-  $scope.refreshPages = () => {
-    aPageModel.refresh(function (resp) {
-      console.log(resp);
-    });
-  };
-
-  $scope.getAuth();
-
-  $scope.tableParams = new NgTableParams({
-
-  }, {
-    getData: function (params) {
-      return aPageModel.query({page: 1, perPage: 100/*, 'siteId': item._id*/}, function (resp) {
-        $scope.pages = resp;
-        params.total(1 * params.count());
-        return $scope.pages;
-      });
-    }
-  });
 }

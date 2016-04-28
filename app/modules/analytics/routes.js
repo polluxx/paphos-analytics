@@ -3,7 +3,7 @@ export default
 function($stateProvider, $urlRouterProvider) {
 
   $stateProvider
-    .state('analytics', {
+    .state('analytics', { 
       parent: 'private',
       abstract: true,
       url: '/analytics',
@@ -57,6 +57,7 @@ function($stateProvider, $urlRouterProvider) {
     })
     .state('analytics.project.pages', {
       url: '/pages',
+      controller: 'apProjectPagesCtrl',
       templateUrl: 'app/views/analytics/projects/page-pages.html'
     })
     .state('analytics.project.positions', {
