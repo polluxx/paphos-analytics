@@ -15,7 +15,7 @@ exports['pages.scan'] = function(app, message, callback) {
       app.models.sites.find({}, next);
     },
     pages: ['projects', function(next, res) {
-      
+
       if(!res.projects) return next('No projects provided!');
 
       var pager = {}, err = null,
@@ -31,60 +31,72 @@ exports['pages.scan'] = function(app, message, callback) {
       res.projects.forEach(function(project) {
           pager[project] = {page:1};
 
-
-          //do {
-            for(var i=0;i<100;i++) {
-              limitService.removeTokens(1, function (err) {
-                if (err) {
-                  return next(err);
-                }
+          for(var i=0;i<100;i++) {
+            limitService.removeTokens(1, function (err) {
+              if (err) {
+                return next(err);
+              }
 
 
-                if (end) return;
+              if (end) return;
 
-                log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager[project].page + " ------");
+              log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager[project].page + " ------");
 
-                request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title&page=" + pager[project].page},
-                  function (err, data, body) {
-                    pager[project].page++;
-                    if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
+              request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,keywords&page=" + pager[project].page},
+                function (err, data, body) {
+                  pager[project].page++;
+                  if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
 
-                    data = JSON.parse(body);
+                  data = JSON.parse(body);
+                  console.log("DATA: " + data.length);
 
+                  if (!data.length) end = true;
 
-                    console.log("DATA: " + data.length);
+                  data.forEach(page => {
 
-                    if (!data.length) end = true;
+                    if (!page.category) return;
 
-                    data.forEach(page => {
+                    url = [page.category.parentAlias, page.category.alias, page.alias].join("/");
+                    insertCondition.url = url;
+                    insertData = {
+                      url: url,
+                      title: page.title,
+                      searchPage: pager[project].page,
+                      siteId: project._id,
+                      keywords: page.keywords.map(keyword => {return keyword.word;})
+                    };
 
-                      if (!page.category) return;
-
-                      url = [page.category.parentAlias, page.category.alias, page.alias].join("/");
-                      insertCondition.url = url;
-                      insertData = {
-                        url: url,
-                        title: page.title,
-                        searchPage: pager[project].page,
-                        siteId: project._id
-                      };
-
-                      app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
-                        if (err) {
-                          log.error("Error when trying to insert data to DB: " + err);
-
-                        }
-                      });
-
+                    app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
+                      if (err) log.error("Error when trying to insert data to DB: " + err);
                     });
-
                   });
-              });
-            }
-          //} while(end || pager[project].page <= 2);
+
+                });
+            });
+          }
+
       });
 
       }]
     });
+}
 
+exports['pages.keywords'] = function(app, message, callback) {
+  var log = app.log;
+  var yandex = app.services.yandex;
+
+  async.auto({
+    pages: (next) => {
+      app.models.pages.find({}, next);
+    },
+    request: ['pages', (next, data) => {
+      if(!data.pages) return next();
+
+      data.pages.forEach(page => {
+        console.log(page);
+      });
+
+      next();
+    }]
+  }, callback);
 }

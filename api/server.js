@@ -10,7 +10,8 @@ var express = require('express'),
   paphos = require('paphos-core'),
   GoogleService = require('./services/google.js'),
   WebmastersService = require('./services/webmasters.js'),
-  AnalyticsService = require('./services/analytics.js');
+  AnalyticsService = require('./services/analytics.js'),
+  YandexService = require('./services/yandex.js');
 
 var app = {
   log: paphos.log(config),
@@ -22,7 +23,7 @@ var app = {
     statistics: require('./models/statistic.js'),
     experiments: require('./models/experiment.js'),
     experimentUrls: require('./models/experimentUrl.js'),
-    visitStatistics: require('./models/visitStatistic.js') 
+    visitStatistics: require('./models/visitStatistic.js')
   }
 };
 
@@ -38,7 +39,8 @@ app.services = {
 
   google: googleSevice = new GoogleService(config.get('google.api'), config.get('url')),
   webmasters: new WebmastersService(app, googleSevice),
-  analytics: new AnalyticsService(app, googleSevice)
+  analytics: new AnalyticsService(app, googleSevice),
+  yandex: new YandexService(app)
 };
 
 exports.app = app;

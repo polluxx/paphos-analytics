@@ -14,6 +14,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
     link: function (scope, element, attrs) {
       scope.reportData = {};
 
+      scope.tabletype = 'all';
+      if(scope.report.type !== undefined) scope.tabletype = scope.report.type;
+
       scope.table = {};
       scope.chart = {
         options: {
@@ -180,7 +183,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             resultsFolded.push(tmpData[insert]);
           }
           rows = resultsFolded;
-          
+
           scope.headers = headers;
           scope.table = {
             headers: headers,

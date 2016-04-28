@@ -14,7 +14,7 @@
           options="chart.options" legend="true" height="150">
   </canvas>
 
-  <div>
+  <div ng-if="tabletype !== 'plot'">
     <ul>
       <li ng-repeat="(index,serie) in chartLines">
         <label>{{serie.name}}
@@ -25,7 +25,7 @@
   </div>
 
 
-  <div class="row" ng-if="table.total.length">
+  <div class="row" ng-if="table.total.length && tabletype !== 'plot' ">
     <div class="col-xs-12">
 
       <h5>Всего:</h5>

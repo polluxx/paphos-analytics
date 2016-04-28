@@ -13,7 +13,7 @@ function AnalyticsService(app, googleService) {
   this.service = googleService;
 
   this.api = googleService.analytics();
-  console.info(this.api )
+  //console.info(this.api )
 };
 
 AnalyticsService.prototype.init = function (next) {

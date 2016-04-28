@@ -23,7 +23,8 @@ function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTablePa
     ids: 'ga:' + $scope.project.analytics.profileId,
     metrics: 'ga:pageviews',
     dimensions: 'ga:source, ga:date',
-    filters: 'ga:pagePath=@' + $scope.item.url
+    filters: 'ga:pagePath=@' + $scope.item.url,
+    type: "plot"
   };
 
 }

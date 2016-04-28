@@ -72,7 +72,6 @@ function($stateProvider, $urlRouterProvider) {
         'main-content': {controller: 'apPagesViewCtrl', templateUrl: 'app/views/analytics/projects/page-statistic.html'}
       },
       resolve: {
-        //item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
         item: (aPageModel, $stateParams) => aPageModel.get({ _id: $stateParams.pageId }).$promise,
         project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
