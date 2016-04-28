@@ -153,11 +153,11 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               });
             }),
             headers = _.map(data.columnHeaders, header => {
-              var itemName = header.name, item = {id:header.name};
+              var itemName = header.name.replace('ga:', ''), item = {id:header.name};
 
               item.title = itemName;
               item.titleAlt = itemName;
-              item.name = itemName.replace(':', '');
+              item.name = itemName;
               item.sortable = itemName;
               item.show = true;
               item.field = itemName;
@@ -180,7 +180,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             resultsFolded.push(tmpData[insert]);
           }
           rows = resultsFolded;
-
+          
           scope.headers = headers;
           scope.table = {
             headers: headers,
@@ -197,14 +197,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             })
           };
 
-
-          if(scope.site.yandexUpdates !== undefined) {
-            rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
-          }
           /*scope.$watch("site.yandexUpdates", function(yandexData) {
             rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
           });*/
-
 
           scope.tableParams.reload();
 
@@ -232,6 +227,16 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             }
             rows = rows.concat(summa);
 
+            if(scope.site.yandexUpdates !== undefined) {
+              var dates = summa.map(summItem => {return summItem[1]}), updateDate = moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'),
+                mostBigCoounter = summa[summa.length-2][2];
+
+              dates.forEach(date => {
+                rows.push(["Yandex Update", date, updateDate === date ? Math.ceil(mostBigCoounter / 10) : 0]);
+              });
+
+            }
+
             var groups = _.groupBy(rows, item => item[0]);
             var dates = _.groupBy(rows, item => item[1]),
               n = 0;
@@ -257,21 +262,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         });
         scope.loading = false;
       }, true);
-
-
-      // helpers
-      /*var tempSummer = {}, tmpLen, allResIns, reurnedRes = [];
-      function sumer(resultS, valueS, indexS, allResults) {
-        tmpLen = tmpLen || allResults.length;
-        tempSummer = returnTempValue(tempSummer, resultS, "All traffic");
-        if(tmpLen === indexS+1) {
-          for(allResIns in tempSummer) {
-            reurnedRes.push(tempSummer[allResIns]);
-          }
-          return reurnedRes;
-        }
-        return valueS;
-      }*/
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
         if(tmpScope[resultAggr[1]] != undefined) {
