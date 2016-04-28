@@ -3,7 +3,7 @@ export default
 function($stateProvider, $urlRouterProvider) {
 
   $stateProvider
-    .state('analytics', { 
+    .state('analytics', {
       parent: 'private',
       abstract: true,
       url: '/analytics',
@@ -48,7 +48,7 @@ function($stateProvider, $urlRouterProvider) {
         'main-content': {controller: 'apProjectViewCtrl', templateUrl: 'app/views/analytics/projects/page-project.html'}
       },
       resolve: {
-        item: function(aSiteModel, $stateParams) { return aSiteModel.get({ _id: $stateParams.projectId })}
+        item: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
     })
     .state('analytics.project.info', {

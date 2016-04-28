@@ -9,7 +9,7 @@
 
     <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
       <tr ng-repeat="row in $data">
-        <td data-title="'Title'" filter="{title: 'text'}" sortable="'title'">
+        <td data-title="'Title'" filter="{title: 'text'}">
           <a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id })">{{row.title}}</a>
         </td>
       </tr>

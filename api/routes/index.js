@@ -22,9 +22,9 @@ exports.init = function (app) {
   app.server.post('/api/:resource', paphos.defaultRoute);
 
 
-  app.server.get('/', function(req, res) {
+  /*app.server.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/../../index.html'));
-  });
+  });*/
 
 /*
   app.server.put('/api/:resource/:_id', access(), resourceRoute);

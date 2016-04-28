@@ -1,8 +1,8 @@
 
 <ng-messages class="text-danger" for="report.$error" role="alert">
   <ng-message when="code">{{report.$error.message}}</ng-message>
+  <ng-message when="message">Error with request: {{report.$error.message}}</ng-message>
 </ng-messages>
-
 
 <div bz-loading-container="loading">
 

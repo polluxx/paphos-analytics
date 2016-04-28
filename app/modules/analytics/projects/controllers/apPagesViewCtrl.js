@@ -8,22 +8,22 @@ function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTablePa
   $scope.project = project;
 
   console.log(project);
+  console.log(item);
 
-  angular.extend($scope, {
-      item: $scope.item,
-      current: {
-        site: $scope.item.url,
-        date: {
-          startDate: moment().subtract(6, 'day'),
-          endDate: moment()
-        }
-      },
-      query: {
-        ids: 'ga:' + $scope.project.analytics.profileId,
-        metrics: 'ga:pageviews',
-        dimensions: 'ga:source, ga:date',
-        filters: 'ga:pagePath=@' + $scope.item.url
-      }
+
+  $scope.current = {
+    site: $scope.item.url,
+    date: {
+      startDate: moment().subtract(6, 'day'),
+      endDate: moment()
     }
-  );
+  };
+
+  $scope.query = {
+    ids: 'ga:' + $scope.project.analytics.profileId,
+    metrics: 'ga:pageviews',
+    dimensions: 'ga:source, ga:date',
+    filters: 'ga:pagePath=@' + $scope.item.url
+  };
+
 }

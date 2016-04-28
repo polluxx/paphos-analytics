@@ -6,6 +6,7 @@ var module = angular.module(appName, [
 
 module.constant('ANALYTICS_API', '{{API_URL}}');
 
+
 // models
 import aAuthModel from './aAuthModel.js';
 import aSiteModel from './aSiteModel.js';

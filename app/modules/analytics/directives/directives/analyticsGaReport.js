@@ -133,15 +133,14 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       }, true);
 
 
-      var chart;
+      var chart, rows = [], headers = [];
       scope.$on('$gaReportSuccess', function (event, report, element) {
         if (!report) {
           return;
         }
-
-
+        
         _.each(report, function (data) {
-          var rows = _.map(data.rows, row => {
+          rows = _.map(data.rows, row => {
               return _.map(row, (item, n) => {
                 var column = scope.current.columns[n];
 
@@ -166,7 +165,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               return item;
             });
 
-          var rows = _.reduce(rows, grouper);
+          rows = _.reduce(rows, grouper);
+
+
           scope.headers = headers;
           scope.table = {
             headers: headers,
@@ -185,7 +186,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
 
           if(scope.site.yandexUpdates !== undefined) {
-            rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+            //rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
           }
           /*scope.$watch("site.yandexUpdates", function(yandexData) {
             rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
