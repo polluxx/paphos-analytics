@@ -40,7 +40,8 @@
     "gulp-ng-annotate": "^2.0.0",
     "gulp-ng-inject": "^0.1.0",
     "gulp-rollup": "^1.8.0",
-    "gulp-sourcemaps": "^1.6.0"
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3"
   },
   "scripts": {
     "start": "node api/app.js",

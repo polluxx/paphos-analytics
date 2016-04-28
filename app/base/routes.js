@@ -7,7 +7,7 @@ export default
     //     $state.go('homepage');
     // });
 
-    $stateProvider
+    $stateProvider 
     //Main page
         .state('homepage', {
             url:"/",
