@@ -1,5 +1,3 @@
-
-
 export default
   /*@ngInject*/
   function($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {

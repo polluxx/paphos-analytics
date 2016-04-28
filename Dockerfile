@@ -2,7 +2,7 @@ FROM node:5.10
 
 COPY docker/crontab /etc/cron.d/paphos-analytics
 
-#RUN mkdir /src && npm install nodemon bower -g && apt-get update  && apt-get install -y wget
+#RUN apt-get update  && apt-get install -y wget cron && chmod 0644 /etc/cron.d/paphos-analytics
 
 RUN  mkdir /src && npm install nodemon bower -g && apt-get update && apt-get install -y cron wget && chmod 0644 /etc/cron.d/paphos-analytics
 

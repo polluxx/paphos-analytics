@@ -113,7 +113,7 @@ var module$2 = angular.module(appName$2, [
   'ngResource'
 ]);
 
-module$2.constant('ANALYTICS_API', '/api');
+module$2.constant('ANALYTICS_API', 'http://localhost:5000/api');
 
 module$2
   .factory('aAuthModel', aAuthModel)
