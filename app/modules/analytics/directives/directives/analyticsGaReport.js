@@ -134,12 +134,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
 
       var chart, rows = [], headers = [];
-      scope.$on('$gaReportSuccess', function (event, report, element) {
-        if (!report) {
+      scope.$on('$gaReportSuccess', function (event, gaReport, element) {
+        if (!gaReport) {
           return;
         }
-        
-        _.each(report, function (data) {
+
+        _.each(gaReport, function (data) {
           rows = _.map(data.rows, row => {
               return _.map(row, (item, n) => {
                 var column = scope.current.columns[n];
@@ -165,8 +165,21 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               return item;
             });
 
-          rows = _.reduce(rows, grouper);
 
+          var indRows=0, rowsLen = rows.length, row,
+            insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"];
+          for(indRows;indRows<rowsLen;indRows++){
+            row = rows[indRows];
+            if(~folders.indexOf(row[0])) {
+              resultsFolded.push(row);
+            } else {
+              tmpData = returnTempValue(tmpData, row, "Other traffic");
+            }
+          }
+          for(insert in tmpData) {
+            resultsFolded.push(tmpData[insert]);
+          }
+          rows = resultsFolded;
 
           scope.headers = headers;
           scope.table = {
@@ -186,7 +199,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
 
           if(scope.site.yandexUpdates !== undefined) {
-            //rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
+            rows.push(["Yandex Update", moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
           }
           /*scope.$watch("site.yandexUpdates", function(yandexData) {
             rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
@@ -207,9 +220,17 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           scope.initialChartData = angular.copy(scope.chart);
 
           if (dimensions.length == 2) {
-            var flat = _.reduce(angular.copy(rows), sumer);
 
-            rows = rows.concat(flat);
+            var rowsCompact = angular.copy(rows),
+              allRowsIndex=0, rowsCompactLength = rowsCompact.length, tempSummer={}, rowCompact, tmpSummerIndex, summa = [];
+            for(allRowsIndex;allRowsIndex<rowsCompactLength;allRowsIndex++) {
+              rowCompact = rowsCompact[allRowsIndex];
+              tempSummer = returnTempValue(tempSummer, rowCompact, "All traffic");
+            }
+            for (tmpSummerIndex in tempSummer) {
+              summa.push(tempSummer[tmpSummerIndex]);
+            }
+            rows = rows.concat(summa);
 
             var groups = _.groupBy(rows, item => item[0]);
             var dates = _.groupBy(rows, item => item[1]),
@@ -239,27 +260,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
 
       // helpers
-      var insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"], arrLen;
-      function grouper(result, value, key, lastArr) {
-        arrLen = arrLen || lastArr.length;
-
-        if(~folders.indexOf(result[0])) {
-          resultsFolded.push(result);
-        } else {
-          tmpData = returnTempValue(tmpData, result, "Other traffic");
-        }
-
-        if(arrLen === key+1) {
-          for(insert in tmpData) {
-            resultsFolded.push(tmpData[insert]);
-          }
-          return resultsFolded;
-        }
-
-        return value;
-      }
-
-      var tempSummer = {}, tmpLen, allResIns, reurnedRes = [];
+      /*var tempSummer = {}, tmpLen, allResIns, reurnedRes = [];
       function sumer(resultS, valueS, indexS, allResults) {
         tmpLen = tmpLen || allResults.length;
         tempSummer = returnTempValue(tempSummer, resultS, "All traffic");
@@ -270,7 +271,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           return reurnedRes;
         }
         return valueS;
-      }
+      }*/
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
         if(tmpScope[resultAggr[1]] != undefined) {
@@ -300,10 +301,10 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       /*scope.$on('$gaReportSuccess', function (e, report, element) {
        console.info(report)
        });*/
-      scope.$on('$gaReportError', function (e, report, element) {
-        console.log(report.error);
-        scope.report.$error = report.error;
-        toaster.pop('error', report.error.message);
+      scope.$on('$gaReportError', function (e, gaReport, element) {
+        console.log(gaReport.error);
+        scope.report.$error = gaReport.error;
+        toaster.pop('error', gaReport.error.message);
       });
     }
   };
