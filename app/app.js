@@ -12,6 +12,6 @@ try {
 
 window.config = config;
 
-angular.module(appName, [baseApp, 'views', 'ngTable'].concat(modules));
+angular.module(appName, [baseApp, 'views'].concat(modules));
 
 export default appName;
