@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($stateProvider, $urlRouterProvider) {
+($stateProvider, $urlRouterProvider) => {
 
     // $urlRouterProvider.otherwise(function($inject) {
     //     var $state = $inject.get('$state');

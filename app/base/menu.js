@@ -6,4 +6,4 @@ export default
     return item.name != 'base';
   });
 
-};
+}; 
