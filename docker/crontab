@@ -1,3 +1,4 @@
 */1 * * * * root /usr/local/bin/node /src/api/cli.js push-task sites.scanAll >/dev/null 2>&1
 
 * 2 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.scan >/dev/null 2>&1
+* /1 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.keywords >/dev/null 2>&1

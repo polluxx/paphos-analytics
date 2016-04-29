@@ -75,7 +75,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         if (!report || !profileId) {
           return;
         }
-
+        
         scope.table = {
           headers: [],
           rows: [],
