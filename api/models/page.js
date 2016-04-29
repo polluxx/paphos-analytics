@@ -7,8 +7,8 @@ var schema = new mongoose.Schema({
   searchPage: {type: Number},
   title: {type: String},
   siteId: mongoose.Schema.Types.ObjectId,
-  keywords: {type: Array} ,
-  
+  keywords: {type: Array},
+
   removed: {type: Date},
   createDate: {type: Date, required: true, default: Date.now}
 }, {

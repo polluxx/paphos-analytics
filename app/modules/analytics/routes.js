@@ -60,6 +60,15 @@ function($stateProvider, $urlRouterProvider) {
       controller: 'apProjectPagesCtrl',
       templateUrl: 'app/views/analytics/projects/page-pages.html'
     })
+    .state('analytics.project.top', {
+      url: '/project/:projectId/top',
+      controller: 'apPagesTopCtrl',
+      templateUrl: 'app/views/analytics/projects/page-top.html',
+      resolve: {
+        items: (aPageModel, $stateParams) => aPageModel.query({page: 1, perPage: 10}).$promise,
+        project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
+      }
+    })
     .state('analytics.project.positions', {
       url: '/positions',
       templateUrl: 'app/views/analytics/projects/page-positions.html'

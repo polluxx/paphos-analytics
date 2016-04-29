@@ -14,7 +14,16 @@
 
   <div>
     <h2>Keywords</h2>
+    <div class="col-xs-6">
 
+      <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Cлово'" sortable="'word'">{{row.word}}</td>
+          <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency}}</td>
+          <td data-title="'Важность'" sortable="'importance'">{{row.importance}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 
 </div>

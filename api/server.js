@@ -19,6 +19,7 @@ var app = {
   models: {
     sites: require('./models/site.js'),
     pages: require('./models/page.js'),
+    keywords: require('./models/keyword.js'),
     queries: require('./models/query.js'),
     statistics: require('./models/statistic.js'),
     experiments: require('./models/experiment.js'),

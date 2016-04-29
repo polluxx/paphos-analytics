@@ -37,7 +37,7 @@ YandexSvc.prototype.searchByKeyword = function (site, keyword, options, next) {
       if (err) return next(err);
 
       if (result.yandexsearch.response[0].error) {
-        return next(new self.app.errors.OperationError(result.yandexsearch.response[0].error[0]._));
+        return next(result.yandexsearch.response[0].error[0]._);
       }
 
       var response = result.yandexsearch.response[0].results[0];
@@ -69,5 +69,32 @@ YandexSvc.prototype.getUrlPosition = function (site, url, keyword, options, next
     next(null, (indexHtml >= 0 ? indexHtml : indexAjax) + 1);
   });
 };
+
+YandexSvc.prototype.getLimits = function(url, currentTime, next) {
+  currentTime = currentTime || new Date();
+
+  yandex(
+    {url: url, action: 'limits-info', query: 'limits-info'},
+    function(err, xmlResults) {
+      if (err) return next(err);
+
+      xml2js.parseString(xmlResults, {trim: true}, function (err, result) {
+        if (err) return next(err);
+
+        if(!result.yandexsearch.response[0]) {
+          return next('empty');
+        }
+
+        var intervals = result.yandexsearch.response[0].limits[0]['time-interval'],
+
+        currentInterval = intervals.filter(interval => {
+          return (currentTime >= new Date(interval['$'].from) && currentTime <= new Date(interval['$'].to))
+        });
+
+        next(null, currentInterval[0]["_"]);
+      });
+
+  });
+}
 
 module.exports = YandexSvc;

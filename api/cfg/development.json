@@ -23,6 +23,10 @@
     }
   },
   "yandex": {
-    "updates": "http://api.promosite.ru/public/all.xml"
+    "updates": "http://api.promosite.ru/public/all.xml",
+    "xml": {
+      "search": "https://yandex.ru/search/xml?user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda",
+      "limits": "https://yandex.ru/search/xml?action=limits-info&user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda"
+    }
   }
 }

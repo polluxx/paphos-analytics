@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTableParams) {
+function($scope, item, project, aKeywordModel, NgTableParams) {
   project.token = {profile_id: project.analytics.profileId};
   project.id = project._id;
 
@@ -26,5 +26,21 @@ function($scope, item, project, ngAnalyticsService, aSiteModel, $http, NgTablePa
     filters: 'ga:pagePath=@' + $scope.item.url,
     type: "plot"
   };
+
+  $scope.keywordsTableParams = new NgTableParams({
+    page: 1,
+    count: 100,
+    sorting: {
+
+    }
+  }, {
+    getData: function(params) {
+      var res = aKeywordModel.query({page: params.page(), perPage: 100}, function(resp) { return resp; });
+      console.log(res);
+      return res;
+    }
+  });
+
+  console.log($scope.keywordsTableParams);
 
 }

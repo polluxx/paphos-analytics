@@ -20,5 +20,12 @@
       "client-id": "527279504416-3p7toklagvpicrrm43moita45s54hrpg.apps.googleusercontent.com",
       "secret": "ClG6H16H3Kyq5Jtdi_SpHpV_"
     }
+  },
+  "yandex": {
+    "updates": "http://api.promosite.ru/public/all.xml",
+    "xml": {
+      "search": "https://yandex.ru/search/xml?user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda",
+      "limits": "https://yandex.ru/search/xml?action=limits-info&user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda"
+    }
   }
 }

@@ -14,7 +14,8 @@ import aPageModel from './aPageModel.js';
 import aVisitModel from './aVisitModel.js';
 import aExperimentModel from './aExperimentModel.js';
 import aExperimentUrlModel from './aExperimentUrlModel.js';
- 
+import aKeywordModel from './aKeywordModel.js';
+
 module
   .factory('aAuthModel', aAuthModel)
   .factory('aPageModel', aPageModel)
@@ -22,6 +23,7 @@ module
   .factory('aVisitModel', aVisitModel)
   .factory('aExperimentModel', aExperimentModel)
   .factory('aExperimentUrlModel', aExperimentUrlModel)
+  .factory('aKeywordModel', aKeywordModel)
 ;
 
 export default appName;

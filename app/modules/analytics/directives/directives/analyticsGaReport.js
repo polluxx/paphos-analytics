@@ -83,6 +83,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         };
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
+
+        var chartOptions = scope.report.chart || {'width': '100%'};
+        console.log(chartOptions);
         $timeout(() => {
           scope.current.chart = {
             reportType: 'ga',
@@ -100,9 +103,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             chart: {
               container: 'chart-container-' + (number++),
               type: 'LINE',
-              options: {
-                'width': '100%'
-              }
+              options: chartOptions
             }
           };
           scope.current.queries = [{
@@ -168,21 +169,22 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               return item;
             });
 
-
-          var indRows=0, rowsLen = rows.length, row,
-            insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"];
-          for(indRows;indRows<rowsLen;indRows++){
-            row = rows[indRows];
-            if(~folders.indexOf(row[0])) {
-              resultsFolded.push(row);
-            } else {
-              tmpData = returnTempValue(tmpData, row, "Other traffic");
+          if(!scope.report.pure) {
+            var indRows = 0, rowsLen = rows.length, row,
+              insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"];
+            for (indRows; indRows < rowsLen; indRows++) {
+              row = rows[indRows];
+              if (~folders.indexOf(row[0])) {
+                resultsFolded.push(row);
+              } else {
+                tmpData = returnTempValue(tmpData, row, "Other traffic");
+              }
             }
+            for (insert in tmpData) {
+              resultsFolded.push(tmpData[insert]);
+            }
+            rows = resultsFolded;
           }
-          for(insert in tmpData) {
-            resultsFolded.push(tmpData[insert]);
-          }
-          rows = resultsFolded;
 
           scope.headers = headers;
           scope.table = {
@@ -219,16 +221,18 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
           if (dimensions.length == 2) {
 
-            var rowsCompact = angular.copy(rows),
-              allRowsIndex=0, rowsCompactLength = rowsCompact.length, tempSummer={}, rowCompact, tmpSummerIndex, summa = [];
-            for(allRowsIndex;allRowsIndex<rowsCompactLength;allRowsIndex++) {
-              rowCompact = rowsCompact[allRowsIndex];
-              tempSummer = returnTempValue(tempSummer, rowCompact, "All traffic");
+            if(!scope.report.pure) {
+              var rowsCompact = angular.copy(rows),
+                allRowsIndex = 0, rowsCompactLength = rowsCompact.length, tempSummer = {}, rowCompact, tmpSummerIndex, summa = [];
+              for (allRowsIndex; allRowsIndex < rowsCompactLength; allRowsIndex++) {
+                rowCompact = rowsCompact[allRowsIndex];
+                tempSummer = returnTempValue(tempSummer, rowCompact, "All traffic");
+              }
+              for (tmpSummerIndex in tempSummer) {
+                summa.push(tempSummer[tmpSummerIndex]);
+              }
+              rows = rows.concat(summa);
             }
-            for (tmpSummerIndex in tempSummer) {
-              summa.push(tempSummer[tmpSummerIndex]);
-            }
-            rows = rows.concat(summa);
 
             if(scope.site.yandexUpdates !== undefined) {
               var dates = summa.map(summItem => {return summItem[1]}), updateDate = moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'),
