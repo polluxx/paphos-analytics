@@ -6,7 +6,7 @@ export default
 
     $scope.saveItem = function(item) {
       var savedItem = angular.copy(item);
-      if(!savedItem['siteUrl']) return;
+      if (!savedItem['siteUrl']) return;
 
       savedItem['id'] = savedItem['siteUrl'];
 
@@ -14,11 +14,12 @@ export default
 
       $scope.loading = true;
       return saveFunc.call(item, res => {
+
         $scope.$close();
       }, () => {
         $scope.loading = false;
         $scope.tableParams.reload();
       });
-    };
+    }
 
   }

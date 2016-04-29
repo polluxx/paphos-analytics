@@ -4,6 +4,15 @@
   <ng-message when="message">Error with request: {{report.$error.message}}</ng-message>
 </ng-messages>
 
+<div class="preloader" ng-show="loading">
+  <div class="wrapper">
+    <span class="circle1"></span>
+    <span class="circle2"></span>
+    <span class="circle3"></span>
+  </div>
+</div>
+
+
 <div bz-loading-container="loading">
 
   <!--<ng-analytics-chart ng-if="current.chart" chart="current.chart"></ng-analytics-chart>-->
@@ -22,10 +31,42 @@
         </label>
         </li>
       </ul>
+      <div class="datepicker">
+        <div class="col-xs-8">
+          <div class="row">
+            <div class="col-xs-6">
+              <label>С даты</label>
+              <div class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="fromDate" is-open="popupFrom.opened" datepicker-options="dateOptions" ng-required="true" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+                <div class="input-group-btn">
+                  <button style="border: 3px solid #DDDDDD;" class="btn btn-default" ng-click="openFrom()"><i class="fa fa-calendar"></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <label>По дату</label>
+              <div class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" date-disabled="disabled(date, mode)" ng-model="toDate" is-open="popupTo.opened" datepicker-options="dateOptions" ng-required="true" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+                <div class="input-group-btn">
+                  <button style="border: 3px solid #DDDDDD;" class="btn btn-default" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <hr>
+              <button class="btn btn-default" ng-click="refreshData()">Получить значения</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 
   <div class="row" ng-if="table.total.length && tabletype !== 'plot' ">
+  <div class="row" ng-if="table.total.length">
     <div class="col-xs-12">
 
       <h5>Всего:</h5>

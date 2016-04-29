@@ -70,6 +70,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         return ctx;
       }
 
+      scope.date.startDate = moment(scope.date.startDate).format('YYYY-MM-DD');
+      scope.date.endDate = moment(scope.date.endDate).format('YYYY-MM-DD');
+
       var showReport = () => {
         var report = scope.report;
         if (!report || !profileId) {
@@ -92,8 +95,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             query: {
               metrics: report.metrics,
               dimensions: report.dimensions,
-              'start-date': scope.date.startDate.format('YYYY-MM-DD'),
-              'end-date': scope.date.endDate.format('YYYY-MM-DD'),
+              'start-date': scope.date.startDate,
+              'end-date': scope.date.endDate,
               ids: 'ga:' + profileId,
               'filters': report.filters,
               // 'max-results': maxResults,
@@ -110,8 +113,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             query: {
               metrics: report.metrics,
               dimensions: report.dimensions,
-              'start-date': scope.date.startDate.format('YYYY-MM-DD'),
-              'end-date': scope.date.endDate.format('YYYY-MM-DD'),
+              'start-date': scope.date.startDate,
+              'end-date': scope.date.endDate,
               ids: 'ga:' + profileId,
               'filters': report.filters,
               // 'max-results': maxResults,
@@ -303,6 +306,54 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.report.$error = gaReport.error;
         toaster.pop('error', gaReport.error.message);
       });
+      
+      // datepicker
+      scope.flag = false;
+      scope.fromDate = new Date();
+      scope.toDate = new Date();
+
+      scope.popupTo = {
+        opened: false
+      };
+
+      scope.popupFrom = {
+        opened: false
+      };
+
+      scope.openFrom = function() {
+        scope.popupFrom.opened = true;
+      };
+
+      scope.openTo = function() {
+        scope.popupTo.opened = true;
+      };
+
+      scope.disabled = function(date, mode) {
+        return (date.getMonth() == scope.fromDate.getMonth()) ? (mode === 'day' && (date.getDate() < scope.fromDate.getDate())) : (date.getMonth() < scope.fromDate.getMonth()) ? mode === 'day' : false;
+      };
+
+      scope.inlineOptions = {
+        showWeeks: false
+      };
+
+      scope.dateOptions = {
+        formatYear: 'yy',
+        showWeeks: false,
+        maxDate: new Date(2020, 5, 22),
+        minDate: new Date(),
+        startingDay: 1
+      };
+
+      scope.toggleMin = function() {
+        scope.inlineOptions.minDate = scope.inlineOptions.minDate ? null : new Date();
+        scope.dateOptions.minDate = scope.inlineOptions.minDate;
+      };
+      scope.toggleMin();
+
+      scope.refreshData = function () {
+        scope.date.startDate = moment(scope.fromDate).format('YYYY-MM-DD');
+        scope.date.endDate = moment(scope.toDate).format('YYYY-MM-DD');
+      }
     }
   };
 }

@@ -22,6 +22,7 @@ function($stateProvider, $urlRouterProvider) {
 
     .state('analytics.dashboard', {
       url: '',
+      resolve: {},
       views: {
         'main-content': {controller: 'adDashboardCtrl', templateUrl: 'app/views/analytics/dashboard/page-dashboard.html'}
       }
@@ -38,7 +39,7 @@ function($stateProvider, $urlRouterProvider) {
             item: function(aSiteModel) { return new aSiteModel() }
           },
           controller: 'adEditProjectModelCtrl'
-        }).result.finally(() => $state.go('^'));
+        }).result.finally(() => $state.go('^', {}, { reload: true }));
       }
     })
     .state('analytics.project', {
