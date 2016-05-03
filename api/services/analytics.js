@@ -5,7 +5,7 @@ var logger = require('paphos-core').log,
   async = require('async'),
   limiter = require('limiter'),
   request = require('request'),
-  xml2json = require('xml2json');
+  xml2js = require('xml2js');
 
 function AnalyticsService(app, googleService) {
   var log = this.log = logger().child({module: 'AnalyticsService'});
@@ -153,17 +153,49 @@ AnalyticsService.prototype.syncStatisticForDay = function(site, date, next) {
   });
 };
 
-AnalyticsService.prototype.getYandexUpdates = function(next) {
-  var app = this.app;
+AnalyticsService.prototype.getMetricsByUrl = function (options, next) {
+  var app = this.app,
+    api = this.api,
+    date = options.date || {
+        startDate: moment().subtract(1, 'day').format('YYYY-MM-DD'),
+        endDate: moment().format('YYYY-MM-DD')
+      },
+    dimensions = options.dimensions || ['ga:pagePath', 'ga:date'],
+    metrics = options.metrics || ['ga:pageviews'];
 
+
+  api.data.ga.get({
+    'ids': 'ga:' + options.profileId,
+    'start-date': date.startDate,
+    'end-date': date.endDate,
+    'metrics': metrics.join(','),
+    'dimensions': dimensions.join(','),
+    filters: options.filters || '',
+  }, function(err, res) {
+    if (err) {
+      return next(err);
+    }
+
+    return next(null, res);
+  });
+
+}
+
+AnalyticsService.prototype.getYandexUpdates = function(next) {
+  var app = this.app,
+  parser = new xml2js.Parser();
   request(app.config.get('yandex.updates'), function(err, resp, body) {
     if(err) return next(err);
 
-    var response = {
-      status: resp.statusCode,
-      body: xml2json.toJson(resp.body)
-    };
-    next(null, response);
+    parser.parseString(resp.body, function (err, result) {
+      if(err) return next(err);
+
+      var response = {
+        status: resp.statusCode,
+        body: JSON.stringify(result)
+      };
+      next(null, response);
+    });
   })
 
 

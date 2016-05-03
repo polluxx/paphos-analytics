@@ -8,6 +8,7 @@ var schema = new mongoose.Schema({
   title: {type: String},
   siteId: mongoose.Schema.Types.ObjectId,
   keywords: {type: Array},
+  pageviews: {type: Number},
 
   removed: {type: Date},
   createDate: {type: Date, required: true, default: Date.now}

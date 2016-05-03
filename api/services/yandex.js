@@ -71,7 +71,8 @@ YandexSvc.prototype.getUrlPosition = function (site, url, keyword, options, next
 };
 
 YandexSvc.prototype.getLimits = function(url, currentTime, next) {
-  currentTime = currentTime || new Date();
+  currentTime = currentTime || new Date(),
+  self = this;
 
   yandex(
     {url: url, action: 'limits-info', query: 'limits-info'},
@@ -81,14 +82,19 @@ YandexSvc.prototype.getLimits = function(url, currentTime, next) {
       xml2js.parseString(xmlResults, {trim: true}, function (err, result) {
         if (err) return next(err);
 
-        if(!result.yandexsearch.response[0]) {
-          return next('empty');
+        if(!result.yandexsearch || !result.yandexsearch.response[0] || result.yandexsearch.response[0].error !== undefined) {
+          var errMsg = 'empty';
+          if(result.yandexsearch.response[0] !== undefined && result.yandexsearch.response[0].error !== undefined) {
+            errMsg = result.yandexsearch.response[0].error;
+            self.app.log.error(errMsg);
+          }
+          return next(errMsg);
         }
 
         var intervals = result.yandexsearch.response[0].limits[0]['time-interval'],
 
         currentInterval = intervals.filter(interval => {
-          return (currentTime >= new Date(interval['$'].from) && currentTime <= new Date(interval['$'].to))
+          return (currentTime >= new Date(interval['$'].from) && currentTime <= new Date(interval['$'].to));
         });
 
         next(null, currentInterval[0]["_"]);

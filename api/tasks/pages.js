@@ -147,7 +147,7 @@ exports['pages.keywords'] = function(app, message, callback) {
                 group = _.find(report.grouping[0].found, {'$': {priority: 'phrase'}});
                 searchCondition = {word: page.word};
                 updateFields = {frequency: parseInt(group["_"]), updated: Date.now()};
-                
+
                 app.models.keywords.update(searchCondition, updateFields, {upsert: false, multi: false}, function (err) {
                   if (err) log.error(err);
                 });
@@ -158,4 +158,49 @@ exports['pages.keywords'] = function(app, message, callback) {
       next();
     }]
   }, callback);
-}
+};
+
+exports['pages.top'] = function(app, message, callback) {
+  var log = app.log,
+    options = {upsert: false, multi: false},
+    insert = {},
+    query = {},
+    rateLimiter = limiter.RateLimiter,
+    limitService = new rateLimiter(1, 'second');
+
+
+  app.models.sites.find({}, function(err, sites) {
+    if(err) return callback(err);
+
+    sites.forEach((site) => {
+      async.auto({
+        pages: next => {
+          app.models.pages.find({siteId: site._id}, next);
+        },
+        top: ['pages', (next, data) => {
+          data.pages.forEach((page) => {
+
+            limitService.removeTokens(1, function(err) {
+              if (err) { return next(err); }
+
+              app.services.analytics.getMetricsByUrl({
+                  filters: 'ga:pagePath=@' + page.url,
+                  profileId: site.analytics.profileId
+                }, function(err, response) {
+                  if(err) {
+                    app.log.error(err);
+                    return;
+                  }
+                  query = {url: page.url};
+                  insert = {pageviews: response.totalsForAllResults['ga:pageviews']};
+                  app.models.pages.update(query, insert, options, (err) => {
+                    if(err) app.log.error(err);
+                  });
+                });
+            });
+          });
+        }]
+      }, callback);
+    });
+  });
+};
