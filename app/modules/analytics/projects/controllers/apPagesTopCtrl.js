@@ -1,9 +1,12 @@
 export default
 /*@ngInject*/
 function($scope, items, project) {
-  project.token = {profile_id: project.analytics.profileId};
+  
+  if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
+  
+  project.token = {profile_id: project.analytics !== undefined ? project.analytics.profileId : null};
   project.id = project._id;
-
+  console.log(items);
   if(!items.length) return;
 
   $scope.current = {
@@ -13,7 +16,7 @@ function($scope, items, project) {
       endDate: moment()
     },
     query: {
-      ids: 'ga:' + project.analytics.profileId,
+      ids: 'ga:' + (project.analytics !== undefined ? project.analytics.profileId : null),
       metrics: 'ga:pageviews',
       dimensions: 'ga:pagePath, ga:date',
       filters: items.map(item => { return 'ga:pagePath==/' + item.url+".html"}).join(','),
