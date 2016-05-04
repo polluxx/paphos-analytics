@@ -12,11 +12,11 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
 
   $scope.tableParams = new NgTableParams({
     page: 1,
-    count: 100
+    count: $scope.counter || 100
   }, {
     getData: function (params) {
       return aPageModel.query({page: params.page(), perPage: params.count(), siteId: item._id}, function (resp, headers) {
-        console.log(resp);
+        $scope.counter = params.count();
         $scope.pages = resp;
         params.total(headers()['x-total-count']);
         return $scope.pages;
