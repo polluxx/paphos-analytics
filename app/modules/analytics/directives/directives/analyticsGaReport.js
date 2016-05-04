@@ -22,6 +22,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
     link: function (scope, element, attrs) {
       scope.reportData = {};
 
+      if(!scope.report) return;
+
       scope.tabletype = 'all';
       if(scope.report.type !== undefined) scope.tabletype = scope.report.type;
 
@@ -209,7 +211,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               if (~folders.indexOf(row[0])) {
                 resultsFolded.push(row);
               } else {
-                tmpData = returnTempValue(tmpData, row, "Other traffic");
+                tmpData = returnTempValue(tmpData, row, "Другой трафик");
               }
             }
             for (insert in tmpData) {
@@ -238,12 +240,15 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           var dimensions = scope.report.dimensions.split(',') || [],
             metrics = scope.report.metrics.split(',') || [];
 
+
           scope.chart.legend = !scope.report.pure;
           scope.chart.labels = _.map(rows, row => row[0]);
           scope.chart.series = _.pluck(metrics, 'uiName');
           scope.chart.data = _.map(metrics, (metric, n) => {
             return _.map(rows, row => parseInt(row[1 + n]))
           });
+
+
 
           scope.initialChartData = angular.copy(scope.chart);
 
@@ -254,7 +259,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
                 allRowsIndex = 0, rowsCompactLength = rowsCompact.length, tempSummer = {}, rowCompact, tmpSummerIndex, summa = [];
               for (allRowsIndex; allRowsIndex < rowsCompactLength; allRowsIndex++) {
                 rowCompact = rowsCompact[allRowsIndex];
-                tempSummer = returnTempValue(tempSummer, rowCompact, "All traffic");
+                tempSummer = returnTempValue(tempSummer, rowCompact, "Весь трафик");
               }
               for (tmpSummerIndex in tempSummer) {
                 summa.push(tempSummer[tmpSummerIndex]);
@@ -277,8 +282,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
             groupByRows(rows);
 
-            scope.dataChart = angular.copy(scope.chart.data);
-            scope.seriesChart = angular.copy(scope.chart.series);
             scope.seriesColours = {};
 
             $timeout(() => {
@@ -321,6 +324,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.chart.data = _.map(groups, (group, key) => {
           return _.map(group, row => parseInt(row[2]));
         });
+
+        scope.dataChart = angular.copy(scope.chart.data);
+        scope.seriesChart = angular.copy(scope.chart.series);
       }
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
@@ -385,7 +391,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           (date.getMonth() < fromDate.getMonth()) ?
           mode === 'day' : false;
       };
-      
+
       scope.refreshData = function (fromDate, toDate) {
         scope.date.startDate = moment(fromDate).format('YYYY-MM-DD');
         scope.date.endDate = moment(toDate).format('YYYY-MM-DD');

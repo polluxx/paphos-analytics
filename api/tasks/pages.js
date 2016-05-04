@@ -10,15 +10,18 @@ exports['pages.scan'] = function(app, message, callback) {
     rateLimiter = limiter.RateLimiter,
     limitService = new rateLimiter(1, 'second');
 
+  if(!message.body._id) return callback('No id provided!');
+
   async.auto({
-    projects: function (next) {
-      app.models.sites.find({}, next);
+    project: function (next) {
+      app.models.sites.findById(message.body._id, next);
     },
-    pages: ['projects', function(next, res) {
+    pages: ['project', function(next, data) {
 
-      if(!res.projects) return next('No projects provided!');
+      if(!data.project) return next('No projects provided!');
 
-      var pager = {}, err = null,
+      var project = data.project,
+        pager = 1,
         insertOptions = {
           upsert: true,
           multi: false
@@ -26,68 +29,80 @@ exports['pages.scan'] = function(app, message, callback) {
         insertData = {},
         insertCondition = {},
         url,
-        end = false,
-        keywords = [];
+        end = false;
 
-      res.projects.forEach(function(project) {
-          pager[project] = {page:1};
-
-          for(var i=0;i<100;i++) {
-            limitService.removeTokens(1, function (err) {
-              if (err) {
-                return next(err);
-              }
+        for(var i=0;i<100;i++) {
+          limitService.removeTokens(1, function (err) {
+            if (err) {
+              return next(err);
+            }
 
 
-              if (end) return;
+            if (end) return;
 
-              log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager[project].page + " ------");
+            log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager + " ------");
 
-              request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,seo&page=" + pager[project].page},
-                function (err, data, body) {
-                  pager[project].page++;
-                  if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
+            request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,seo&page=" + pager},
+              function (err, data, body) {
+                pager++;
+                if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
 
-                  data = JSON.parse(body);
-                  console.log("DATA: " + data.length);
+                data = JSON.parse(body);
+                console.log("DATA: " + data.length);
 
-                  if (!data.length) end = true;
+                if (!data.length) end = true;
 
-                  data.forEach(page => {
+                data.forEach(page => {
 
-                    if (!page.category) return;
+                  if (!page.category) return;
 
-                    url = [page.category.parentAlias, page.category.alias, page.alias].join("/");
-                    insertCondition.url = url;
-                    insertData = {
-                      url: url,
-                      title: page.title,
-                      searchPage: pager[project].page,
-                      siteId: project._id,
-                      keywords: page.seo.keywords.map(keyword => {return keyword.title;})
-                    };
+                  url = [page.category.parentAlias, page.category.alias, page.alias].join("/");
+                  insertCondition.url = url;
+                  insertData = {
+                    url: url,
+                    title: page.title,
+                    searchPage: pager,
+                    siteId: project._id,
+                    keywords: page.seo.keywords.map(keyword => {return keyword.title;})
+                  };
 
-                    app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
-                      if (err) log.error("Error when trying to insert data to DB: " + err);
-                    });
-
-                    page.seo.keywords.forEach(word => {
-                      word.siteId = project._id;
-                      app.models.keywords.update({word: word.title}, word, insertOptions, function (err) {
-                        if (err) log.error("Error when trying to insert data to DB: " + err);
-                      });
-                    });
+                  app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
+                    if (err) log.error("Error when trying to insert data to DB: " + err);
                   });
 
+                  page.seo.keywords.forEach(word => {
+                    word.siteId = project._id;
+                    app.models.keywords.update({word: word.title}, word, insertOptions, function (err) {
+                      if (err) log.error("Error when trying to insert data to DB: " + err);
+                    });
+                  });
                 });
-            });
-          }
 
-      });
+              });
+          });
+        }
 
       }]
     });
-}
+};
+
+exports['pages.scanProjects'] = function(app, message, callback) {
+  var log = app.log;
+
+  async.auto({
+    sites: function (next) {
+      app.models.sites.find({}, next);
+    },
+    scan: ['sites', (next, data) => {
+      if(!data.sites) return next('No data to process.');
+
+      data.sites.forEach(record => {
+        app.services.tasks.publish('pages.scan', { _id: record._id });
+      });
+      next();
+    }]
+  }, cb);
+};
 
 exports['pages.keywords'] = function(app, message, callback) {
   var log = app.log,

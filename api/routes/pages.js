@@ -20,8 +20,8 @@ router.get('/:id/queries', function (req, res, next) {
   });
 });
 
-router.get('/refresh', function(req, res, next) {
-  req.app.services.tasks.publish('pages.scan');
+router.get('/:id/refresh', function(req, res, next) {
+  req.app.services.tasks.publish('pages.scan', { _id: req.params.id });
   res.json({message: 'done'});
 });
 

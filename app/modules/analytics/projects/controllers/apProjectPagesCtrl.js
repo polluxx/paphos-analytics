@@ -3,7 +3,7 @@ export default
 function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
 
   $scope.refreshPages = () => {
-    aPageModel.refresh(function (resp) {
+    aPageModel.refresh({_id: item._id},function (resp) {
       console.log(resp);
     });
   };
@@ -12,7 +12,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     page: 1
   }, {
     getData: function (params) {
-      return aPageModel.query({page: params.page(), perPage: 100/*, 'siteId': item._id*/}, function (resp) {
+      return aPageModel.query({page: params.page(), perPage: 100, siteId: item._id}, function (resp) {
         $scope.pages = resp;
         params.total(1 * params.count());
         return $scope.pages;
