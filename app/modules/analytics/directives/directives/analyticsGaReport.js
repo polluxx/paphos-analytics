@@ -282,10 +282,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             scope.seriesColours = {};
 
             $timeout(() => {
-              var instance = Chart.instances[Object.keys(Chart.instances)[0]];
-              instance.datasets.forEach(dataset => {
-                scope.seriesColours[dataset.label] = dataset.strokeColor;
-              });
+
               resetSeries();
             }, 1000);
 
@@ -299,11 +296,17 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       }, true);
 
       function resetSeries() {
+        var instance = Chart.instances[Object.keys(Chart.instances)[0]];
+        if(instance !== undefined) {
+          instance.datasets.forEach(dataset => {
+            scope.seriesColours[dataset.label] = dataset.strokeColor;
+          });
+        }
         scope.seriesChart.forEach(series => {
           scope.chartLines[series] = {
             name: series,
             color: scope.seriesColours[series] || "",
-            $enabled: true
+            $enabled: series.$enabled !== undefined ? series.$enabled : true
           };
         });
       }
@@ -334,6 +337,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         var checked = _.filter(chartLines, selection => { return selection.$enabled; }).map(checked => { return checked.name; });
         var intersect = [];
 
+        //resetSeries();
 
         scope.seriesChart.forEach((item, index) => {
           if(~checked.indexOf(item)) intersect.push(index);
