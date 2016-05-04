@@ -152,7 +152,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       };
 
       var profileId;
-      scope.$watchGroup(['site.id', 'date.startDate'], () => {
+      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate'], () => {
         if (!scope.site) {
           return;
         }
@@ -359,9 +359,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       });
 
       // datepicker
-      scope.flag = false;
-      scope.fromDate = new Date();
+      scope.now = new Date();
       scope.toDate = new Date();
+      scope.fromDate = new Date(scope.now.setDate(scope.now.getDate() - 6));
 
       scope.popupTo = {
         opened: false
@@ -379,31 +379,16 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.popupTo.opened = true;
       };
 
-      scope.disabled = function(date, mode) {
-        return (date.getMonth() == scope.fromDate.getMonth()) ? (mode === 'day' && (date.getDate() < scope.fromDate.getDate())) : (date.getMonth() < scope.fromDate.getMonth()) ? mode === 'day' : false;
+      scope.disabled = function(date, mode, fromDate) {
+        return (date.getMonth() == fromDate.getMonth()) ?
+          (mode === 'day' && (date.getDate() < fromDate.getDate())) :
+          (date.getMonth() < fromDate.getMonth()) ?
+          mode === 'day' : false;
       };
-
-      scope.inlineOptions = {
-        showWeeks: false
-      };
-
-      scope.dateOptions = {
-        formatYear: 'yy',
-        showWeeks: false,
-        maxDate: new Date(2020, 5, 22),
-        minDate: new Date(),
-        startingDay: 1
-      };
-
-      scope.toggleMin = function() {
-        scope.inlineOptions.minDate = scope.inlineOptions.minDate ? null : new Date();
-        scope.dateOptions.minDate = scope.inlineOptions.minDate;
-      };
-      scope.toggleMin();
-
-      scope.refreshData = function () {
-        scope.date.startDate = moment(scope.fromDate).format('YYYY-MM-DD');
-        scope.date.endDate = moment(scope.toDate).format('YYYY-MM-DD');
+      
+      scope.refreshData = function (fromDate, toDate) {
+        scope.date.startDate = moment(fromDate).format('YYYY-MM-DD');
+        scope.date.endDate = moment(toDate).format('YYYY-MM-DD');
       }
     }
   };

@@ -18,52 +18,53 @@
   <!--<ng-analytics-chart ng-if="current.chart" chart="current.chart"></ng-analytics-chart>-->
   <ng-analytics-report ng-if="current.queries.length" report-data="report.data" queries="current.queries"></ng-analytics-report>
 
-  <canvas class="chart chart-line" chart-data="chart.data"
-          chart-labels="chart.labels"  chart-legend="{{chart.legend}}" chart-series="chart.series"
-          options="chart.options" legend="{{chart.legend}}" height="150">
-  </canvas>
+  <div class="row">
+    <div class="col-xs-12">
+      <canvas class="chart chart-line" chart-data="chart.data"
+              chart-labels="chart.labels"  chart-legend="{{chart.legend}}" chart-series="chart.series"
+              options="chart.options" legend="{{chart.legend}}" height="150">
+      </canvas>
+    </div>
 
-  <div>
-    <ul>
-      <li ng-repeat="(index,serie) in chartLines">
+    <div class="col-xs-offset-12 col-xs-3" style="position:absolute; z-index: 1000;">
+      <ul>
+        <li ng-repeat="(index,serie) in chartLines" style="list-style: none;">
           <span style="position: absolute;left:0;right:0;width: 20px;height:20px;background-color: {{serie.color}}"></span>
           <input ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-checked="serie.$enabled" />
           <label>{{serie.name}}</label>
-      </li>
+        </li>
       </ul>
+    </div>
+
+    <div class="col-xs-12">
       <div class="datepicker">
-        <div class="col-xs-8">
-          <div class="row">
-            <div class="col-xs-6">
-              <label>С даты</label>
-              <div class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="fromDate" is-open="popupFrom.opened" datepicker-options="dateOptions" ng-required="true" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
-                <div class="input-group-btn">
-                  <button style="border: 3px solid #DDDDDD;" class="btn btn-default" ng-click="openFrom()"><i class="fa fa-calendar"></i></button>
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-6">
-              <label>По дату</label>
-              <div class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" date-disabled="disabled(date, mode)" ng-model="toDate" is-open="popupTo.opened" datepicker-options="dateOptions" ng-required="true" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
-                <div class="input-group-btn">
-                  <button style="border: 3px solid #DDDDDD;" class="btn btn-default" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
-                </div>
-              </div>
+        <div class="col-xs-6">
+          <label>С даты</label>
+          <div class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="fromDate" is-open="popupFrom.opened" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+            <div class="input-group-btn">
+              <button class="btn btn-default border-bottom" ng-click="openFrom()"><i class="fa fa-calendar"></i></button>
             </div>
           </div>
-          <div class="row">
-            <div class="col-xs-12">
-              <hr>
-              <button class="btn btn-default" ng-click="refreshData()">Получить значения</button>
+        </div>
+        <div class="col-xs-6">
+          <label>По дату</label>
+          <div class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="toDate" date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+            <div class="input-group-btn">
+              <button class="btn btn-default border-bottom" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
             </div>
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <hr>
+          <button class="btn btn-default" ng-click="refreshData(fromDate, toDate)">Получить значения</button>
+        </div>
+      </div>
     </div>
   </div>
-
 
   <div class="row" ng-if="table.total.length && tabletype !== 'plot' ">
   <div class="row" ng-if="table.total.length">

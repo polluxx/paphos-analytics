@@ -7865,10 +7865,8 @@ button.toast-close-button {
     transform: translate(0, 0); } }
 
 .extra-preloader {
-  /*width: 50px;*/
-  /*position: absolute;*/
-  width: 200px;
-  height: 200px;
+  width: 50px;
+  position: absolute;
   left: 50%;
   top: 50%;
   margin-top: -25px;
@@ -8307,4 +8305,8 @@ button.toast-close-button {
     background-color:rgb(255,255,255);
     -moz-transform: translateY(-20px);
   }
+}
+
+.border-bottom {
+  border: 3px solid #DDDDDD;
 }
