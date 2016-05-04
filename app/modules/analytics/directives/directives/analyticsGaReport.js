@@ -78,7 +78,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         if (!report || !profileId) {
           return;
         }
-        
+
         scope.table = {
           headers: [],
           rows: [],
@@ -237,26 +237,20 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               rows = rows.concat(summa);
             }
 
-            if(scope.site.yandexUpdates !== undefined) {
-              var dates = summa.map(summItem => {return summItem[1]}), updateDate = moment(scope.site.yandexUpdates.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'),
+            scope.$watch("site.yandexUpdates", function (yUpdate) {
+              if(!yUpdate) return;
+
+              var dates = summa.map(summItem => {return summItem[1]}), updateDate = moment(yUpdate.data.index[0].upd_date[0], 'YYYYMMDD').format('DD/MM/YYYY'),
                 mostBigCoounter = summa[summa.length-2][2];
 
               dates.forEach(date => {
                 rows.push(["Yandex Update", date, updateDate === date ? Math.ceil(mostBigCoounter / 10) : 0]);
               });
 
-            }
-
-            var groups = _.groupBy(rows, item => item[0]);
-            var dates = _.groupBy(rows, item => item[1]),
-              n = 0;
-
-            scope.chart.labels = _.keys(dates);
-            scope.chart.series = _.keys(groups);
-            scope.chart.data = _.map(groups, (group, key) => {
-              return _.map(group, row => parseInt(row[2]));
+              groupByRows(rows);
             });
 
+            groupByRows(rows);
 
             scope.dataChart = angular.copy(scope.chart.data);
             scope.seriesChart = angular.copy(scope.chart.series);
@@ -272,6 +266,18 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         });
         scope.loading = false;
       }, true);
+      
+      function groupByRows(rows) {
+        var groups = _.groupBy(rows, item => item[0]);
+        var dates = _.groupBy(rows, item => item[1]),
+          n = 0;
+
+        scope.chart.labels = _.keys(dates);
+        scope.chart.series = _.keys(groups);
+        scope.chart.data = _.map(groups, (group, key) => {
+          return _.map(group, row => parseInt(row[2]));
+        });
+      }
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
         if(tmpScope[resultAggr[1]] != undefined) {
@@ -306,7 +312,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.report.$error = gaReport.error;
         toaster.pop('error', gaReport.error.message);
       });
-      
+
       // datepicker
       scope.flag = false;
       scope.fromDate = new Date();
