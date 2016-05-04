@@ -157,7 +157,7 @@ AnalyticsService.prototype.getMetricsByUrl = function (options, next) {
   var app = this.app,
     api = this.api,
     date = options.date || {
-        startDate: moment().subtract(1, 'day').format('YYYY-MM-DD'),
+        startDate: moment().format('YYYY-MM-DD'),
         endDate: moment().format('YYYY-MM-DD')
       },
     dimensions = options.dimensions || ['ga:pagePath', 'ga:date'],

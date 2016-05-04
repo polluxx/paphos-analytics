@@ -43,4 +43,16 @@ router.get('/:id/keywords', function (req, res, next) {
   });
 });
 
+//test route
+
+router.get('/task', function(req, res, next) {
+  
+  if(!req.query.subtask) {
+    return next('No subtask!');
+  }
+  req.app.services.tasks.publish('pages.scanAll', { subtask: req.query.subtask });
+  res.json({message: 'done'});
+});
+
+
 module.exports = router;

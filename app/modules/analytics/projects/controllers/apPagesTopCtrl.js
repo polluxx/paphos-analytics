@@ -1,9 +1,9 @@
 export default
 /*@ngInject*/
 function($scope, items, project) {
-  
+
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
-  
+
   project.token = {profile_id: project.analytics !== undefined ? project.analytics.profileId : null};
   project.id = project._id;
   console.log(items);
@@ -23,6 +23,7 @@ function($scope, items, project) {
       sort: '-ga:pageviews, -ga:date',
       type: "plot",
       pure: true,
+      labels:false,
       chart: {
         fill: false,
         pointRadius: 1,

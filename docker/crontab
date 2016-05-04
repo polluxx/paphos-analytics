@@ -1,6 +1,7 @@
-*/1 * * * * root /usr/local/bin/node /src/api/cli.js push-task sites.scanAll >> /var/log/cron.log 2>&1
+*/10 * * * * root /usr/local/bin/node /src/api/cli.js push-task sites.scanAll >> /var/log/cron.log 2>&1
 
-*/10 * * * * root /usr/local/bin/node /src/api/cli.js push-task pages.scan >> /var/log/cron.log 2>&1
+* */1 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.keywords >> /var/log/cron.log 2>&1
 
-* /1 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.keywords >> /var/log/cron.log 2>&1
+* 1 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.scanAll >> /var/log/cron.log 2>&1
+* 2 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.scanAllTop >> /var/log/cron.log 2>&1
 # An empty line is required at the end of this file for a valid cron file.

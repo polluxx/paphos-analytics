@@ -66,7 +66,7 @@ function($stateProvider, $urlRouterProvider) {
       controller: 'apPagesTopCtrl',
       templateUrl: 'app/views/analytics/projects/page-top.html',
       resolve: {
-        items: (aPageModel, $stateParams) => aPageModel.query({page: 1, perPage: 10}).$promise,
+        items: (aPageModel, $stateParams) => aPageModel.query({page: 1, perPage: 10, sorting: {pageviews: 'desc'}}).$promise,
         project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
     })

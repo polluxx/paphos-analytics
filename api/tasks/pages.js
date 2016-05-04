@@ -86,24 +86,6 @@ exports['pages.scan'] = function(app, message, callback) {
     });
 };
 
-exports['pages.scanProjects'] = function(app, message, callback) {
-  var log = app.log;
-
-  async.auto({
-    sites: function (next) {
-      app.models.sites.find({}, next);
-    },
-    scan: ['sites', (next, data) => {
-      if(!data.sites) return next('No data to process.');
-
-      data.sites.forEach(record => {
-        app.services.tasks.publish('pages.scan', { _id: record._id });
-      });
-      next();
-    }]
-  }, cb);
-};
-
 exports['pages.keywords'] = function(app, message, callback) {
   var log = app.log,
     yandex = app.services.yandex,
@@ -182,44 +164,74 @@ exports['pages.top'] = function(app, message, callback) {
     rateLimiter = limiter.RateLimiter,
     limitService = new rateLimiter(1, 'second');
 
+  if(!message.body._id) return callback('No id provided!');
 
-  app.models.sites.find({}, function(err, sites) {
-    if(err) return callback(err);
+  async.auto({
+    site: next => {
+      app.models.sites.findById(message.body._id, next);
+    },
+    pages: ['site', (next, data) => {
+      console.log(data.site._id);
+      app.models.pages.find({siteId: data.site._id}, next);
+    }],
+    top: ['site', 'pages', (next, data) => {
+      var site = data.site;
 
-    sites.forEach((site) => {
-      async.auto({
-        pages: next => {
-          app.models.pages.find({siteId: site._id}, next);
-        },
-        top: ['pages', (next, data) => {
+      if(!site.analytics || !site.analytics.profileId) {
+        return next('No analytics for site:'+site._id);
+      }
 
-          if(!site.analytics || !site.analytics.profileId) {
-            return next('No analytics for site:'+site._id);
-          }
+      data.pages.forEach((page) => {
 
-          data.pages.forEach((page) => {
+        limitService.removeTokens(1, function(err) {
+          if (err) { return next(err); }
 
-            limitService.removeTokens(1, function(err) {
-              if (err) { return next(err); }
+          app.services.analytics.getMetricsByUrl({
+              filters: 'ga:pagePath=@' + page.url,
+              profileId: site.analytics.profileId
+            }, function(err, response) {
+              if(err) {
+                app.log.error(err);
+                return;
+              }
 
-              app.services.analytics.getMetricsByUrl({
-                  filters: 'ga:pagePath=@' + page.url,
-                  profileId: site.analytics.profileId
-                }, function(err, response) {
-                  if(err) {
-                    app.log.error(err);
-                    return;
-                  }
-                  query = {url: page.url};
-                  insert = {pageviews: response.totalsForAllResults['ga:pageviews']};
-                  app.models.pages.update(query, insert, options, (err) => {
-                    if(err) app.log.error(err);
-                  });
-                });
+              console.log(response);
+
+              query = {url: page.url};
+              insert = {pageviews: response.totalsForAllResults['ga:pageviews']};
+              app.models.pages.update(query, insert, options, (err) => {
+                if(err) app.log.error(err);
+              });
             });
-          });
-        }]
-      }, callback);
-    });
-  });
+        });
+      });
+    }]
+  }, callback);
+
 };
+
+exports['pages.scanAllTop'] = function(app, message, callback) {
+  sendTaskToProjects('pages.top', app, callback);
+};
+
+exports['pages.scanAll'] = function(app, message, callback) {
+  sendTaskToProjects('pages.top', app, callback);
+};
+
+function sendTaskToProjects(task, app, callback) {
+  var log = app.log;
+
+  async.auto({
+    sites: function (next) {
+      app.models.sites.find({}, next);
+    },
+    scan: ['sites', (next, data) => {
+      if(!data.sites) return next('No data to process.');
+
+      data.sites.forEach(record => {
+        app.services.tasks.publish(task, { _id: record._id });
+      });
+      next();
+    }]
+  }, callback);
+}

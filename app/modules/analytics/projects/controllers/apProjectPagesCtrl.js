@@ -16,7 +16,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   }, {
     getData: function (params) {
       return aPageModel.query({page: params.page(), perPage: params.count(), siteId: item._id}, function (resp, headers) {
-
+        console.log(resp);
         $scope.pages = resp;
         params.total(headers()['x-total-count']);
         return $scope.pages;
