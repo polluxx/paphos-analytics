@@ -3,6 +3,14 @@ export default
 function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
   var number = 0;
   Chart.defaults.global.responsive = true;
+  var defaultLineOptions = {
+    datasetStrokeWidth: 2,
+    bezierCurve: true,
+    datasetFill: true,
+    legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].strokeColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
+  }
+  //Chart.defaults.Line.legendTemplate = '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].strokeColor%>"><input type="checkbox" style="margin-top: 4px;" checked="true" ng-click="rechart(datasets)" ng-checked="datasets[i].$enabled"/></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>';
+
   return {
     restrict: 'A',
     scope: {
@@ -86,10 +94,24 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         };
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
-
+        console.log(report);
         var chartOptions = scope.report.chart || {'width': '100%'};
-        console.log(chartOptions);
+
         $timeout(() => {
+
+          if(scope.report.pure !== undefined) {
+            Chart.defaults.Line.datasetStrokeWidth = 1.5;
+            Chart.defaults.Line.bezierCurve = false;
+            Chart.defaults.Line.bezierCurveTension = 0.4;
+            Chart.defaults.Line.datasetFill = false;
+
+          } else {
+            var defaultLineIndex;
+            for(defaultLineIndex in defaultLineOptions) {
+              Chart.defaults.Line[defaultLineIndex] = defaultLineOptions[defaultLineIndex];
+            }
+          }
+
           scope.current.chart = {
             reportType: 'ga',
             query: {
@@ -99,14 +121,14 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               'end-date': scope.date.endDate,
               ids: 'ga:' + profileId,
               'filters': report.filters,
-              // 'max-results': maxResults,
+              'max-results': report.maxResults || 1000,
+              sort: report.sort || null
               // 'sampling-level': samplingLevel,
               // 'segments': segment
             },
             chart: {
               container: 'chart-container-' + (number++),
-              type: 'LINE',
-              options: chartOptions
+              type: 'LINE'
             }
           };
           scope.current.queries = [{
@@ -117,11 +139,13 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               'end-date': scope.date.endDate,
               ids: 'ga:' + profileId,
               'filters': report.filters,
-              // 'max-results': maxResults,
+              'max-results': report.maxResults || 1000,
+              sort: report.sort || null
               // 'sampling-level': samplingLevel,
               // 'segments': segment
             }
           }];
+
         }, 100);
         scope.number = number;
         scope.loading = true;
@@ -139,6 +163,11 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         showReport();
       }, true);
 
+
+
+      scope.$on('chart-create', function (evt, chart) {
+        console.log(chart);
+      });
 
       var chart, rows = [], headers = [];
       scope.$on('$gaReportSuccess', function (event, gaReport, element) {
@@ -204,16 +233,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               });
             })
           };
-
-          /*scope.$watch("site.yandexUpdates", function(yandexData) {
-            rows.push(["Yandex Update", moment(yandexData.data.index.upd_date, 'YYYYMMDD').format('DD/MM/YYYY'), 1]);
-          });*/
-
           scope.tableParams.reload();
 
           var dimensions = scope.report.dimensions.split(',') || [],
             metrics = scope.report.metrics.split(',') || [];
 
+          scope.chart.legend = !scope.report.pure;
           scope.chart.labels = _.map(rows, row => row[0]);
           scope.chart.series = _.pluck(metrics, 'uiName');
           scope.chart.data = _.map(metrics, (metric, n) => {
@@ -254,19 +279,35 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
             scope.dataChart = angular.copy(scope.chart.data);
             scope.seriesChart = angular.copy(scope.chart.series);
+            scope.seriesColours = {};
 
-            scope.seriesChart.forEach(series => {
-              scope.chartLines[series] = {
-                name: series,
-                $enabled: true
-              };
-            });
+            $timeout(() => {
+              var instance = Chart.instances[Object.keys(Chart.instances)[0]];
+              instance.datasets.forEach(dataset => {
+                scope.seriesColours[dataset.label] = dataset.strokeColor;
+              });
+              resetSeries();
+            }, 1000);
+
+            resetSeries();
           }
           scope.hideChart = dimensions.length > 2;
         });
         scope.loading = false;
+
+
       }, true);
-      
+
+      function resetSeries() {
+        scope.seriesChart.forEach(series => {
+          scope.chartLines[series] = {
+            name: series,
+            color: scope.seriesColours[series] || "",
+            $enabled: true
+          };
+        });
+      }
+
       function groupByRows(rows) {
         var groups = _.groupBy(rows, item => item[0]);
         var dates = _.groupBy(rows, item => item[1]),

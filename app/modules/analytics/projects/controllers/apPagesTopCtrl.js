@@ -4,7 +4,8 @@ function($scope, items, project) {
   project.token = {profile_id: project.analytics.profileId};
   project.id = project._id;
 
-  console.log(items.map(item => { return 'ga:pagePath==/' + item.url+".html"}));
+  if(!items.length) return;
+
   $scope.current = {
     project: project,
     date: {
@@ -16,6 +17,7 @@ function($scope, items, project) {
       metrics: 'ga:pageviews',
       dimensions: 'ga:pagePath, ga:date',
       filters: items.map(item => { return 'ga:pagePath==/' + item.url+".html"}).join(','),
+      sort: '-ga:pageviews, -ga:date',
       type: "plot",
       pure: true,
       chart: {

@@ -19,17 +19,17 @@
   <ng-analytics-report ng-if="current.queries.length" report-data="report.data" queries="current.queries"></ng-analytics-report>
 
   <canvas class="chart chart-line" chart-data="chart.data"
-          chart-labels="chart.labels" chart-legend="true" chart-series="chart.series"
-          options="chart.options" legend="true" height="150">
+          chart-labels="chart.labels"  chart-legend="{{chart.legend}}" chart-series="chart.series"
+          options="chart.options" legend="{{chart.legend}}" height="150">
   </canvas>
 
-  <div ng-if="tabletype !== 'plot'">
+  <div>
     <ul>
       <li ng-repeat="(index,serie) in chartLines">
-        <label>{{serie.name}}
-          <input ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-model ng-checked="serie.$enabled" />
-        </label>
-        </li>
+          <span style="position: absolute;left:0;right:0;width: 20px;height:20px;background-color: {{serie.color}}"></span>
+          <input ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-checked="serie.$enabled" />
+          <label>{{serie.name}}</label>
+      </li>
       </ul>
       <div class="datepicker">
         <div class="col-xs-8">

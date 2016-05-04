@@ -71,8 +71,8 @@ YandexSvc.prototype.getUrlPosition = function (site, url, keyword, options, next
 };
 
 YandexSvc.prototype.getLimits = function(url, currentTime, next) {
-  currentTime = currentTime || new Date(),
-  self = this;
+  currentTime = currentTime || new Date();
+  var self = this;
 
   yandex(
     {url: url, action: 'limits-info', query: 'limits-info'},

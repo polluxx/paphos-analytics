@@ -43,7 +43,7 @@ exports['pages.scan'] = function(app, message, callback) {
 
               log.info(' ------ Start getting project: ' + project.siteUrl + " page: " + pager[project].page + " ------");
 
-              request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,keywords&page=" + pager[project].page},
+              request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,seo&page=" + pager[project].page},
                 function (err, data, body) {
                   pager[project].page++;
                   if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
@@ -64,16 +64,16 @@ exports['pages.scan'] = function(app, message, callback) {
                       title: page.title,
                       searchPage: pager[project].page,
                       siteId: project._id,
-                      keywords: page.keywords.map(keyword => {return keyword.word;})
+                      keywords: page.seo.keywords.map(keyword => {return keyword.title;})
                     };
 
                     app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
                       if (err) log.error("Error when trying to insert data to DB: " + err);
                     });
 
-                    page.keywords.forEach(word => {
+                    page.seo.keywords.forEach(word => {
                       word.siteId = project._id;
-                      app.models.keywords.update({word: word.word}, word, insertOptions, function (err) {
+                      app.models.keywords.update({word: word.title}, word, insertOptions, function (err) {
                         if (err) log.error("Error when trying to insert data to DB: " + err);
                       });
                     });
@@ -134,7 +134,6 @@ exports['pages.keywords'] = function(app, message, callback) {
           data.pages.forEach(page => {
 
             limitService.removeTokens(1, function (err, remainingRequests) {
-
               if (err) {
                 return next(err);
               }
