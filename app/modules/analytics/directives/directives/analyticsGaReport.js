@@ -6,10 +6,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
   var defaultLineOptions = {
     datasetStrokeWidth: 2,
     bezierCurve: true,
-    datasetFill: true,
-    legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].strokeColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
+    datasetFill: true
   }
-  //Chart.defaults.Line.legendTemplate = '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].strokeColor%>"><input type="checkbox" style="margin-top: 4px;" checked="true" ng-click="rechart(datasets)" ng-checked="datasets[i].$enabled"/></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>';
 
   return {
     restrict: 'A',
@@ -166,11 +164,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       }, true);
 
 
-
-      scope.$on('chart-create', function (evt, chart) {
-        console.log(chart);
-      });
-
       var chart, rows = [], headers = [];
       scope.$on('$gaReportSuccess', function (event, gaReport, element) {
         if (!gaReport) {
@@ -248,8 +241,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             return _.map(rows, row => parseInt(row[1 + n]))
           });
 
-
-
           scope.initialChartData = angular.copy(scope.chart);
 
           if (dimensions.length == 2) {
@@ -278,17 +269,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               });
 
               groupByRows(rows);
+              resetSeries();
             });
 
             groupByRows(rows);
 
             scope.seriesColours = {};
-
-            $timeout(() => {
-
-              resetSeries();
-            }, 1000);
-
             resetSeries();
           }
           scope.hideChart = dimensions.length > 2;
@@ -327,6 +313,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
         scope.dataChart = angular.copy(scope.chart.data);
         scope.seriesChart = angular.copy(scope.chart.series);
+        resetSeries();
       }
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
