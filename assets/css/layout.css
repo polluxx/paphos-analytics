@@ -8310,3 +8310,7 @@ button.toast-close-button {
 .border-bottom {
   border: 3px solid #DDDDDD;
 }
+
+.margin-top-table {
+  margin-top: 10px;
+}
