@@ -41,7 +41,10 @@
         <div class="col-xs-6">
           <label>С даты</label>
           <div class="input-group">
-            <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="fromDate" is-open="popupFrom.opened" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+            <input type="text" class="form-control" datepicker-options="{ defaultDate: '2016-04-28', showWeeks: false }" defaultDate="fromDate"
+                   uib-datepicker-popup="dd.MM.yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
+                   readonly="readonly" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+            />
             <div class="input-group-btn">
               <button class="btn btn-default border-bottom" ng-click="openFrom()"><i class="fa fa-calendar"></i></button>
             </div>
@@ -50,7 +53,11 @@
         <div class="col-xs-6">
           <label>По дату</label>
           <div class="input-group">
-            <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="toDate" date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"  />
+            <input type="text" class="form-control" datepicker-options="{ showWeeks: false }"
+                   uib-datepicker-popup="dd.MM.yyyy" ng-required="true" ng-model="toDate"
+                   date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" readonly="readonly"
+                   current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
+            />
             <div class="input-group-btn">
               <button class="btn btn-default border-bottom" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
             </div>
