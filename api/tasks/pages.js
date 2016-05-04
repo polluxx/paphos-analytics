@@ -192,6 +192,11 @@ exports['pages.top'] = function(app, message, callback) {
           app.models.pages.find({siteId: site._id}, next);
         },
         top: ['pages', (next, data) => {
+
+          if(!site.analytics || !site.analytics.profileId) {
+            return next('No analytics for site:'+site._id);
+          }
+
           data.pages.forEach((page) => {
 
             limitService.removeTokens(1, function(err) {

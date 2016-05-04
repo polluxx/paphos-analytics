@@ -1,7 +1,8 @@
 export default
 /*@ngInject*/
-function($scope, item, project, aKeywordModel, NgTableParams) {
-  project.token = {profile_id: project.analytics.profileId};
+function($scope, item, project, aPageModel, NgTableParams) {
+
+  project.token = {profile_id: project.analytics !== undefined ? project.analytics.profileId : null};
   project.id = project._id;
 
   $scope.item = item;
@@ -20,7 +21,7 @@ function($scope, item, project, aKeywordModel, NgTableParams) {
   };
 
   $scope.query = {
-    ids: 'ga:' + $scope.project.analytics.profileId,
+    ids: 'ga:' + ($scope.project.analytics !== undefined ? $scope.project.analytics.profileId : null),
     metrics: 'ga:pageviews',
     dimensions: 'ga:source, ga:date',
     filters: 'ga:pagePath=@' + $scope.item.url,
@@ -31,11 +32,11 @@ function($scope, item, project, aKeywordModel, NgTableParams) {
     page: 1,
     count: 100,
     sorting: {
-
+      frequency: 'desc'
     }
   }, {
     getData: function(params) {
-      var res = aKeywordModel.query({page: params.page(), perPage: 100}, function(resp) { return resp; });
+      var res = aPageModel.keywords({_id:$scope.item._id}, function(resp) { return resp; });
       console.log(res);
       return res;
     }

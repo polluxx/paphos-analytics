@@ -8,6 +8,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     });
   };
 
+  $scope.item = item;
+
   $scope.tableParams = new NgTableParams({
     page: 1
   }, {

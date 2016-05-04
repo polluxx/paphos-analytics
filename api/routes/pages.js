@@ -20,9 +20,27 @@ router.get('/:id/queries', function (req, res, next) {
   });
 });
 
-router.get('/:id/refresh', function(req, res, next) {
-  req.app.services.tasks.publish('pages.scan', { _id: req.params.id });
+router.get('/:projectId/refresh', function(req, res, next) {
+  req.app.services.tasks.publish('pages.scan', { _id: req.params.projectId });
   res.json({message: 'done'});
+});
+
+router.get('/:id/keywords', function (req, res, next) {
+  async.auto({
+    'page': next => {
+      req.app.models.pages.findById(req.params.id, next);
+    },
+    'keywords': ['page', (next, result) => {
+      console.log(result.page);
+      if(!result.page.keywords) return next('No keywords for page.');
+
+      req.app.models.keywords.find({word: {$in: result.page.keywords}}, next);
+    }]
+  }, (err, data) => {
+    if (err) { return next(err); }
+
+    res.json(data.keywords);
+  });
 });
 
 module.exports = router;
