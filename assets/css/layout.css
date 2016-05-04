@@ -8307,6 +8307,23 @@ button.toast-close-button {
   }
 }
 
+.datepicker .glyphicon {
+  display: inline-block;
+  font-family: FontAwesome !important;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.datepicker .glyphicon-chevron-left:before {
+  content: "\f053";
+}
+.datepicker .glyphicon-chevron-right:before {
+  content: "\f054";
+}
+
 .border-bottom {
   border: 3px solid #DDDDDD;
 }

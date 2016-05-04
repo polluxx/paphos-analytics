@@ -353,7 +353,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.chart.series = scope.seriesChart.filter(returnIntersection);
 
         function returnIntersection(item, index) { return ~intersect.indexOf(index); }
-      }
+      };
 
       /*scope.$on('$gaReportSuccess', function (e, report, element) {
        console.info(report)
