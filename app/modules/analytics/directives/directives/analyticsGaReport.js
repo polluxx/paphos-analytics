@@ -80,6 +80,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
       scope.date.startDate = moment(scope.date.startDate).format('YYYY-MM-DD');
       scope.date.endDate = moment(scope.date.endDate).format('YYYY-MM-DD');
+      scope.seriesColours = {};
 
       var showReport = () => {
         var report = scope.report;
@@ -94,7 +95,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         };
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
-        console.log(report);
+
         var chartOptions = scope.report.chart || {'width': '100%'};
 
         $timeout(() => {
@@ -196,6 +197,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               return item;
             });
 
+
+
           if(!scope.report.pure) {
             var indRows = 0, rowsLen = rows.length, row,
               insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"];
@@ -235,10 +238,10 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
 
           scope.chart.legend = !scope.report.pure;
-          scope.chart.labels = _.map(rows, row => row[0]);
+          scope.chart.labels = rows.map(row => row[0]);
           scope.chart.series = _.pluck(metrics, 'uiName');
-          scope.chart.data = _.map(metrics, (metric, n) => {
-            return _.map(rows, row => parseInt(row[1 + n]))
+          scope.chart.data = metrics.map((metric, n) => {
+            return rows.map(row => parseInt(row[1 + n]))
           });
 
           scope.initialChartData = angular.copy(scope.chart);
@@ -274,7 +277,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
             groupByRows(rows);
 
-            scope.seriesColours = {};
+
             resetSeries();
           }
           scope.hideChart = dimensions.length > 2;
@@ -305,15 +308,23 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         var dates = _.groupBy(rows, item => item[1]),
           n = 0;
 
-        scope.chart.labels = _.keys(dates);
-        scope.chart.series = _.keys(groups);
+        scope.chart.labels = Object.keys(dates).sort((a,b) => {
+          var first = moment(a, 'DD/MM/YYYY'), second = moment(b, 'DD/MM/YYYY');
+          return (first === second) ? 0 : (first > second ? 1 : -1);
+        });
+        scope.chart.series = Object.keys(groups);
+
         scope.chart.data = _.map(groups, (group, key) => {
-          return _.map(group, row => parseInt(row[2]));
+          return group.map(row => parseInt(row[2]));
         });
 
         scope.dataChart = angular.copy(scope.chart.data);
         scope.seriesChart = angular.copy(scope.chart.series);
         resetSeries();
+      }
+
+      function sortGroupValues(a, b) {
+        return (a[1] === b[1]) ? 0 : (a[1] > b[1] ? 1 : -1);
       }
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
