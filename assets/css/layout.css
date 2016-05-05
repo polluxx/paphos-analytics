@@ -8171,13 +8171,19 @@ button.toast-close-button {
   .daterangepicker .calendar.left {
     clear: none; } }
 
+.wrapper-preloader {
+  height: 420px;
+  width: 100%;
+  background-color: rgba(169, 169, 169, 0.64);
+  position: absolute;
+  z-index: 1001; }
+
 .preloader {
   text-align: center;
-  width:78px;
-  height: 200px;
   margin-top: 20%;
   margin-left: calc(50% - 39px);
-}
+  position: absolute;
+  z-index: 101; }
 
 .preloader span {
   display: inline-block;
