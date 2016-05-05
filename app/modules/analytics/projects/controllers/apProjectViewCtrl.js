@@ -20,7 +20,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   $scope.query = {
     ids: 'ga:' + item.analytics.profileId,  // put your viewID here
     metrics: 'ga:pageviews',
-    dimensions: 'ga:source, ga:date'
+    dimensions: 'ga:source, ga:date',
+    legend:false
   };
 
 

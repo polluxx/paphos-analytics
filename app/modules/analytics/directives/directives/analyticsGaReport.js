@@ -237,7 +237,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             metrics = scope.report.metrics.split(',') || [];
 
 
-          scope.chart.legend = !scope.report.pure;
+          scope.chart.legend = !!scope.report.legend;
           scope.chart.labels = rows.map(row => row[0]);
           scope.chart.series = _.pluck(metrics, 'uiName');
           scope.chart.data = metrics.map((metric, n) => {
@@ -272,13 +272,9 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               });
 
               groupByRows(rows);
-              resetSeries();
             });
 
             groupByRows(rows);
-
-
-            resetSeries();
           }
           scope.hideChart = dimensions.length > 2;
         });
@@ -287,14 +283,18 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
       }, true);
 
-      function resetSeries() {
-        var instance = Chart.instances[Object.keys(Chart.instances)[0]];
-        if(instance !== undefined) {
-          instance.datasets.forEach(dataset => {
+      // listen to chart create event and get colors
+      scope.$on('create', function(e, chart) {
+        resetSeries(chart);
+      });
+
+      function resetSeries(chart) {
+        if(chart !== undefined) {
+          chart.datasets.forEach(dataset => {
             scope.seriesColours[dataset.label] = dataset.strokeColor;
           });
         }
-        scope.seriesChart.forEach(series => {
+        scope.chart.series.forEach(series => {
           scope.chartLines[series] = {
             name: series,
             color: scope.seriesColours[series] || "",
@@ -320,11 +320,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
         scope.dataChart = angular.copy(scope.chart.data);
         scope.seriesChart = angular.copy(scope.chart.series);
-        resetSeries();
-      }
-
-      function sortGroupValues(a, b) {
-        return (a[1] === b[1]) ? 0 : (a[1] > b[1] ? 1 : -1);
+        //resetSeries();
       }
 
       function returnTempValue(tmpScope, resultAggr, firstIndexName) {
@@ -353,9 +349,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         function returnIntersection(item, index) { return ~intersect.indexOf(index); }
       };
 
-      /*scope.$on('$gaReportSuccess', function (e, report, element) {
-       console.info(report)
-       });*/
       scope.$on('$gaReportError', function (e, gaReport, element) {
         console.log(gaReport.error);
         scope.report.$error = gaReport.error;

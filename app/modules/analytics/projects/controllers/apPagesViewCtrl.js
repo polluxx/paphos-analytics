@@ -28,7 +28,7 @@ function($scope, item, project, aPageModel, NgTableParams) {
     dimensions: 'ga:source, ga:date',
     filters: 'ga:pagePath=@' + $scope.item.url,
     type: "plot",
-    labels:false
+    legend:false
   };
 
   $scope.keywordsTableParams = new NgTableParams({

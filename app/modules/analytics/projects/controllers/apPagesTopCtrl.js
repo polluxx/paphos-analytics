@@ -23,7 +23,7 @@ function($scope, items, project) {
       sort: '-ga:pageviews, -ga:date',
       type: "plot",
       pure: true,
-      labels:false,
+      legend:false,
       chart: {
         fill: false,
         pointRadius: 1,
