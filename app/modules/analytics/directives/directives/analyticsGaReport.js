@@ -33,6 +33,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         }
       };
       scope.chartLines = {};
+      scope.checkedBoxes = [];
 
       scope.current = {
         queries: [],
@@ -294,13 +295,21 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             scope.seriesColours[dataset.label] = dataset.strokeColor;
           });
         }
+        
         scope.chart.series.forEach(series => {
+
           scope.chartLines[series] = {
             name: series,
             color: scope.seriesColours[series] || "",
             $enabled: series.$enabled !== undefined ? series.$enabled : true
           };
         });
+
+        if(scope.checkedBoxes.length) {
+          scope.seriesChart.forEach((item) => {
+            if(!~scope.checkedBoxes.indexOf(item)) scope.chartLines[item].color = "";
+          });
+        }
       }
 
       function groupByRows(rows) {
@@ -334,13 +343,11 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       }
 
       scope.rechart = function(chartLines) {
-        var checked = _.filter(chartLines, selection => { return selection.$enabled; }).map(checked => { return checked.name; });
+        scope.checkedBoxes = _.filter(chartLines, selection => { return selection.$enabled; }).map(checked => { return checked.name; });
         var intersect = [];
 
-        //resetSeries();
-
         scope.seriesChart.forEach((item, index) => {
-          if(~checked.indexOf(item)) intersect.push(index);
+          if(~scope.checkedBoxes.indexOf(item)) intersect.push(index);
         });
 
         scope.chart.data = scope.dataChart.filter(returnIntersection);
