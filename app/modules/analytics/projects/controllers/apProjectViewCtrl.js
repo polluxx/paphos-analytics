@@ -21,7 +21,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     ids: 'ga:' + item.analytics.profileId,  // put your viewID here
     metrics: 'ga:pageviews',
     dimensions: 'ga:source, ga:date',
-    legend:false
+    legend:false,
+    type: "plot"
   };
 
 
