@@ -99,7 +99,10 @@ exports['pages.keywords'] = function(app, message, callback) {
   function yandexLimitResponse(err, response, cb) {
     log.info("Get limit from yandex: attempt - "+limitChance);
     if(err) {
-      if(limitChance >=3) return cb('More than 3 attempts failed when getting xml limits!');
+      if(limitChance >=3) {
+        log.info('More than 3 attempts failed when getting xml limits!');
+        return cb();
+      }
       limitChance++;
       return yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
         return yandexLimitResponse(err, response, cb);
