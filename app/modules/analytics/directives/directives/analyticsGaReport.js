@@ -393,12 +393,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.popupTo.opened = true;
       };
 
-      scope.disabled = function(date, mode, fromDate) {
-        return (date.getMonth() == fromDate.getMonth()) ?
-          (mode === 'day' && (date.getDate() < fromDate.getDate())) :
-          (date.getMonth() < fromDate.getMonth()) ?
-          mode === 'day' : false;
-      };
+      // scope.disabled = function(date, mode, fromDate) {
+      //   return (date.getMonth() == fromDate.getMonth()) ?
+      //     (mode === 'day' && (date.getDate() < fromDate.getDate())) :
+      //     (date.getMonth() < fromDate.getMonth()) ?
+      //     mode === 'day' : false;
+      // };
 
       scope.refreshData = function (fromDate, toDate) {
         scope.date.startDate = moment(fromDate).format('YYYY-MM-DD');
