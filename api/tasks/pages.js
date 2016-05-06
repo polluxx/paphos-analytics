@@ -117,7 +117,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     },
     pages: ['limit', (next, data) => {
       var limit = parseInt(data.limit);
-      limitService = new rateLimiter(limit, 'hour');
+
       app.models.keywords.find(
         {
           $or:
@@ -128,28 +128,31 @@ exports['pages.keywords'] = function(app, message, callback) {
     }],
     request: ['pages', (next, data) => {
       if(!data.pages) return next();
-          data.pages.forEach(page => {
 
-            limitService.removeTokens(1, function (err, remainingRequests) {
-              if (err) {
-                return next(err);
-              }
-              yandex.searchByKeyword(yandexConf, page.word, {count: 100}, function (err, report) {
-                if (err) {
-                  log.error(err);
-                  return;
-                }
+      limitService = new rateLimiter(data.pages.length, 'hour');
 
-                group = _.find(report.grouping[0].found, {'$': {priority: 'phrase'}});
-                searchCondition = {word: page.word};
-                updateFields = {frequency: parseInt(group["_"]), updated: Date.now()};
+      data.pages.forEach(page => {
 
-                app.models.keywords.update(searchCondition, updateFields, {upsert: false, multi: false}, function (err) {
-                  if (err) log.error(err);
-                });
-              });
+        limitService.removeTokens(1, function (err, remainingRequests) {
+          if (err) {
+            return next(err);
+          }
+          yandex.searchByKeyword(yandexConf, page.word, {count: 100}, function (err, report) {
+            if (err) {
+              log.error(err);
+              return;
+            }
+
+            group = _.find(report.grouping[0].found, {'$': {priority: 'phrase'}});
+            searchCondition = {word: page.word};
+            updateFields = {frequency: parseInt(group["_"]), updated: Date.now()};
+
+            app.models.keywords.update(searchCondition, updateFields, {upsert: false, multi: false}, function (err) {
+              if (err) log.error(err);
             });
           });
+        });
+      });
 
       next();
     }]
