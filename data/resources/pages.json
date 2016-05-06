@@ -1,0 +1,20 @@
+{
+  "options": {
+    "searchFields": [],
+    "maxPerPage": [
+      {
+        "role": "*",
+        "value": 100
+      }
+    ]
+  },
+  "acl": {
+    "*": {
+      "get": "*",
+      "get?_id": "*",
+      "put?_id": "*",
+      "post": "*",
+      "delete?_id": "*"
+    }
+  }
+}

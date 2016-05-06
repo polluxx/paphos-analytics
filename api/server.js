@@ -38,6 +38,10 @@ app.services = {
     destination: config.get('tasks.stomp.destination')
   }),
 
+  data: googleSevice = new paphos.data(app, {
+    dataDir: path.join(__dirname, 'data')
+  }),
+
   google: googleSevice = new GoogleService(config.get('google.api'), config.get('url')),
   webmasters: new WebmastersService(app, googleSevice),
   analytics: new AnalyticsService(app, googleSevice),
