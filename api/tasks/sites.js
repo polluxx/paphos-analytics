@@ -18,6 +18,9 @@ exports['sites.scanSite'] = function (app, msg, cb) {
       app.services.google.setCredentials(data.site.tokens);
       if (data.site.tokens.refresh_token) {
         app.services.google.refreshAccessToken(function (err, tokens) {
+          if(err || !tokens) {
+            return next(err || 'No tokens from GA refresh!');
+          }
           app.services.google.setCredentials(tokens);
           if (tokens.refresh_token) {
             data.site.tokens = tokens;
