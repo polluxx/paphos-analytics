@@ -12,7 +12,6 @@
     "*": {
       "get": "*",
       "get?_id": "*",
-      "get?siteId": "*",
       "put?_id": "*",
       "post": "*",
       "delete?_id": "*"

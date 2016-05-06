@@ -39,6 +39,7 @@ exports['sites.scanSite'] = function (app, msg, cb) {
       return next();
       app.services.analytics.syncReports(data.site, startDate, endDate, next);
     }],
+      
     'query': ['token', function (next, data) {
       var currentDate = moment(startDate);
       return next();

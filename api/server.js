@@ -97,10 +97,13 @@ exports.start = function (next) {
         app.log.info('Tasks processing disabled, skipping queue subscribing');
         return next();
       }
-      app.services.tasks.start(next);
+      app.services.tasks.start(next);  
     },
     'google': function(next) {
       app.services.google.start(next);
+    },
+    'data': function(next) {
+      app.services.data.loadData(next);
     },
     'server': function(next) {
       app.server = express();
