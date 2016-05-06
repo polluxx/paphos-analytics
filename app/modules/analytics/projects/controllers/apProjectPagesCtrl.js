@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, ngTableEventsChannel, $timeout) {
+function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, ngTableEventsChannel, $timeout, $stateParams) {
 
   $scope.refreshPages = (cb) => {
     aPageModel.refresh({_id: item._id},function (resp) {
@@ -8,17 +8,22 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     });
   };
 
+  $scope.paginationPage = $stateParams.paginationPage;
+  $scope.paginationCount = $stateParams.paginationCount;
+
   $scope.item = item;
   $scope.total = 0;
   $scope.dataMightReload = false;
 
   $scope.tableParams = new NgTableParams({
-    page: 1,
-    count: $scope.counter || 10
+  page: $scope.paginationPage,
+  count: $scope.paginationCount || $scope.counter
   }, {
     getData: function (params) {
       return aPageModel.query({page: params.page(), perPage: params.count(), siteId: item._id}, function (resp, headers) {
         $scope.counter = params.count();
+        $scope.paginationPage = params.page();
+        $scope.paginationCount = params.count();
         $scope.pages = resp;
         $scope.total = parseInt(headers('x-total-count'));
         params.total($scope.total);

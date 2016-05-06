@@ -58,6 +58,10 @@ function($stateProvider, $urlRouterProvider) {
     })
     .state('analytics.project.pages', {
       url: '/pages',
+      params: {
+        paginationPage: 1,
+        paginationCount: 10
+      },
       controller: 'apProjectPagesCtrl',
       templateUrl: 'app/views/analytics/projects/page-pages.html'
     })
@@ -78,6 +82,10 @@ function($stateProvider, $urlRouterProvider) {
     .state('pages', {
       parent: 'analytics',
       url: '/project/:projectId/page/:pageId',
+      params: {
+        paginationPage: 1,
+        paginationCount: 10
+      },
       views: {
         'main-content': {controller: 'apPagesViewCtrl', templateUrl: 'app/views/analytics/projects/page-statistic.html'}
       },

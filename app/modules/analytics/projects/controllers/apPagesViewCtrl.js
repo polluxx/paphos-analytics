@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, aPageModel, NgTableParams) {
+function($scope, item, project, aPageModel, NgTableParams, $stateParams) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -13,7 +13,6 @@ function($scope, item, project, aPageModel, NgTableParams) {
   console.log(project);
   console.log(item);
 
-
   $scope.current = {
     site: $scope.item.url,
     date: {
@@ -22,6 +21,9 @@ function($scope, item, project, aPageModel, NgTableParams) {
     }
   };
 
+  $scope.paginationPage = $stateParams.paginationPage;
+  $scope.paginationCount = $stateParams.paginationCount;
+  
   $scope.query = {
     ids: 'ga:' + ($scope.project.analytics !== undefined ? $scope.project.analytics.profileId : null),
     metrics: 'ga:pageviews',
