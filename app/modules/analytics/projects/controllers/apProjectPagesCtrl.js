@@ -2,9 +2,9 @@ export default
 /*@ngInject*/
 function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
 
-  $scope.refreshPages = () => {
+  $scope.refreshPages = (cb) => {
     aPageModel.refresh({_id: item._id},function (resp) {
-      console.log(resp);
+      cb(null, resp.message);
     });
   };
 
@@ -27,6 +27,10 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
+
+  // $scope.$watch('tableParams.data', (data) => {
+  //   console.log($scope.tableParams);
+  // });
 
   var total = $scope.tableParams.total();
   $scope.$watch('total', () => {
