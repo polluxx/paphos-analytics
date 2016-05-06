@@ -287,7 +287,18 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       // listen to chart create event and get colors
       scope.$on('create', function(e, chart) {
         resetSeries(chart);
+        verifyDate(scope.chart.labels);
       });
+
+      function verifyDate(date) {
+        if (moment(scope.fromDate).format('DD/MM/YYYY') != date[0] && moment(scope.toDate).format('DD/MM/YYYY') != date[date.length - 1]) {
+          scope.fromDate = date[0];
+          scope.toDate = date[date.length - 1];
+        } else if(scope.fromDate == undefined && scope.fromDate == undefined) {
+          scope.fromDate = date[0];
+          scope.toDate = date[date.length - 1];
+        }
+      }
 
       function resetSeries(chart) {
         if(chart !== undefined) {
@@ -363,10 +374,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       });
 
       // datepicker
-      scope.now = new Date();
-      scope.toDate = new Date();
-      scope.fromDate = new Date(scope.now.setDate(scope.now.getDate() - 6));
-
       scope.popupTo = {
         opened: false
       };
