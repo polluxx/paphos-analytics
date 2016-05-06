@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
+function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, ngTableEventsChannel, $timeout) {
 
   $scope.refreshPages = (cb) => {
     aPageModel.refresh({_id: item._id},function (resp) {
@@ -10,6 +10,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
 
   $scope.item = item;
   $scope.total = 0;
+  $scope.dataMightReload = false;
 
   $scope.tableParams = new NgTableParams({
     page: 1,
@@ -28,9 +29,24 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     paginationMinBlocks: 2
   });
 
-  // $scope.$watch('tableParams.data', (data) => {
-  //   console.log($scope.tableParams);
-  // });
+  ngTableEventsChannel.onAfterReloadData((evt) => {
+    evt.data.$promise.then((resp)=>{
+      console.log(resp);
+      if(!resp.length) $scope.dataMightReload = true;
+    });
+  }, $scope);
+
+  $scope.$watch('dataMightReload', result => {
+    if(!result) return;
+    $scope.loading = true;
+    $scope.refreshPages(() => {
+        $timeout(()=>{
+          console.log('reload');
+          $scope.loading = false;
+          $scope.tableParams.reload();
+        }, 2000);
+    });
+  });
 
   var total = $scope.tableParams.total();
   $scope.$watch('total', () => {
