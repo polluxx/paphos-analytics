@@ -295,7 +295,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           scope.fromDate = date[0];
           scope.toDate = date[date.length - 1];
         } else if(scope.fromDate == undefined) {
-          console.log("i know");
+          scope.fromDate = moment(date[0]).format('DD/MM/YYYY');
+          scope.toDate = moment(date[date.length - 1]).format('DD/MM/YYYY');
         }
       }
 
@@ -372,11 +373,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         toaster.pop('error', gaReport.error.message);
       });
 
-      // datepicker
-      scope.now = new Date();
-      scope.toDate = new Date();
-      scope.fromDate = new Date(scope.now.setDate(scope.now.getDate() - 6));
-
       scope.popupTo = {
         opened: false
       };
@@ -393,12 +389,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.popupTo.opened = true;
       };
 
-      // scope.disabled = function(date, mode, fromDate) {
-      //   return (date.getMonth() == fromDate.getMonth()) ?
-      //     (mode === 'day' && (date.getDate() < fromDate.getDate())) :
-      //     (date.getMonth() < fromDate.getMonth()) ?
-      //     mode === 'day' : false;
-      // };
+      scope.disabled = function(date, mode, fromDate) {
+        return (date.getMonth() == moment(fromDate).month()) ?
+          (mode === 'day' && (date.getDate() < moment(fromDate).date())) :
+          (date.getMonth() < moment(fromDate).month()) ?
+          mode === 'day' : false;
+      };
 
       scope.refreshData = function (fromDate, toDate) {
         scope.date.startDate = moment(fromDate).format('YYYY-MM-DD');

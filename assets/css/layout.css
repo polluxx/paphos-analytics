@@ -8337,3 +8337,18 @@ button.toast-close-button {
 .margin-top-table {
   margin-top: 10px;
 }
+
+.absolute-serie {
+  position:absolute;
+  z-index: 1000;
+}
+
+.absolute-serie .break {
+  width: 90%;
+  word-wrap: break-word;
+}
+
+.absolute-serie .check-align {
+  margin-top: 6px;
+  float: left;
+}
