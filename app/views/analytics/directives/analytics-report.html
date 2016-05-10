@@ -47,7 +47,7 @@
           <label>С даты</label>
           <div class="input-group">
             <input type="text" class="form-control" datepicker-options="{ defaultDate: '2016-04-28', showWeeks: false }" defaultDate="fromDate"
-                   uib-datepicker-popup="DD/MM/YYYY" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
+                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
                    readonly="readonly" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
             />
             <div class="input-group-btn">
@@ -59,7 +59,7 @@
           <label>По дату</label>
           <div class="input-group">
             <input type="text" class="form-control" datepicker-options="{ showWeeks: false }"
-                   uib-datepicker-popup="DD/MM/YYYY" ng-required="true" ng-model="toDate"
+                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="toDate"
                    date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" readonly="readonly"
                    current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
             />
