@@ -48,5 +48,5 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams) {
   });
 
   console.log($scope.keywordsTableParams);
-
+  
 }

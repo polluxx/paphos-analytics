@@ -5,7 +5,7 @@
 </ng-messages>
 
 <div class="row" ng-show="loading">
-  <div class="col-xs-12">
+  <div class="col-xs-10">
     <div class="wrapper-preloader">
       <div class="preloader">
         <div class="wrapper">
@@ -24,30 +24,30 @@
   <ng-analytics-report ng-if="current.queries.length" report-data="report.data" queries="current.queries"></ng-analytics-report>
 
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-10">
       <canvas class="chart chart-line" chart-data="chart.data"
               chart-labels="chart.labels"  chart-legend="{{chart.legend}}" chart-series="chart.series"
               options="chart.options" legend="{{chart.legend}}" height="150">
       </canvas>
     </div>
 
-    <div class="col-xs-offset-12 col-xs-3" style="position:absolute; z-index: 1000;">
-      <ul>
-        <li ng-repeat="(index,serie) in chartLines" style="list-style: none;">
+    <div class="col-xs-offset-10 col-xs-4 absolute-serie">
+      <ul class="margin-top-table">
+        <li ng-repeat="(index,serie) in chartLines" style="list-style: none; width: 100%;">
           <span style="position: absolute;left:0;right:0;width: 20px;height:20px;background-color: {{serie.color}}"></span>
-          <input ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-checked="serie.$enabled" />
-          <label>{{serie.name}}</label>
+          <input class="check-align" ng-click="rechart(chartLines)" type="checkbox" ng-model="serie.$enabled" name="serie" value="{{serie.name}}" ng-checked="serie.$enabled" />
+          <label class="break">{{serie.name}}</label>
         </li>
       </ul>
     </div>
 
-    <div class="col-xs-12">
+    <div class="col-xs-10" ng-show="!loading">
       <div class="datepicker">
         <div class="col-xs-6">
           <label>С даты</label>
           <div class="input-group">
-            <input type="text" class="form-control" datepicker-options="{ defaultDate: '2016-04-28', showWeeks: false }" defaultDate="fromDate"
-                   uib-datepicker-popup="dd.MM.yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
+            <input type="text" class="form-control" datepicker-options="{ showWeeks: false }" defaultDate="fromDate"
+                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
                    readonly="readonly" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
             />
             <div class="input-group-btn">
@@ -59,7 +59,7 @@
           <label>По дату</label>
           <div class="input-group">
             <input type="text" class="form-control" datepicker-options="{ showWeeks: false }"
-                   uib-datepicker-popup="dd.MM.yyyy" ng-required="true" ng-model="toDate"
+                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="toDate"
                    date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" readonly="readonly"
                    current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
             />
@@ -67,12 +67,6 @@
               <button class="btn btn-default border-bottom" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <hr>
-          <button class="btn btn-default" ng-click="refreshData(fromDate, toDate)">Получить значения</button>
         </div>
       </div>
     </div>

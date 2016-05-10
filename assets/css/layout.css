@@ -8174,16 +8174,16 @@ button.toast-close-button {
 .wrapper-preloader {
   height: 420px;
   width: 100%;
-  background-color: rgba(169, 169, 169, 0.64);
+  background-color: white;
   position: absolute;
-  z-index: 1001; }
+  z-index: 101; }
 
 .preloader {
   text-align: center;
   margin-top: 20%;
   margin-left: calc(50% - 39px);
   position: absolute;
-  z-index: 101; }
+  z-index: 102; }
 
 .preloader span {
   display: inline-block;
@@ -8336,4 +8336,32 @@ button.toast-close-button {
 
 .margin-top-table {
   margin-top: 10px;
+}
+
+.absolute-serie {
+  position:absolute;
+  z-index: 1000;
+}
+
+.absolute-serie .break {
+  width: 90%;
+  word-wrap: break-word;
+}
+
+.absolute-serie .check-align {
+  margin-top: 6px;
+  float: left;
+}
+
+.datepicker .btn-danger {
+  display: none;
+}
+
+.datepicker .btn-info {
+  border-bottom-right-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+}
+
+.ng-table-counts button {
+  margin-top: 15px;
 }

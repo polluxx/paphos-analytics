@@ -12,17 +12,15 @@
 <div class="tab-content" ui-view>
   <div date="current.date" site="project" analytics-ga-report="query"></div>
 
-  <div>
-    <h2>Keywords</h2>
-    <div class="col-xs-9">
-
-      <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
-        <tr ng-repeat="row in $data">
-          <td data-title="'Фраза'" sortable="'word'">{{row.word}}</td>
-          <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
-        </tr>
-      </table>
-    </div>
+  <div class="row margin-top-table" ng-show="$data">
+    <div class="col-xs-10">
+        <h2>Keywords</h2>
+        <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
+          <tr ng-repeat="row in $data">
+            <td data-title="'Фраза'" sortable="'word'">{{row.word}}</td>
+            <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
+          </tr>
+        </table>
+      </div>
   </div>
-
 </div>
