@@ -7,7 +7,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
     datasetStrokeWidth: 2,
     bezierCurve: true,
     datasetFill: true
-  }
+  };
 
   return {
     restrict: 'A',
@@ -45,7 +45,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         page: 1,
         count: 100,
         sorting: {
-
         }
       }, {
         filterDelay: 0,
@@ -65,7 +64,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
         }
       });
-
 
       function makeCanvas(container) {
         var canvas = document.createElement('canvas');
@@ -133,6 +131,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
               type: 'LINE'
             }
           };
+
           scope.current.queries = [{
             query: {
               metrics: report.metrics,
@@ -149,22 +148,23 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           }];
 
         }, 100);
+
         scope.number = number;
         scope.loading = true;
       };
 
       var profileId;
-      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate'], () => {
+      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate', 'fromDate', 'toDate'], () => {
         if (!scope.site) {
           return;
         }
+
         profileId = scope.site.token.profile_id;
 
         scope.current.queries = [];
         scope.current.chart = null;
         showReport();
       }, true);
-
 
       var chart, rows = [], headers = [];
       scope.$on('$gaReportSuccess', function (event, gaReport, element) {
@@ -197,8 +197,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
               return item;
             });
-
-
 
           if(!scope.report.pure) {
             var indRows = 0, rowsLen = rows.length, row,
@@ -236,7 +234,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
           var dimensions = scope.report.dimensions.split(',') || [],
             metrics = scope.report.metrics.split(',') || [];
-
 
           scope.chart.legend = !!scope.report.legend;
           scope.chart.labels = rows.map(row => row[0]);
@@ -280,8 +277,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           scope.hideChart = dimensions.length > 2;
         });
         scope.loading = false;
-
-
       }, true);
 
       // listen to chart create event and get colors
@@ -289,7 +284,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         resetSeries(chart);
         verifyDate(scope.chart.labels);
       });
-
+      
       function verifyDate(date) {
         if (moment(scope.fromDate).format('DD/MM/YYYY') != date[0] && moment(scope.toDate).format('DD/MM/YYYY') != date[date.length - 1]) {
           scope.fromDate = date[0];
@@ -368,7 +363,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       };
 
       scope.$on('$gaReportError', function (e, gaReport, element) {
-        console.log(gaReport.error);
         scope.report.$error = gaReport.error;
         toaster.pop('error', gaReport.error.message);
       });
@@ -395,11 +389,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           (date.getMonth() < moment(fromDate).month()) ?
           mode === 'day' : false;
       };
-
-      scope.refreshData = function (fromDate, toDate) {
-        scope.date.startDate = moment(fromDate).format('YYYY-MM-DD');
-        scope.date.endDate = moment(toDate).format('YYYY-MM-DD');
-      }
     }
   };
 }

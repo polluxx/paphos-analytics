@@ -5,7 +5,7 @@
 </ng-messages>
 
 <div class="row" ng-show="loading">
-  <div class="col-xs-12">
+  <div class="col-xs-10">
     <div class="wrapper-preloader">
       <div class="preloader">
         <div class="wrapper">
@@ -46,7 +46,7 @@
         <div class="col-xs-6">
           <label>С даты</label>
           <div class="input-group">
-            <input type="text" class="form-control" datepicker-options="{ defaultDate: '2016-04-28', showWeeks: false }" defaultDate="fromDate"
+            <input type="text" class="form-control" datepicker-options="{ showWeeks: false }" defaultDate="fromDate"
                    uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
                    readonly="readonly" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
             />
@@ -67,12 +67,6 @@
               <button class="btn btn-default border-bottom" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <hr>
-          <button class="btn btn-default" ng-click="refreshData(fromDate, toDate)">Получить значения</button>
         </div>
       </div>
     </div>
