@@ -27,12 +27,14 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
         $scope.pages = resp;
         $scope.total = parseInt(headers('x-total-count'));
         params.total($scope.total);
+        
         return $scope.pages;
       });
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
+
 
   ngTableEventsChannel.onAfterReloadData((evt) => {
     evt.data.$promise.then((resp)=>{

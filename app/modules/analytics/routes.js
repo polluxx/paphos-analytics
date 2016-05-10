@@ -76,6 +76,11 @@ function($stateProvider, $urlRouterProvider) {
     })
     .state('analytics.project.positions', {
       url: '/positions',
+      params: {
+        paginationPage: 1,
+        paginationCount: 100
+      },
+      controller: 'apPagesPositionsCtrl',
       templateUrl: 'app/views/analytics/projects/page-positions.html'
     })
 

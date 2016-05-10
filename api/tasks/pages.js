@@ -3,6 +3,7 @@
 var async = require('async'),
   _ = require('lodash'),
   request = require('request'),
+  moment = require('moment'),
   limiter = require('limiter');
 
 exports['pages.scan'] = function(app, message, callback) {
@@ -45,7 +46,10 @@ exports['pages.scan'] = function(app, message, callback) {
             request({url: 'http://' + project.siteUrl + "/api/posts?perPage=100&fields=category,alias,title,seo&page=" + pager},
               function (err, data, body) {
                 pager++;
-                if (err || data.statusCode !== 200) return next(err || "Error code: " + data.statusCode);
+                if (err || data.statusCode !== 200) {
+                  end = true;
+                  return next(err || "Error code: " + data.statusCode);
+                }
 
                 data = JSON.parse(body);
                 console.log("DATA: " + data.length);
@@ -140,6 +144,8 @@ exports['pages.keywords'] = function(app, message, callback) {
           if (err) {
             return next(err);
           }
+
+          // YANDEX START
           yandex.searchByKeyword(yandexConf, page.word, {count: 100}, function (err, report) {
             if (err) {
               log.error(err);
@@ -154,6 +160,11 @@ exports['pages.keywords'] = function(app, message, callback) {
               if (err) log.error(err);
             });
           });
+          // YANDEX END
+
+          // GOOGLE
+          scanGooglePosition(app, page);
+
         });
       });
 
@@ -221,7 +232,7 @@ exports['pages.scanAllTop'] = function(app, message, callback) {
 };
 
 exports['pages.scanAll'] = function(app, message, callback) {
-  sendTaskToProjects('pages.top', app, callback);
+  sendTaskToProjects('pages.scan', app, callback);
 };
 
 function sendTaskToProjects(task, app, callback) {
@@ -240,4 +251,40 @@ function sendTaskToProjects(task, app, callback) {
       next();
     }]
   }, callback);
+}
+
+function scanGooglePosition(app, keyword) {
+  var log = app.log;
+  // start getting dara from Google Search
+  async.auto({
+    project: next => {
+      app.models.sites.findOne({_id: keyword.siteId}, next);
+    },
+    position: ['project', (next, data) => {
+      console.log(keyword.word);
+      console.log(data.project.siteUrl);
+      app.services.googleSvc.getUrlPosition(data.project.siteUrl, encodeURIComponent(keyword.word),
+        {
+          count: 100,
+          //regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
+        }, next);
+    }],
+    save: ['position', (next, data) => {
+      app.models.keywords.update(
+        {_id: keyword._id},
+        {
+          $addToSet: {
+            positions: {
+              date: moment(new Date()).format("YYYY-MM-DD"),
+              //date: moment(new Date()).subtract(1, 'day').format("YYYY-MM-DD"),
+              position: data.position
+            }
+          }
+        },
+        {upsert: false, multi: false},
+        next);
+    }]
+  }, err => {
+    if(err) log.error(err);
+  });
 }

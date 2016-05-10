@@ -11,7 +11,8 @@ var express = require('express'),
   GoogleService = require('./services/google.js'),
   WebmastersService = require('./services/webmasters.js'),
   AnalyticsService = require('./services/analytics.js'),
-  YandexService = require('./services/yandex.js');
+  YandexService = require('./services/yandex.js'),
+  GoogleSvc = require('./services/googleSvc.js');
 
 var app = {
   log: paphos.log(config),
@@ -45,7 +46,8 @@ app.services = {
   google: googleSevice = new GoogleService(config.get('google.api'), config.get('url')),
   webmasters: new WebmastersService(app, googleSevice),
   analytics: new AnalyticsService(app, googleSevice),
-  yandex: new YandexService(app)
+  yandex: new YandexService(app),
+  googleSvc: new GoogleSvc(app)
 };
 
 exports.app = app;
@@ -97,7 +99,7 @@ exports.start = function (next) {
         app.log.info('Tasks processing disabled, skipping queue subscribing');
         return next();
       }
-      app.services.tasks.start(next);  
+      app.services.tasks.start(next);
     },
     'google': function(next) {
       app.services.google.start(next);
