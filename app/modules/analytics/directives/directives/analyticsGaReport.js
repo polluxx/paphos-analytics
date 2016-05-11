@@ -159,6 +159,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
           return;
         }
 
+
         profileId = scope.site.token.profile_id;
 
         scope.current.queries = [];

@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, NgTableParams, aKeywordModel, $stateParams) {
+function($scope, NgTableParams, aKeywordModel, $stateParams, $filter) {
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
@@ -17,12 +17,20 @@ function($scope, NgTableParams, aKeywordModel, $stateParams) {
         $scope.total = parseInt(headers('x-total-count'));
         params.total($scope.total);
         console.log(resp);
+
         return $scope.pages;
-        
+
       });
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
 
+  $scope.formatDate = function (date) {
+    return date;
+  };
+
+  $scope.show = function (position, first) {
+    return $filter('compare')(position, first);
+  }
 }

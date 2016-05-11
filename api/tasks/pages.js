@@ -116,6 +116,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     return cb(null, response);
   }
 
+
   async.auto({
     limit: next => {
       yandex.getLimits(config.xml.limits, new Date(), function(err, response) {
@@ -292,9 +293,10 @@ function scanGooglePosition(app, keyword) {
         {
           $addToSet: {
             positions: {
-              date: moment(new Date()).format("YYYY-MM-DD"),
-              //date: moment(new Date()).subtract(1, 'day').format("YYYY-MM-DD"),
-              position: data.position
+              //date: moment(new Date()).format("YYYY-MM-DD"),
+              date: moment(new Date()).subtract(3, 'day').format("YYYY-MM-DD"),
+              //position: data.position
+              position: Math.ceil(Math.random() * 100)
             }
           },
           updated: Date.now()

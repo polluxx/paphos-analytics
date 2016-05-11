@@ -27,7 +27,7 @@
         this.authorize = function (container) {
           var self = this;
 
-          if (!self.serviceAuthToken) {
+            if (!self.serviceAuthToken) {
             return self.ga.auth.authorize({
               container: container,
               clientid: clientId,
