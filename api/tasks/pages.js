@@ -124,16 +124,17 @@ exports['pages.keywords'] = function(app, message, callback) {
     },
     pages: ['limit', (next, data) => {
       var limit = parseInt(data.limit);
+      if(!limit) limit = 200;
 
       app.models.keywords.find(
         {
           $or:
           [
-            {update: {$lt: 'new Date("<YYYY-mm-dd>")'}},
+            {update: {$lt: new Date(moment().format("mm/dd/YYYY"))}},
             {update: {$exists: false}}
           ]}, next).limit(limit);
     }],
-    request: ['pages', (next, data) => {
+    request: ['pages', 'limit', (next, data) => {
       if(!data.pages) return next();
 
       limitService = new rateLimiter(data.pages.length, 'hour');
