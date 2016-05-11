@@ -134,8 +134,8 @@ exports['pages.keywords'] = function(app, message, callback) {
             {update: {$exists: false}}
           ]}, next).limit(limit);
     }],
-    request: ['pages', 'limit', (next, data) => {
-      if(!data.pages) return next();
+    yandex: ['pages', 'limit', (next, data) => {
+      if(!data.pages.length || !data.limit) return next();
 
       limitService = new rateLimiter(data.pages.length, 'hour');
 
@@ -162,6 +162,22 @@ exports['pages.keywords'] = function(app, message, callback) {
             });
           });
           // YANDEX END
+
+        });
+      });
+
+      next();
+    }],
+    google: ['pages', (next, data) => {
+      if(!data.pages.length) return next();
+      limitService = new rateLimiter(15, 'minute');
+
+      data.pages.forEach(page => {
+
+        limitService.removeTokens(1, function (err, remainingRequests) {
+          if (err) {
+            return next(err);
+          }
 
           // GOOGLE
           scanGooglePosition(app, page);
