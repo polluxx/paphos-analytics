@@ -130,8 +130,8 @@ exports['pages.keywords'] = function(app, message, callback) {
         {
           $or:
           [
-            {update: {$lt: new Date(moment().format("mm/dd/YYYY"))}},
-            {update: {$exists: false}}
+            {updated: {$lt: new Date(moment().format("mm/dd/YYYY"))}},
+            {updated: {$exists: false}}
           ]}, next).limit(limit);
     }],
     yandex: ['pages', 'limit', (next, data) => {
@@ -296,7 +296,8 @@ function scanGooglePosition(app, keyword) {
               //date: moment(new Date()).subtract(1, 'day').format("YYYY-MM-DD"),
               position: data.position
             }
-          }
+          },
+          updated: Date.now()
         },
         {upsert: false, multi: false},
         next);
