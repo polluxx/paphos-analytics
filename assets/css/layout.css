@@ -8365,3 +8365,11 @@ button.toast-close-button {
 .ng-table-counts button {
   margin-top: 15px;
 }
+
+.color-green {
+  color: green;
+}
+
+.color-red {
+  color: red;
+}

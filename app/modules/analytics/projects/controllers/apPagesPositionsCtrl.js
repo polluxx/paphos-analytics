@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, NgTableParams, aKeywordModel, $stateParams, $filter) {
+function($scope, NgTableParams, aKeywordModel, $stateParams) {
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
@@ -25,12 +25,4 @@ function($scope, NgTableParams, aKeywordModel, $stateParams, $filter) {
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
-
-  $scope.formatDate = function (date) {
-    return date;
-  };
-
-  $scope.show = function (position, first) {
-    return $filter('compare')(position, first);
-  }
 }

@@ -19,14 +19,11 @@
             <td sortable="'word'">{{row.word}}</td>
             <td sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
             <td ng-repeat="key in row.positions | limitTo: 5" sortable="'position'">
-              <div style="float: left;">
+              <div class="pull-left">
                 {{ key.position }}
               </div>
-              <div ng-if="!show(key.position, $first) && !$first">
-                <i class="fa fa-angle-up" style="color: green; float: right;"></i>
-              </div>
-              <div ng-if="show(key.position, $first) && !$first">
-                <i class="fa fa-angle-down" style="color: red; float: right;"></i>
+              <div class="pull-right" ng-hide="$first">
+                <i class="fa" ng-class="(key.position | compare : $first) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'"></i>
               </div>
             </td>
           </tr>
