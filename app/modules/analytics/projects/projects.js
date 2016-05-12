@@ -29,11 +29,7 @@ module.filter("compare", [function() {
 
   return function (value, first) {
     if(value != before) {
-      if (value > before) {
-        compare = false;
-      }  else {
-        compare = true;
-      }
+      compare = value - before;
 
       if(first){
         before = 0;
@@ -41,7 +37,7 @@ module.filter("compare", [function() {
         before = value;
       }
     }
-    
+
     return compare;
   }
 }]);

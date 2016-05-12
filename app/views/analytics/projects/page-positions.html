@@ -23,7 +23,11 @@
                 {{ key.position }}
               </div>
               <div class="pull-right" ng-hide="$first">
-                <i class="fa" ng-class="(key.position | compare : $first) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'"></i>
+                <div class="position-index">
+                  <i class="fa" ng-class="((key.position | compare : $first) < 0) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'">
+                    <span>{{ key.position | compare : $first }}</span>
+                  </i>
+                </div>
               </div>
             </td>
           </tr>
