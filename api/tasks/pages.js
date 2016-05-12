@@ -293,10 +293,8 @@ function scanGooglePosition(app, keyword) {
         {
           $addToSet: {
             positions: {
-              //date: moment(new Date()).format("YYYY-MM-DD"),
-              date: moment(new Date()).subtract(3, 'day').format("YYYY-MM-DD"),
-              //position: data.position
-              position: Math.ceil(Math.random() * 100)
+              date: moment(new Date()).format("YYYY-MM-DD"),
+              position: data.position
             }
           },
           updated: Date.now()
