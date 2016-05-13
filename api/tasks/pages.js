@@ -126,7 +126,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     pages: ['limit', (next, data) => {
       var limit = parseInt(data.limit);
       if(!limit) limit = 200;
-      
+
       app.models.keywords.find(
         {
           $or:
@@ -273,7 +273,7 @@ function sendTaskToProjects(task, app, callback) {
 }
 
 function scanGooglePosition(app, keyword) {
-  var log = app.log;
+  var log = app.log, siteUrl;
   // start getting dara from Google Search
   async.auto({
     project: next => {
@@ -281,11 +281,14 @@ function scanGooglePosition(app, keyword) {
     },
     position: ['project', (next, data) => {
       console.log(keyword.word);
-      console.log(data.project.siteUrl);
-      app.services.googleSvc.getUrlPosition(data.project.siteUrl, encodeURIComponent(keyword.word),
+
+      siteUrl = data.project.siteUrl;
+      siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
+
+      app.services.googleSvc.getUrlPosition(siteUrl, encodeURIComponent(keyword.word),
         {
           count: 100,
-          //regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
+          regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
         }, next);
     }],
     save: ['position', (next, data) => {
