@@ -9,3 +9,4 @@ function() {
     templateUrl: '/app/views/analytics/directives/loading.html'
   };
 }
+

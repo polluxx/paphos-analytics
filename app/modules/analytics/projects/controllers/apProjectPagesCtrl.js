@@ -4,7 +4,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
 
   $scope.refreshPages = (cb) => {
     aPageModel.refresh({_id: item._id},function (resp) {
-      cb(null, resp.message);
+      if(cb) cb(null, resp.message);
     });
   };
 
@@ -32,7 +32,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
         if(!resp.length) $scope.dataMightReload = true;
 
         return $scope.pages;
-      });
+      }).$promise;
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
@@ -48,14 +48,5 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
           $scope.tableParams.reload();
         }, 2000);
     });
-  });
-
-  var total = $scope.tableParams.total();
-  $scope.$watch('total', () => {
-    if($scope.total !== total) {
-      $scope.tableParams.total($scope.total);
-      total = $scope.tableParams.total();
-      $scope.tableParams.reload();
-    }
   });
 }
