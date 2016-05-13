@@ -24,14 +24,14 @@
           <tr ng-repeat="row in $data">
             <td sortable="'word'">{{row.word}}</td>
             <td sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
-            <td ng-repeat="key in row.positions track by $index" sortable="'position'">
+            <td ng-repeat="position in row.positions track by $index" sortable="'position'">
               <div class="pull-left">
                 {{ position }}
               </div>
 
               <div class="pull-right" ng-hide="$first">
-                <div class="position-index" ng-init="compared = ($first || position == '-') ? position : position - row.positions[$index+1])">
-                  <i ng-show="compared !== 0" class="fa" ng-class="(compared <= 0) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'">
+                <div class="position-index" ng-init="compared = (($first || position == '-') ? position : position - row.positions[$index+1])">
+                  <i ng-show="compared !== 0 && compared !== '-'" class="fa" ng-class="(compared <= 0) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'">
                     <span>{{compared}}</span>
                   </i>
                 </div>
