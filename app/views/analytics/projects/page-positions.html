@@ -24,7 +24,7 @@
           <tr ng-repeat="row in $data">
             <td sortable="'word'">{{row.word}}</td>
             <td sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
-            <td ng-repeat="key in row.positions | limitTo: -5" sortable="'position'">
+            <td ng-repeat="key in row.positions track by $index" sortable="'position'">
               <div class="pull-left">
                 {{ key.position }}
               </div>
