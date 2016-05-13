@@ -10,7 +10,7 @@ import adEditProjectModelCtrl from './controllers/adEditProjectModelCtrl.js';
 
 module
   .controller('adDashboardCtrl', adDashboardCtrl)
-  .controller('adEditProjectModelCtrl', adEditProjectModelCtrl)
+  .controller('adEditProjectModelCtrl', adEditProjectModelCtrl) 
 ;
 
 // config
