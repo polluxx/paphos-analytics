@@ -1,10 +1,14 @@
 export default
 /*@ngInject*/
 function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams, $timeout) {
-  $scope.paginationPage = $stateParams.paginationPage;
-  $scope.paginationCount = $stateParams.paginationCount;
-
   $scope.loading = true;
+
+  $scope.current = {
+    date: {
+      from: moment().subtract(5, 'days'),
+      to: moment()
+    }
+  };
 
   $scope.refreshKeys = (cb) => {
     $scope.loading = true;
@@ -20,23 +24,27 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
 
 
   $scope.tableParams = new NgTableParams({
-    page: $scope.paginationPage,
-    count: $scope.paginationCount || $scope.counter
+    page: 1,
+    count: 10
   }, {
     getData: function (params) {
-      return aKeywordModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: project._id}, function (resp, headers) {
-        $scope.loading = false;
-        $scope.counter = params.count();
-        $scope.paginationPage = params.page();
-        $scope.paginationCount = params.count();
-        $scope.pages = resp;
-        $scope.total = parseInt(headers('x-total-count'));
-        params.total($scope.total);
-        console.log(resp);
+      var dateFrom = $scope.current.date.from.format('YYYY-MM-DD'),
+        dateTo = $scope.current.date.to.format('YYYY-MM-DD');
 
+      return aKeywordModel.query({
+        page: parseInt(params.page()),
+        perPage: parseInt(params.count()),
+        siteId: project._id,
+        dateFrom: dateFrom,
+        dateTo: dateTo
+      }, function (resp, headers) {
+        $scope.loading = false;
+        $scope.pages = resp;
+
+        params.total(parseInt(headers('x-total-count')));
         return $scope.pages;
 
-      });
+      }).$promise;
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
