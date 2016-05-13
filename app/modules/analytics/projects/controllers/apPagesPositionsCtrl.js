@@ -1,12 +1,19 @@
 export default
 /*@ngInject*/
-function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams) {
+function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams, $timeout) {
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
+  $scope.loading = true;
+
   $scope.refreshKeys = (cb) => {
+    $scope.loading = true;
     aPageModel.sendTask({subtask: 'pages.keywords'}, function (resp) {
       console.log(resp);
+
+      $timeout(function(){
+        $scope.loading = false;
+      }, 2000);
       if(cb !== undefined) cb(null, resp.message);
     });
   };
@@ -18,6 +25,7 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
   }, {
     getData: function (params) {
       return aKeywordModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: project._id}, function (resp, headers) {
+        $scope.loading = false;
         $scope.counter = params.count();
         $scope.paginationPage = params.page();
         $scope.paginationCount = params.count();

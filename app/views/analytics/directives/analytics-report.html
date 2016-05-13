@@ -4,21 +4,9 @@
   <ng-message when="message">Error with request: {{report.$error.message}}</ng-message>
 </ng-messages>
 
-<div class="row" ng-show="loading">
-  <div class="col-xs-10">
-    <div class="wrapper-preloader">
-      <div class="preloader">
-        <div class="wrapper">
-          <span class="circle1"></span>
-          <span class="circle2"></span>
-          <span class="circle3"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<loading ng-model="loading"></loading>
 
-<div bz-loading-container="loading">
+<div>
 
   <!--<ng-analytics-chart ng-if="current.chart" chart="current.chart"></ng-analytics-chart>-->
   <ng-analytics-report ng-if="current.queries.length" report-data="report.data" queries="current.queries"></ng-analytics-report>
