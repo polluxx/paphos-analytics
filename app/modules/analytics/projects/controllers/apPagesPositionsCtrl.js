@@ -29,7 +29,13 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
   }, {
     getData: function (params) {
       var dateFrom = $scope.current.date.from.format('YYYY-MM-DD'),
-        dateTo = $scope.current.date.to.format('YYYY-MM-DD');
+        dateTo = $scope.current.date.to.format('YYYY-MM-DD'),
+        dates = [];
+
+      for (var date = moment($scope.current.date.from); date.isSameOrBefore($scope.current.date.to); date.add(1, 'day')) {
+        dates.push(date.format('DD.MM.YYYY'))
+      }
+      $scope.dates = dates;
 
       return aKeywordModel.query({
         page: parseInt(params.page()),

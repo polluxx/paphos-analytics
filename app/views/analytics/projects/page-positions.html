@@ -18,7 +18,7 @@
           <tr>
             <td>Фраза</td>
             <td>Частотность</td>
-            <td ng-repeat="elem in $data[0].positions | limitTo: -5">{{elem.date}}</td>
+            <td ng-repeat="date in dates">{{date}}</td>
           </tr>
           </thead>
           <tr ng-repeat="row in $data">
