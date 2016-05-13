@@ -16,10 +16,6 @@ var module = angular.module(appName,
   ]
 );
 
-import MainServiceCtrl from './MainServiceCtrl.js';
-
-module.controller('MainServiceCtrl', MainServiceCtrl);
-
 import routesConfig from './routes.js';
 
 module.config(routesConfig);
