@@ -131,7 +131,7 @@ exports['pages.keywords'] = function(app, message, callback) {
         {
           $or:
           [
-            {updated: {$lt: new Date(moment().format("mm/dd/YYYY"))}},
+            {updated: {$lt: new Date(moment().format("MM/DD/YYYY"))}},
             {updated: {$exists: false}}
           ]}, next).limit(limit);
     }],
@@ -170,6 +170,7 @@ exports['pages.keywords'] = function(app, message, callback) {
       next();
     }],
     google: ['pages', (next, data) => {
+      console.log(data.pages);
       if(!data.pages.length) return next();
       limitService = new rateLimiter(15, 'minute');
 
@@ -272,7 +273,7 @@ function sendTaskToProjects(task, app, callback) {
 }
 
 function scanGooglePosition(app, keyword) {
-  var log = app.log;
+  var log = app.log, siteUrl;
   // start getting dara from Google Search
   async.auto({
     project: next => {
@@ -280,11 +281,14 @@ function scanGooglePosition(app, keyword) {
     },
     position: ['project', (next, data) => {
       console.log(keyword.word);
-      console.log(data.project.siteUrl);
-      app.services.googleSvc.getUrlPosition(data.project.siteUrl, encodeURIComponent(keyword.word),
+
+      siteUrl = data.project.siteUrl;
+      siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
+
+      app.services.googleSvc.getUrlPosition(siteUrl, encodeURIComponent(keyword.word),
         {
           count: 100,
-          //regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
+          regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
         }, next);
     }],
     save: ['position', (next, data) => {
@@ -296,8 +300,8 @@ function scanGooglePosition(app, keyword) {
               date: moment(new Date()).format("YYYY-MM-DD"),
               position: data.position
             }
-          },
-          updated: Date.now()
+          }
+          //updated: Date.now()
         },
         {upsert: false, multi: false},
         next);

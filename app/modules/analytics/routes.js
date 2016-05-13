@@ -81,8 +81,12 @@ function($stateProvider, $urlRouterProvider) {
         paginationCount: 100
       },
       controller: 'apPagesPositionsCtrl',
-      templateUrl: 'app/views/analytics/projects/page-positions.html'
+      templateUrl: 'app/views/analytics/projects/page-positions.html',
+      resolve: {
+        project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
+      }
     })
+    
 
     .state('pages', {
       parent: 'analytics',

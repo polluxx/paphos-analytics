@@ -20,28 +20,23 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   count: $scope.paginationCount || $scope.counter
   }, {
     getData: function (params) {
-      return aPageModel.query({page: params.page(), perPage: params.count(), siteId: item._id}, function (resp, headers) {
+      return aPageModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: item._id}, function (resp, headers) {
         $scope.counter = params.count();
         $scope.paginationPage = params.page();
         $scope.paginationCount = params.count();
         $scope.pages = resp;
         $scope.total = parseInt(headers('x-total-count'));
         params.total($scope.total);
-        
+
+        // check if no results
+        if(!resp.length) $scope.dataMightReload = true;
+
         return $scope.pages;
       });
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
-
-
-  ngTableEventsChannel.onAfterReloadData((evt) => {
-    evt.data.$promise.then((resp)=>{
-      console.log(resp);
-      if(!resp.length) $scope.dataMightReload = true;
-    });
-  }, $scope);
 
   $scope.$watch('dataMightReload', result => {
     if(!result) return;

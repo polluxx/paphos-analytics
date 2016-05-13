@@ -17,15 +17,21 @@ GoogleSvc.prototype.getSitesByKeyword = function (keyword, options, next) {
     if (error) { return next(error); }
 
     var urls = [],
-      regex = options.regex || /url\?q=(\S+)&sa=/,
+      pushUrl,
+      regex =  /url\?q=(\S+)&sa=/,
       $ = cheerio.load(body);
 
     $('h3.r a').each(function() {
       var url = $(this).attr("href").match(regex);
-      console.log($(this).attr("href"));
-      console.log(url);
+
       if(url) {
-        urls.push(url[1]);
+        pushUrl = url[1];
+        if(options.regex !== undefined) {
+          var domain = url[1].match(options.regex);
+          pushUrl = domain !== undefined ? domain[0] : url[1];
+        }
+        console.log(pushUrl);
+        urls.push(pushUrl);
       }
     });
 

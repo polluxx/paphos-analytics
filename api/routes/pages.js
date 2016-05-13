@@ -31,7 +31,6 @@ router.get('/:id/keywords', function (req, res, next) {
       req.app.models.pages.findById(req.params.id, next);
     },
     'keywords': ['page', (next, result) => {
-      console.log(result.page);
       if(!result.page.keywords) return next('No keywords for page.');
 
       req.app.models.keywords.find({word: {$in: result.page.keywords}}, next);
@@ -50,8 +49,8 @@ router.get('/task', function(req, res, next) {
   if(!req.query.subtask) {
     return next('No subtask!');
   }
-  req.app.services.tasks.publish('pages.scanAll', { subtask: req.query.subtask });
-  res.json({message: 'done'});
+  req.app.services.tasks.publish(req.query.subtask, {});
+  res.json({message: 'done task: ' + req.query.subtask});
 });
 
 
