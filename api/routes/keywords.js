@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
       keywords: function(next) {
         var opts = {};
         if (req.query['perPage']) {
-          opts.skip = req.query['page'] ? (req.query['page'] - 1) * req.query['perPage'] : 0;
+          opts.skip = req.query['page'] ? (req.query['page'] - 1) * req.query['perPage'] : "-";
           opts.limit = req.query['perPage'];
         }
         req.app.models.keywords.find({siteId: params.siteId}, {}, opts, next);
