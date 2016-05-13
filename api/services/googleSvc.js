@@ -28,7 +28,7 @@ GoogleSvc.prototype.getSitesByKeyword = function (keyword, options, next) {
         pushUrl = url[1];
         if(options.regex !== undefined) {
           var domain = url[1].match(options.regex);
-          pushUrl = domain !== undefined ? domain[0] : url[1];
+          pushUrl = domain ? domain[0] : url[1];
         }
         urls.push(pushUrl);
       }
