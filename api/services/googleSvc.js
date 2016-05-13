@@ -17,6 +17,7 @@ GoogleSvc.prototype.getSitesByKeyword = function (keyword, options, next) {
     if (error) { return next(error); }
 
     var urls = [],
+      pushUrl,
       regex =  /url\?q=(\S+)&sa=/,
       $ = cheerio.load(body);
 
@@ -24,7 +25,11 @@ GoogleSvc.prototype.getSitesByKeyword = function (keyword, options, next) {
       var url = $(this).attr("href").match(regex);
 
       if(url) {
-        var pushUrl = (options.regex !== undefined) ? url[1].match(options.regex)[0] : url[1];
+        pushUrl = url[1];
+        if(options.regex !== undefined) {
+          var domain = url[1].match(options.regex);
+          pushUrl = domain !== undefined ? domain[0] : url[1];
+        }
         console.log(pushUrl);
         urls.push(pushUrl);
       }
