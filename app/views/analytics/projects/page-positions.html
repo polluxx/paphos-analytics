@@ -30,7 +30,7 @@
               </div>
 
               <div class="pull-right" ng-hide="$first">
-                <div class="position-index" ng-init="compared = (!$first ? position - row.positions[$index+1] : position)">
+                <div class="position-index" ng-init="compared = ($first || position == '-') ? position : position - row.positions[$index+1])">
                   <i ng-show="compared !== 0" class="fa" ng-class="(compared <= 0) ? 'fa-angle-down color-red' : 'fa-angle-up color-green'">
                     <span>{{compared}}</span>
                   </i>
