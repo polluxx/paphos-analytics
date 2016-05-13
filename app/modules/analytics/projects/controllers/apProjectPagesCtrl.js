@@ -27,21 +27,16 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
         $scope.pages = resp;
         $scope.total = parseInt(headers('x-total-count'));
         params.total($scope.total);
-        
+
+        // check if no results
+        if(!resp.length) $scope.dataMightReload = true;
+
         return $scope.pages;
       });
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
   });
-
-
-  ngTableEventsChannel.onAfterReloadData((evt) => {
-    evt.data.$promise.then((resp)=>{
-      console.log(resp);
-      if(!resp.length) $scope.dataMightReload = true;
-    });
-  }, $scope);
 
   $scope.$watch('dataMightReload', result => {
     if(!result) return;

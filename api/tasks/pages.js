@@ -126,12 +126,12 @@ exports['pages.keywords'] = function(app, message, callback) {
     pages: ['limit', (next, data) => {
       var limit = parseInt(data.limit);
       if(!limit) limit = 200;
-
+      
       app.models.keywords.find(
         {
           $or:
           [
-            {updated: {$lt: new Date(moment().format("mm/dd/YYYY"))}},
+            {updated: {$lt: new Date(moment().format("MM/DD/YYYY"))}},
             {updated: {$exists: false}}
           ]}, next).limit(limit);
     }],
@@ -170,6 +170,7 @@ exports['pages.keywords'] = function(app, message, callback) {
       next();
     }],
     google: ['pages', (next, data) => {
+      console.log(data.pages);
       if(!data.pages.length) return next();
       limitService = new rateLimiter(15, 'minute');
 
@@ -296,8 +297,8 @@ function scanGooglePosition(app, keyword) {
               date: moment(new Date()).format("YYYY-MM-DD"),
               position: data.position
             }
-          },
-          updated: Date.now()
+          }
+          //updated: Date.now()
         },
         {upsert: false, multi: false},
         next);
