@@ -1,4 +1,3 @@
-import filters from './filters/filters';
 import models from './models/models';
 import dashboard from './dashboard/dashboard';
 import projects from './projects/projects';
@@ -11,7 +10,6 @@ var appName = 'module.analytics';
 
 var module = angular.module(appName, [
   'chart.js',
-  filters,
   models,
   dashboard,
   projects,
