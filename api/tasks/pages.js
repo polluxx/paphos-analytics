@@ -301,8 +301,8 @@ function scanGooglePosition(app, keyword) {
               date: moment(new Date()).format("YYYY-MM-DD"),
               position: data.position
             }
-          }
-          //updated: Date.now()
+          },
+          updated: Date.now()
         },
         {upsert: false, multi: false},
         next);

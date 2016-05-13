@@ -6,7 +6,7 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
   $scope.current = {
     date: {
       from: moment().subtract(5, 'days'),
-      to: moment().add(1, 'days')
+      to: moment()
     }
   };
 
@@ -46,7 +46,7 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
       }, function (resp, headers) {
         $scope.loading = false;
         $scope.pages = resp;
-        
+
         params.total(parseInt(headers('x-total-count')));
         return $scope.pages;
 
