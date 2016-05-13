@@ -292,6 +292,7 @@ function scanGooglePosition(app, keyword) {
         }, next);
     }],
     save: ['position', (next, data) => {
+      console.log(data.position);
       app.models.keywords.update(
         {_id: keyword._id},
         {

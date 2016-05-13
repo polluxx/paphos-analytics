@@ -23,23 +23,4 @@ module.config(function($stateProvider) {
 
 });
 
-module.filter("compare", [function() {
-  var before = 0;
-  var compare = '';
-
-  return function (value, first) {
-    if(value != before) {
-      compare = value - before;
-
-      if(first){
-        before = 0;
-      } else {
-        before = value;
-      }
-    }
-
-    return compare;
-  }
-}]);
-
 export default appName;

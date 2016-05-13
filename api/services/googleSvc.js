@@ -30,7 +30,6 @@ GoogleSvc.prototype.getSitesByKeyword = function (keyword, options, next) {
           var domain = url[1].match(options.regex);
           pushUrl = domain !== undefined ? domain[0] : url[1];
         }
-        console.log(pushUrl);
         urls.push(pushUrl);
       }
     });
