@@ -8,7 +8,7 @@
             <div class="form-group">
               <div class="input-group" style="margin: 15px;">
                 <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                <input type="text" class="form-control" placeholder="Поиск..." ng-model="search.title">
+                <input type="text" class="form-control" placeholder="Поиск..." ng-model="search">
               </div>
             </div>
           </form>
@@ -26,8 +26,8 @@
 
   <div class="col-md-12">
     <table ng-table="tableParams" class="table table-condensed table-bordered table-striped">
-      <tr ng-repeat="row in $data | filter:search">
-        <td data-title="'Title'" filter="{title: searching}">
+      <tr ng-repeat="row in $data">
+        <td data-title="'Title'" filter="{title: 'text'}">
           <a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id, paginationCount: counter, paginationPage: paginationPage })">{{row.title}}</a>
         </td>
         <td data-title="'Url'" filter="{title: 'text'}">
