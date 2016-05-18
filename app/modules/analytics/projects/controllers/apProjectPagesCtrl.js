@@ -8,6 +8,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     });
   };
 
+  $scope.search = '';
+
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
