@@ -13,6 +13,7 @@
       "get": "*",
       "get?_id": "*",
       "get?siteId": "*",
+      "get?title": "*",
       "get?sorting": "*",
       "put?_id": "*",
       "post": "*",

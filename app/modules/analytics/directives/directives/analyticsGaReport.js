@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
+function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateService) {
   var number = 0;
   Chart.defaults.global.responsive = true;
   var defaultLineOptions = {
@@ -77,8 +77,15 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         return ctx;
       }
 
-      scope.date.startDate = moment(scope.date.startDate).format('YYYY-MM-DD');
-      scope.date.endDate = moment(scope.date.endDate).format('YYYY-MM-DD');
+      scope.date.startDate = dateService.start;
+      scope.date.endDate = dateService.end;
+
+      scope.$on('daterange', function(event, dateStart, dateEnd) {
+        scope.date.startDate = dateStart;
+        scope.date.endDate = dateEnd;
+        scope.$apply();
+      });
+
       scope.seriesColours = {};
 
       var showReport = () => {
@@ -86,7 +93,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         if (!report || !profileId) {
           return;
         }
-
+        
         scope.table = {
           headers: [],
           rows: [],
@@ -117,8 +124,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             query: {
               metrics: report.metrics,
               dimensions: report.dimensions,
-              'start-date': scope.date.startDate,
-              'end-date': scope.date.endDate,
+              'start-date': moment(scope.date.startDate).format('YYYY-MM-DD'),
+              'end-date': moment(scope.date.endDate).format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
               'filters': report.filters,
               'max-results': report.maxResults || 1000,
@@ -136,8 +143,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             query: {
               metrics: report.metrics,
               dimensions: report.dimensions,
-              'start-date': scope.date.startDate,
-              'end-date': scope.date.endDate,
+              'start-date': moment(scope.date.startDate).format('YYYY-MM-DD'),
+              'end-date': moment(scope.date.endDate).format('YYYY-MM-DD'),
               ids: 'ga:' + profileId,
               'filters': report.filters,
               'max-results': report.maxResults || 1000,
@@ -160,7 +167,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         }
 
         profileId = scope.site.token.profile_id;
-
         scope.current.queries = [];
         scope.current.chart = null;
         showReport();

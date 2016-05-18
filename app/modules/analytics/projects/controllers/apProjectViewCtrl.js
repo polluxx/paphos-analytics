@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams) {
+function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, dateService) {
   console.log(item);
   var profilesId = !item.analytics ? null : item.analytics.profileId;
 
@@ -18,8 +18,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   $scope.current = {
     site: item.siteUrl,
     date: {
-      startDate: moment().subtract(6, 'day'),
-      endDate: moment()
+      startDate: dateService.start,
+      endDate: dateService.end
     }
   };
 
@@ -28,7 +28,6 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     $scope.query.$error= {code: 404, message:"Нет токена авторизации. Авторизируйтесь в сервисе GA."};
     return;
   }
-
 
   $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
     if (isReady) {
