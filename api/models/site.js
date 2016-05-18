@@ -8,6 +8,7 @@ var schema = new mongoose.Schema({
   isActive: Boolean,
   services: {
     analytics: Boolean,
+    yandex: Boolean,
     webmaster: Boolean
   },
 
@@ -17,6 +18,11 @@ var schema = new mongoose.Schema({
     token_type: String,
     id_token: String,
     expiry_date: Number
+  },
+
+  yandexTokens: {
+    token: String,
+    expires: Date
   },
 
   analytics: {

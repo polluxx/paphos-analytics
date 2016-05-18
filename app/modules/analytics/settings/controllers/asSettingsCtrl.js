@@ -18,6 +18,10 @@ export default
       aAuthModel.signIn();
     };
 
+    $scope.yandexSignIn = () => {
+      aAuthModel.yandexSignIn();
+    };
+
     $scope.updateSite = (site) => {
       aSiteModel.updateSite({ _id: site._id }, site, res => {
 

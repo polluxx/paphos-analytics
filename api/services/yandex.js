@@ -5,7 +5,8 @@ var async = require('async'),
   cheerio = require('cheerio'),
   yandex = require('yandex-search'),
   xml2js = require('xml2js'),
-  _ = require('lodash');
+  _ = require('lodash'),
+  YandexDirect = require('yandex-direct');
 
 function YandexSvc(app) {
   this.app = app;

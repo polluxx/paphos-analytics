@@ -32,9 +32,11 @@
     "rollup-plugin-node-resolve": "^1.5.0",
     "ssh2": "^0.4.14",
     "stompit": "^0.22.0",
+    "uuid": "^2.0.2",
     "watchify": "^3.7.0",
     "xml2js": "^0.4.16",
     "xml2json": "^0.9.0",
+    "yandex-direct": "^0.1.1",
     "yandex-search": "^1.0.0"
   },
   "devDependencies": {

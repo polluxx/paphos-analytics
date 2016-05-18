@@ -25,8 +25,16 @@
   "yandex": {
     "updates": "http://api.promosite.ru/public/all.xml",
     "xml": {
+      "wordstat": "https://wordstat.yandex.ua/#!/?user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda&words=",
       "search": "https://yandex.ru/search/xml?user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda",
       "limits": "https://yandex.ru/search/xml?action=limits-info&user=esvit&key=03.9573926:0f453a40cd2d029a3143334941a90fda"
+    },
+    "api": {
+      "redirectUrl": "/api/auth/yandex/callback",
+      "clientId": "0ef7db9c9c614dae92befc6b6004fd34",
+      "secret": "3dfb05844015407caa621f488045066a",
+
+      "auth": "https://oauth.yandex.com/authorize"
     }
   }
 }

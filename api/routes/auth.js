@@ -11,6 +11,12 @@ router.get('/google', function (req, res, next) {
   });
 });
 
+router.get('/yandex', function (req, res, next) {
+  req.app.services.yandexWds.getAuthCode(function(err, url) {
+    res.json({ url: url });
+  });
+});
+
 router.get('/google/callback', function (req, res, next) {
   console.log(req.query);
   async.auto({
@@ -29,6 +35,20 @@ router.get('/google/callback', function (req, res, next) {
   });
 });
 
+router.get('/yandex/callback', function (req, res, next) {
+  console.log(req.query);
+  async.auto({
+    'tokens': function(next) {
+      req.app.services.yandexWds.getToken(req.query.code, next);
+    },
+    'analytics': ['tokens', function(next, data) {
+      req.app.services.yandexWds.syncAccount(data.tokens, next);
+    }]
+  }, function(err) {
+    if (err) { return next(err); }
+    res.send('<script>window.close()</script>')
+  });
+});
 
 
 module.exports = router;

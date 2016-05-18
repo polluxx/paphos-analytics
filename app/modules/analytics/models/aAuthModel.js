@@ -9,7 +9,8 @@ function aAuthModel($resource, ANALYTICS_API, SatellizerPopup, $window) {
     'create': {method: 'POST'},
     'update': {method: 'PATCH'},
 
-    'authGoogle': {method: 'GET', params: { method: 'google' }}
+    'authGoogle': {method: 'GET', params: { method: 'google' }},
+    'authYandex': {method: 'GET', params: { method: 'yandex' }}
   });
 
   resource.signIn = (callback) => {
@@ -25,6 +26,22 @@ function aAuthModel($resource, ANALYTICS_API, SatellizerPopup, $window) {
       .catch(function(err) {
         console.log(err);
       });
+    });
+  };
+
+  resource.yandexSignIn = (callback) => {
+    callback = callback || angular.noop;
+
+    resource.authYandex(res => {
+
+      var openPopup = SatellizerPopup.open(res.url, 'Yandex Auth', { width: 452, height: 633 }, $window.location.origin).pollPopup();
+      console.log(openPopup);
+      openPopup.then(function(token) {
+        callback(token);
+      })
+        .catch(function(err) {
+          console.log(err);
+        });
     });
   };
 

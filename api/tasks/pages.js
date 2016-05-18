@@ -94,39 +94,32 @@ exports['pages.keywords'] = function(app, message, callback) {
   var log = app.log,
     yandex = app.services.yandex,
     config = app.config.get('yandex'),
-    yandexConf = {yandexXml: config.xml.search},
+    yandexXmlUrl= config.xml.wordstat,
     group, updateFields, searchCondition,
     rateLimiter = limiter.RateLimiter,
     limitService;
 
   var limitChance = 1;
-  function yandexLimitResponse(err, response, cb) {
-    log.info("Get limit from yandex: attempt - "+limitChance);
-    if(err) {
-      if(limitChance >=3) {
-        log.info('More than 3 attempts failed when getting xml limits!');
-        return cb();
-      }
-      limitChance++;
-      return yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
-        return yandexLimitResponse(err, response, cb);
-      });
-    }
-
-    return cb(null, response);
-  }
+  // function yandexLimitResponse(err, response, cb) {
+  //   log.info("Get limit from yandex: attempt - "+limitChance);
+  //   if(err) {
+  //     if(limitChance >=3) {
+  //       log.info('More than 3 attempts failed when getting xml limits!');
+  //       return cb();
+  //     }
+  //     limitChance++;
+  //     return yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
+  //       return yandexLimitResponse(err, response, cb);
+  //     });
+  //   }
+  //
+  //   return cb(null, response);
+  // }
 
 
   async.auto({
-    limit: next => {
-      yandex.getLimits(config.xml.limits, new Date(), function(err, response) {
-        yandexLimitResponse(err, response, next);
-      });
-    },
-    pages: ['limit', (next, data) => {
-      var limit = parseInt(data.limit);
-      if(!limit) limit = 200;
-
+    pages: (next) => {
+      var limit = 200;
       app.models.keywords.find(
         {
           $or:
@@ -134,61 +127,34 @@ exports['pages.keywords'] = function(app, message, callback) {
             {updated: {$lt: new Date(moment().format("MM/DD/YYYY"))}},
             {updated: {$exists: false}}
           ]}, next).limit(limit);
-    }],
-    yandex: ['pages', 'limit', (next, data) => {
-      if(!data.pages.length || !data.limit) return next();
-
-      limitService = new rateLimiter(data.pages.length, 'hour');
-
-      data.pages.forEach(page => {
-
-        limitService.removeTokens(1, function (err, remainingRequests) {
-          if (err) {
-            return next(err);
-          }
-
-          // YANDEX START
-          yandex.searchByKeyword(yandexConf, page.word, {count: 100}, function (err, report) {
-            if (err) {
-              log.error(err);
-              return;
-            }
-
-            group = _.find(report.grouping[0].found, {'$': {priority: 'phrase'}});
-            searchCondition = {word: page.word};
-            updateFields = {frequency: parseInt(group["_"]), updated: Date.now()};
-
-            app.models.keywords.update(searchCondition, updateFields, {upsert: false, multi: false}, function (err) {
-              if (err) log.error(err);
-            });
-          });
-          // YANDEX END
-
-        });
-      });
-
-      next();
-    }],
-    google: ['pages', (next, data) => {
-      console.log(data.pages);
+    },
+    yandex: ['pages', (next, data) => {
       if(!data.pages.length) return next();
-      limitService = new rateLimiter(15, 'minute');
 
-      data.pages.forEach(page => {
-
-        limitService.removeTokens(1, function (err, remainingRequests) {
-          if (err) {
-            return next(err);
-          }
-
-          // GOOGLE
-          scanGooglePosition(app, page);
-
-        });
-      });
+      startYandexReport(app, data.pages.map(page => page.word));
 
       next();
     }]
+    // google: ['pages', (next, data) => {
+    //   console.log(data.pages);
+    //   if(!data.pages.length) return next();
+    //   limitService = new rateLimiter(10, 'minute');
+    //
+    //   data.pages.forEach(page => {
+    //
+    //     limitService.removeTokens(1, function (err, remainingRequests) {
+    //       if (err) {
+    //         return next(err);
+    //       }
+    //
+    //       // GOOGLE
+    //       scanGooglePosition(app, page);
+    //
+    //     });
+    //   });
+    //
+    //   next();
+    // }]
   }, callback);
 };
 
@@ -309,5 +275,43 @@ function scanGooglePosition(app, keyword) {
     }]
   }, err => {
     if(err) log.error(err);
+  });
+}
+
+function startYandexReport(app, keywords) {
+  var rateLimiter = limiter.RateLimiter,
+  limitService = new rateLimiter(3, 'minute');
+
+  async.auto({
+    sitesTokens: next => {
+      app.models.sites.find({}, 'yandexTokens', next);
+    },
+    api: ['sitesTokens', (next, data) => {
+      var tokenObj = data.sitesTokens[0].yandexTokens;
+      app.services.yandexWds.init(tokenObj.token, next);
+    }],
+    createReport: ['api', (next, data) => {
+      app.services.yandexWds.createWordstatReport(keywords, data.api, next);
+    }],
+    checkReport: ['createReport', (next, data) => {
+      console.log(data);
+      // limitService.removeTokens(1, function (err, remainingRequests) {
+      //   app.services.yandexWds.listWordstatReports(data.data, function(error, response) {
+      //     if(error) return next(error);
+      //
+      //     console.log(response);
+      //     next()
+      //   });
+      // });
+      next();
+    }],
+    report: ['checkReport', (next, data) => {
+      next();
+    }],
+    deleteReport: ['report', (next, data) => {
+      next();
+    }]
+  }, error => {
+    if(error) app.log.error("Error on yandex report:", error);
   });
 }

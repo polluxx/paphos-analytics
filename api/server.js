@@ -12,6 +12,7 @@ var express = require('express'),
   WebmastersService = require('./services/webmasters.js'),
   AnalyticsService = require('./services/analytics.js'),
   YandexService = require('./services/yandex.js'),
+  YandexWds = require('./services/yandexWds.js'),
   GoogleSvc = require('./services/googleSvc.js');
 
 var app = {
@@ -47,6 +48,7 @@ app.services = {
   webmasters: new WebmastersService(app, googleSevice),
   analytics: new AnalyticsService(app, googleSevice),
   yandex: new YandexService(app),
+  yandexWds: new YandexWds(app),
   googleSvc: new GoogleSvc(app)
 };
 
