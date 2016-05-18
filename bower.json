@@ -27,7 +27,7 @@
     "bootstrap": "4",
     "angular": "~1.5.1",
     "angular-ui-router": "~0.2.15",
-    "satellizer": "~0.13.1",
+    "satellizer": "*",
     "lodash": "~3.10.1",
     "ngAnalytics": "nganalytics#~1.1.4",
     "angular-permission": "~1.1.1",

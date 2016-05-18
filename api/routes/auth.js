@@ -18,7 +18,6 @@ router.get('/yandex', function (req, res, next) {
 });
 
 router.get('/google/callback', function (req, res, next) {
-  console.log(req.query);
   async.auto({
     'tokens': function(next) {
       req.app.services.google.getToken(req.query.code, next);
@@ -28,15 +27,27 @@ router.get('/google/callback', function (req, res, next) {
     }],
     'analytics': ['tokens', 'webmasters', function(next, data) {
       req.app.services.analytics.syncAccount(data.tokens, next);
+    }],
+    'saveTempSites': ['analytics', function(next, data) {
+      if(!data.analytics || !data.analytics.saveTokens) return next();
+
+      var updateParams = {upsert: true, multi: false}, insertData;
+      data.analytics.saveTokens.forEach(function(site) {
+        insertData = {siteUrl: site.siteUrl, token: site.token};
+        req.app.models.tempSites.update({siteUrl: site.siteUrl}, insertData, updateParams, function (err) {
+          if(err) req.app.log.error(err);
+        });
+      });
+      next();
     }]
   }, function(err) {
     if (err) { return next(err); }
-    res.send('<script>window.close()</script>')
+
+    res.send('<script>window.close();</script>');
   });
 });
 
 router.get('/yandex/callback', function (req, res, next) {
-  console.log(req.query);
   async.auto({
     'tokens': function(next) {
       req.app.services.yandexWds.getToken(req.query.code, next);

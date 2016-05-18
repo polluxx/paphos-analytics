@@ -10,6 +10,7 @@ module.constant('ANALYTICS_API', '{{API_URL}}');
 // models
 import aAuthModel from './aAuthModel.js';
 import aSiteModel from './aSiteModel.js';
+import aTempSiteModel from './aTempSiteModel.js';
 import aPageModel from './aPageModel.js';
 import aVisitModel from './aVisitModel.js';
 import aExperimentModel from './aExperimentModel.js';
@@ -20,6 +21,7 @@ module
   .factory('aAuthModel', aAuthModel)
   .factory('aPageModel', aPageModel)
   .factory('aSiteModel', aSiteModel)
+  .factory('aTempSiteModel', aTempSiteModel)
   .factory('aVisitModel', aVisitModel)
   .factory('aExperimentModel', aExperimentModel)
   .factory('aExperimentUrlModel', aExperimentUrlModel)

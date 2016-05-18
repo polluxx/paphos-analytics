@@ -35,9 +35,6 @@ function($stateProvider, $urlRouterProvider) {
           windowClass: 'modal-right',
           animation: true,
           templateUrl: 'app/views/analytics/dashboard/modal-project.html',
-          resolve: {
-            item: function(aSiteModel) { return new aSiteModel() }
-          },
           controller: 'adEditProjectModelCtrl'
         }).result.finally(() => $state.go('^', {}, { reload: true }));
       }

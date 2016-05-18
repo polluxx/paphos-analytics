@@ -20,6 +20,7 @@ var app = {
   config: config,
   models: {
     sites: require('./models/site.js'),
+    tempSites: require('./models/tempSite.js'),
     pages: require('./models/page.js'),
     keywords: require('./models/keyword.js'),
     queries: require('./models/query.js'),

@@ -47,6 +47,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
       app.models.sites.find({ siteUrl: { $in: urls } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
+      var tokenSites = [];
       async.each(data.analyticSites, function(site, next) {
         site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
         var dbItem = _.find(data.dbSites, { siteUrl: site.websiteUrl });
@@ -54,6 +55,8 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
         if (!dbItem || !site.profiles.length) {
           return next();
         }
+
+        tokenSites.push({siteUrl: dbItem.siteUrl, token: tokens.access_token});
         dbItem.services.analytics = true;
         dbItem.tokens = tokens;
         dbItem.analytics = {
@@ -61,7 +64,11 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
           profileId: site.profiles[0].id
         };
         dbItem.save(next);
-      }, next);
+      }, function (err, data) {
+        if(err) return next(err);
+        
+        next(null, tokenSites);
+      });
     }]
   }, next);
 };

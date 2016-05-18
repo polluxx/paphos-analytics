@@ -13,11 +13,6 @@ export default
 
     $scope.user = {};
 
-
-    $scope.signIn = () => {
-      aAuthModel.signIn();
-    };
-
     $scope.yandexSignIn = () => {
       aAuthModel.yandexSignIn();
     };
