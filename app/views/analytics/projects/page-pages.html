@@ -14,6 +14,9 @@
         <td data-title="'Title'" filter="{title: 'text'}">
           <a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id, paginationCount: counter, paginationPage: paginationPage })">{{row.title}}</a>
         </td>
+        <td data-title="'Url'" filter="{title: 'text'}">
+          <a href="#" ui-sref="pages({ projectId: item._id, pageId: row._id, paginationCount: counter, paginationPage: paginationPage })">{{row.url}}</a>
+        </td>
       </tr>
     </table>
   </div>

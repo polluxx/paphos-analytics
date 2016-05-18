@@ -1,13 +1,40 @@
 <div class="page-header">
-
-  <h1>
-    Cтраница "{{item.title}}"
-  </h1>
-
-  <div class="page-actions">
-    <a href="" class="btn btn-primary" ui-sref="analytics.project.pages({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })">Назад</a>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="row">
+        <div class="col-xs-9">
+          <h1>
+            Cтраница "{{item.title}}"
+          </h1>
+        </div>
+        <div class="col-xs-3">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="input-group" style="margin-top: 10px;">
+                <input daterange placeholder="Выберите дату" class="form-control" type="text" />
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="page-actions">
+        <a href="" class="btn btn-primary" ui-sref="analytics.project.pages({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })">Назад</a>
+      </div>
+    </div>
   </div>
 </div>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.info({ projectId: project._id })" ui-sref-active="active">Общая информация</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.pages({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })" ui-sref-active="active">Статистика страниц</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.top({ projectId: project._id })" ui-sref-active="active">Топ страниц</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.positions({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })" ui-sref-active="active">Позиции</a></li>
+</ul>
 
 <div class="tab-content" ui-view>
   <div date="current.date" site="project" analytics-ga-report="query"></div>

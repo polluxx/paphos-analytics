@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, aPageModel, NgTableParams, $stateParams) {
+function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateService) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -16,8 +16,8 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams) {
   $scope.current = {
     site: $scope.item.url,
     date: {
-      startDate: moment().subtract(6, 'day'),
-      endDate: moment()
+      startDate: dateService.start,
+      endDate: dateService.end
     }
   };
 

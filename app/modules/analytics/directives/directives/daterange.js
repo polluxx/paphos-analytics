@@ -1,27 +1,26 @@
 export default
 /*@ngInject*/
-function() {
+function($rootScope, $stateParams, dateService) {
   return {
     restrict: 'EA',
     scope: {
       daterange: '='
     },
     link: function (scope, element, attrs) {
-      scope.$watch('daterange', function () {
-        element.data('daterangepicker').setStartDate(moment(scope.daterange, 'YYYY-MM-DD').format('DD/MM/YYYY'));
-      });
-
+      dateService.start = dateService.start ||  $stateParams.startDate || moment().subtract(6, 'days').format('YYYY-MM-DD');
+      dateService.end = dateService.end || $stateParams.endDate || moment().format('YYYY-MM-DD');
+      $stateParams.startDate = dateService.start;
       element.daterangepicker({
         locale: {
           format: 'DD/MM/YYYY'
         },
-        "startDate": scope.daterange,
-        "autoApply": true,
-        "singleDatePicker": true
-      }, function (date) {
-
-        scope.daterange = date.format('YYYY-MM-DD');
-        scope.$apply();
+        "startDate": moment(dateService.start, 'YYYY-MM-DD').format('DD/MM/YYYY'),
+        "endDate": moment(dateService.end, 'YYYY-MM-DD').format('DD/MM/YYYY'),
+        "autoApply": true
+      }, function (start, end) {
+        dateService.start = moment(start, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        dateService.end = moment(end, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        $rootScope.$broadcast('daterange', dateService.start, dateService.end);
       });
     }
   };
