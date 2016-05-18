@@ -154,11 +154,10 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       };
 
       var profileId;
-      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate', 'fromDate', 'toDate'], () => {
+      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate'], () => {
         if (!scope.site) {
           return;
         }
-
 
         profileId = scope.site.token.profile_id;
 
@@ -283,18 +282,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
       // listen to chart create event and get colors
       scope.$on('create', function(e, chart) {
         resetSeries(chart);
-        verifyDate(scope.chart.labels);
       });
-      
-      function verifyDate(date) {
-        if (moment(scope.fromDate).format('DD/MM/YYYY') != date[0] && moment(scope.toDate).format('DD/MM/YYYY') != date[date.length - 1]) {
-          scope.fromDate = date[0];
-          scope.toDate = date[date.length - 1];
-        } else if(scope.fromDate == undefined) {
-          scope.fromDate = moment(date[0]).format('DD/MM/YYYY');
-          scope.toDate = moment(date[date.length - 1]).format('DD/MM/YYYY');
-        }
-      }
 
       function resetSeries(chart) {
         if(chart !== undefined) {
@@ -302,7 +290,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
             scope.seriesColours[dataset.label] = dataset.strokeColor;
           });
         }
-        
+
         scope.chart.series.forEach(series => {
 
           scope.chartLines[series] = {
@@ -359,7 +347,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
 
         scope.chart.data = scope.dataChart.filter(returnIntersection);
         scope.chart.series = scope.seriesChart.filter(returnIntersection);
-
         function returnIntersection(item, index) { return ~intersect.indexOf(index); }
       };
 
@@ -367,29 +354,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q) {
         scope.report.$error = gaReport.error;
         toaster.pop('error', gaReport.error.message);
       });
-
-      scope.popupTo = {
-        opened: false
-      };
-
-      scope.popupFrom = {
-        opened: false
-      };
-
-      scope.openFrom = function() {
-        scope.popupFrom.opened = true;
-      };
-
-      scope.openTo = function() {
-        scope.popupTo.opened = true;
-      };
-
-      scope.disabled = function(date, mode, fromDate) {
-        return (date.getMonth() == moment(fromDate).month()) ?
-          (mode === 'day' && (date.getDate() < moment(fromDate).date())) :
-          (date.getMonth() < moment(fromDate).month()) ?
-          mode === 'day' : false;
-      };
     }
   };
 }

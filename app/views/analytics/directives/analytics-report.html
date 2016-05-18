@@ -28,35 +28,14 @@
         </li>
       </ul>
     </div>
+  </div>
 
-    <div class="col-xs-10" ng-show="!loading">
-      <div class="datepicker">
-        <div class="col-xs-6">
-          <label>С даты</label>
-          <div class="input-group">
-            <input type="text" class="form-control" datepicker-options="{ showWeeks: false }" defaultDate="fromDate"
-                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="fromDate" is-open="popupFrom.opened"
-                   readonly="readonly" current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
-            />
-            <div class="input-group-btn">
-              <button class="btn btn-default border-bottom" ng-click="openFrom()"><i class="fa fa-calendar"></i></button>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-6">
-          <label>По дату</label>
-          <div class="input-group">
-            <input type="text" class="form-control" datepicker-options="{ showWeeks: false }"
-                   uib-datepicker-popup="MM/dd/yyyy" ng-required="true" ng-model="toDate"
-                   date-disabled="disabled(date, mode, fromDate)" is-open="popupTo.opened" readonly="readonly"
-                   current-text="Сегодня" clear-text="Очистить" close-text="Закрыть"
-            />
-            <div class="input-group-btn">
-              <button class="btn btn-default border-bottom" ng-click="openTo()"><i class="fa fa-calendar"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="row">
+    <div class="col-xs-5">
+      <input daterange="date.startDate" placeholder="Начальная дата" class="form-control" type="text" />
+    </div>
+    <div class="col-xs-5">
+      <input daterange="date.endDate" placeholder="Дата завершения" class="form-control" type="text" />
     </div>
   </div>
 
