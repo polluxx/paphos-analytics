@@ -23,11 +23,12 @@ router.post('/:id/refresh', function (req, res, next) {
       req.app.services.google.refreshAccessToken(function (err, tokens) {
         console.info(err, tokens)
         data.site.tokens = tokens;
+
         data.site.save(function(err) {
           if (err) { return next(err); }
 
           req.app.services.analytics.syncAccount(tokens, function() {
-            console.log(tokens);
+            console.log('refresh tokens', tokens);
             next();
           });
 

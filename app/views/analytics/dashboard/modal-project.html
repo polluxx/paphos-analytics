@@ -13,7 +13,7 @@
 
       <bz-form-control label="Выбор сайтов" field="siteUrl" >
 
-        <div class="c-inputs-stacked">
+        <div class="c-inputs-stacked" style="padding-top: 20px;">
           <label class="c-input c-radio" ng-repeat="(key, site) in sites track by key">
             <input type="checkbox" ng-click="check(site._id)" ng-model="site.$checked" />
             <span class="c-indicator"></span>

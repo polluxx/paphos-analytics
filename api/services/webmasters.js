@@ -24,6 +24,7 @@ WebmastersService.prototype.syncAccount = function(tokens, next) {
   async.auto({
     'webmasterSites': function(next) {
       api.sites.list({}, function(err, data) {
+        
         next(err, data.siteEntry);
       });
     },

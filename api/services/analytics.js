@@ -40,6 +40,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
       });
     },
     'allSites': ['analyticSites', function(next, data) {
+
       var urls = _.pluck(data.analyticSites, 'websiteUrl');
       urls = _.map(urls, function(item) {
         return _.trim(item, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
@@ -47,17 +48,16 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
       next(null, urls);
     }],
     'dbSites': ['allSites', function(next, data) {
-      console.log(data.allSites);
       app.models.sites.find({ siteUrl: { $in: data.allSites } }, next);
     }],
-    'saveTokens': ['dbSites', function(next, data) {
+    'saveTokens': ['analyticSites', 'dbSites', function(next, data) {
       var tokenSites = [];
-      console.log(data.dbSites);
-      async.each(data.dbSites, function(site, next) {
+      console.log('data.analyticSites', data.analyticSites);
+      async.each(data.analyticSites, function(site, next) {
         site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
 
         var dbItem = _.find(data.dbSites, { siteUrl: site.websiteUrl });
-
+        console.log('find DB sites', dbItem);
         if (!dbItem || !site.profiles.length) {
           return next();
         }
@@ -67,7 +67,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
           webPropertyId: site.id,
           profileId: site.profiles[0].id
         };
-
+        console.log('dbItem', dbItem);
         dbItem.save(next);
       }, next);
     }],

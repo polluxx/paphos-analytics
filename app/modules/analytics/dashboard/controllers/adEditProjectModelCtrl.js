@@ -36,15 +36,15 @@ export default
 
           if(!res.length) {
             var saved = savedItem.$create((res, err) => {
-              aSiteModel.refresh({_id: res._id})
+              aSiteModel.refresh({_id: res._id});
               $scope.$close();
             }, () => {
               $scope.loading = false;
               $scope.tableParams.reload();
-              console.log('data');
             });
-
             savedSites.push(saved);
+          } else {
+            aSiteModel.refresh({_id: res._id});
           }
 
           aSiteModel.deleteTemp({_id: site._id});
@@ -52,8 +52,13 @@ export default
       });
 
       Promise.all(savedSites)
-        .then(function(resp) {
+        .then((resp) => {
+          //$scope.$close();
+
           console.log('all save', resp);
+        }, () => {
+          // $scope.loading = false;
+          // $scope.tableParams.reload();
         })
         .catch(function(err) {
           console.log('all save', err);
