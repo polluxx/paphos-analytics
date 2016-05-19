@@ -51,18 +51,18 @@ export default
         });
       });
 
-      Promise.all(savedSites)
-        .then((resp) => {
-          //$scope.$close();
-
-          console.log('all save', resp);
-        }, () => {
-          // $scope.loading = false;
-          // $scope.tableParams.reload();
-        })
-        .catch(function(err) {
-          console.log('all save', err);
-        });
+      // Promise.all(savedSites)
+      //   .then((resp) => {
+      //     //$scope.$close();
+      //
+      //     console.log('all save', resp);
+      //   }, () => {
+      //     // $scope.loading = false;
+      //     // $scope.tableParams.reload();
+      //   })
+      //   .catch(function(err) {
+      //     console.log('all save', err);
+      //   });
 
     }
 
