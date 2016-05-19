@@ -22,10 +22,8 @@ export default
         var savedItem = new aSiteModel(site);
         if (!savedItem['siteUrl']) return;
 
-        savedItem.tokens = {};
         savedItem.services = {};
-        savedItem.tokens.access_token = savedItem.token;
-        savedItem.tokens.token_type = 'Bearer';
+        savedItem.tokens = savedItem.tokens;
         savedItem.services.analytics = true;
         savedItem.isActive = true;
 

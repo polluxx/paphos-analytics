@@ -73,7 +73,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
     }],
     'tempList': ['allSites', function(next, data) {
       var tempList = data.allSites.map(site => {
-        return {siteUrl: site, token: tokens.access_token};
+        return {siteUrl: site, tokens: tokens};
       });
 
       next(null, tempList);

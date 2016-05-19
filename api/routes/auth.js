@@ -33,7 +33,7 @@ router.get('/google/callback', function (req, res, next) {
 
       var updateParams = {upsert: true, multi: false}, insertData;
       data.analytics.tempList.forEach(function(site) {
-        insertData = {siteUrl: site.siteUrl, token: site.token};
+        insertData = {siteUrl: site.siteUrl, tokens: site.tokens};
         req.app.models.tempSites.update({siteUrl: site.siteUrl}, insertData, updateParams, function (err) {
           if(err) req.app.log.error(err);
         });

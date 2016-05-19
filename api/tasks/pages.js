@@ -128,33 +128,33 @@ exports['pages.keywords'] = function(app, message, callback) {
             {updated: {$exists: false}}
           ]}, next).limit(limit);
     },
-    yandex: ['pages', (next, data) => {
-      if(!data.pages.length) return next();
-
-      startYandexReport(app, data.pages.map(page => page.word));
-
-      next();
-    }]
-    // google: ['pages', (next, data) => {
-    //   console.log(data.pages);
+    // yandex: ['pages', (next, data) => {
     //   if(!data.pages.length) return next();
-    //   limitService = new rateLimiter(10, 'minute');
     //
-    //   data.pages.forEach(page => {
-    //
-    //     limitService.removeTokens(1, function (err, remainingRequests) {
-    //       if (err) {
-    //         return next(err);
-    //       }
-    //
-    //       // GOOGLE
-    //       scanGooglePosition(app, page);
-    //
-    //     });
-    //   });
+    //   startYandexReport(app, data.pages.map(page => page.word));
     //
     //   next();
     // }]
+    google: ['pages', (next, data) => {
+      console.log(data.pages);
+      if(!data.pages.length) return next();
+      limitService = new rateLimiter(10, 'minute');
+
+      data.pages.forEach(page => {
+
+        limitService.removeTokens(1, function (err, remainingRequests) {
+          if (err) {
+            return next(err);
+          }
+
+          // GOOGLE
+          scanGooglePosition(app, page);
+
+        });
+      });
+
+      next();
+    }]
   }, callback);
 };
 
