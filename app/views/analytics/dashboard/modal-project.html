@@ -11,25 +11,16 @@
 
     <bz-form-control label="Домен" field="siteUrl" help="Например: v-androide.com">
 
+      <bz-form-control label="Выбор сайтов" field="siteUrl" >
 
-
-      <form class="form-horizontal">
-        <div class="form-group">
-          <div class="col-sm-9">
-            <ul>
-            <div class="checkbox" ng-repeat="site in sites">
-              <li style="list-style: none; width: 100%;">
-                <p class="bg-success" style="padding: 10px 10px 10px 25px;">
-                  <label class="break -align-right">
-                    <input style="width: auto;display: inline-block;" type="checkbox" class="form-control check-align -align-left" ng-click="check(site._id)" ng-model="site.$checked"> {{site.siteUrl}}
-                  </label>
-                </p>
-              </li>
-            </div>
-            </ul>
-          </div>
+        <div class="c-inputs-stacked">
+          <label class="c-input c-radio" ng-repeat="(key, site) in sites track by key">
+            <input type="checkbox" ng-click="check(site._id)" ng-model="site.$checked" />
+            <span class="c-indicator"></span>
+            {{site.siteUrl}}
+          </label>
         </div>
-      </form>
+      </bz-form-control>
       <!--<input type="text" name="siteUrl" required ng-pattern="/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/" class="form-control" ng-model="item.siteUrl" />-->
 
       <ng-messages class="text-danger" for="editForm.siteUrl.$error" role="alert">

@@ -1,9 +1,11 @@
 export default
   /*@ngInject*/
-  function($scope, aAuthModel, aTempSiteModel, aSiteModel) {
+  function($scope, aAuthModel, aTempSiteModel, aSiteModel, $timeout) {
 
     $scope.signIn = () => {
-      aAuthModel.signIn((resp) => $scope.getTempSites);
+      aAuthModel.signIn((resp) => {
+        $timeout($scope.getTempSites, 1500);
+      });
     };
 
     $scope.checked = [];
@@ -19,6 +21,14 @@ export default
       sitesToSave.forEach((site) => {
         var savedItem = new aSiteModel(site);
         if (!savedItem['siteUrl']) return;
+
+        savedItem.tokens = {};
+        savedItem.services = {};
+        savedItem.tokens.access_token = savedItem.token;
+        savedItem.tokens.token_type = 'Bearer';
+        savedItem.services.analytics = true;
+        savedItem.isActive = true;
+
         delete savedItem.token;
         delete savedItem._id;
         delete savedItem.$checked;
@@ -28,7 +38,7 @@ export default
 
           if(!res.length) {
             var saved = savedItem.$create((res, err) => {
-              // aSiteModel.refresh({_id: res._id})
+              aSiteModel.refresh({_id: res._id})
               $scope.$close();
             }, () => {
               $scope.loading = false;

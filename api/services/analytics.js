@@ -47,10 +47,12 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
       next(null, urls);
     }],
     'dbSites': ['allSites', function(next, data) {
+      console.log(data.allSites);
       app.models.sites.find({ siteUrl: { $in: data.allSites } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
       var tokenSites = [];
+      console.log(data.dbSites);
       async.each(data.dbSites, function(site, next) {
         site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
 
@@ -73,7 +75,7 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
       var tempList = data.allSites.map(site => {
         return {siteUrl: site, token: tokens.access_token};
       });
-      
+
       next(null, tempList);
     }]
   }, next);
