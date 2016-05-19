@@ -29,10 +29,10 @@ router.get('/google/callback', function (req, res, next) {
       req.app.services.analytics.syncAccount(data.tokens, next);
     }],
     'saveTempSites': ['analytics', function(next, data) {
-      if(!data.analytics || !data.analytics.saveTokens) return next();
+      if(!data.analytics || !data.analytics.tempList) return next();
 
       var updateParams = {upsert: true, multi: false}, insertData;
-      data.analytics.saveTokens.forEach(function(site) {
+      data.analytics.tempList.forEach(function(site) {
         insertData = {siteUrl: site.siteUrl, token: site.token};
         req.app.models.tempSites.update({siteUrl: site.siteUrl}, insertData, updateParams, function (err) {
           if(err) req.app.log.error(err);

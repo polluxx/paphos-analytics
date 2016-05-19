@@ -24,6 +24,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     getData: function (params) {
       return aPageModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: item._id}, function (resp, headers) {
         $scope.counter = params.count();
+        console.log(params.filter());
         $scope.paginationPage = params.page();
         $scope.paginationCount = params.count();
         $scope.pages = resp;
@@ -38,6 +39,12 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     },
     paginationMaxBlocks: 10,
     paginationMinBlocks: 2
+  });
+
+  $scope.$watch("search", function (search) {
+    if(search.length < 2) return;
+
+    $scope.tableParams.reload();
   });
 
   $scope.$watch('dataMightReload', result => {

@@ -1,14 +1,17 @@
 <bz-form model="item" name="editForm" model-state="error" submit="saveItem(item)">
-  <div class="modal-header">
-    <h3 class="modal-title">Новый проект</h3>
+  <div class="modal-header page-header">
+    <h3 class="modal-title" style="float: left;">Новый проект</h3>
+    <div class="page-actions">
+      <a href="#" class="btn btn-primary" type="submit" ng-click="signIn()">
+        GA login
+      </a>
+    </div>
   </div>
   <div class="modal-body">
 
     <bz-form-control label="Домен" field="siteUrl" help="Например: v-androide.com">
 
-      <button class="btn btn-primary" type="submit" ng-click="signIn()">
-        GA login
-      </button>
+
 
       <form class="form-horizontal">
         <div class="form-group">

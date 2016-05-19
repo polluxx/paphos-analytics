@@ -4,8 +4,8 @@ var router = require('express').Router(),
   moment = require('moment'),
   _ = require('lodash'),
   async = require('async');
-/*
-router.get('/:id', function (req, res, next) {
+
+router.post('/:id/refresh', function (req, res, next) {
   var fields = ['isActive'],
     update = _.pick(req.body, fields);
 
@@ -15,7 +15,7 @@ router.get('/:id', function (req, res, next) {
     },
     'token': ['site', function(next, data) {
       var expiredDate = moment(data.site.tokens.expiry_date);
-console.info(data.site);
+
       if (!expiredDate.isBefore(moment())) {
       //  return next(null, data.site.tokens.access_token);
       }
@@ -27,8 +27,8 @@ console.info(data.site);
           if (err) { return next(err); }
 
           req.app.services.analytics.syncAccount(tokens, function() {
-
-            next(null, tokens.access_token);
+            console.log(tokens);
+            next();
           });
 
         });
@@ -39,7 +39,7 @@ console.info(data.site);
 
     res.json(data.site);
   });
-});*/
+});
 
 router.post('/find', function (req, res, next) {
   req.app.models.sites.find(req.params, function(err, data) {
@@ -86,6 +86,16 @@ router.post('/:id/scan', function (req, res, next) {
     }
     req.app.services.tasks.publish('sites.scanSite', { _id: item._id });
     res.status(204).end();
+  });
+});
+
+router.delete('/:id/temp', function(req, res, next) {
+  if(!req.params || !req.params.id) return res.status(406).send();
+
+  req.app.models.tempSites.remove({_id: req.params.id}, function(err, data) {
+    if(err) return res.status(500).send({error: err});
+
+    res.json({deleted: data});
   });
 });
 

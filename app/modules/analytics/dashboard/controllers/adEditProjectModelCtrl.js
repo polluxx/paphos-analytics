@@ -15,6 +15,7 @@ export default
       if(!sitesToSave.length) return;
 
       $scope.loading = true;
+      var savedSites = [];
       sitesToSave.forEach((site) => {
         var savedItem = new aSiteModel(site);
         if (!savedItem['siteUrl']) return;
@@ -24,23 +25,37 @@ export default
 
         console.log(site);
         aSiteModel.query({siteUrl: savedItem.siteUrl, page: 1, perPage: 1}, (res) => {
-          if(!res.length) {
-            savedItem.$create((res, err) => {
-              console.log(res, err)
-            });
-          }
-          //site.$remove({_id: site._id});
-        });
 
+          if(!res.length) {
+            var saved = savedItem.$create((res, err) => {
+              // aSiteModel.refresh({_id: res._id})
+              $scope.$close();
+            }, () => {
+              $scope.loading = false;
+              $scope.tableParams.reload();
+              console.log('data');
+            });
+
+            savedSites.push(saved);
+          }
+
+          aSiteModel.deleteTemp({_id: site._id});
+        });
       });
-      $scope.$close();
-      $scope.loading = false;
-      // $scope.tableParams.reload();
+
+      Promise.all(savedSites)
+        .then(function(resp) {
+          console.log('all save', resp);
+        })
+        .catch(function(err) {
+          console.log('all save', err);
+        });
 
     }
 
     $scope.getTempSites = function() {
-      aTempSiteModel.query({page: 1, perPage: 10}, function (sites) {
+      aTempSiteModel.query({page: 1, perPage: 100}, function (sites) {
+        console.log(sites);
         $scope.sites = sites;
       });
     }

@@ -39,36 +39,42 @@ AnalyticsService.prototype.syncAccount = function(tokens, next) {
         next(null, items);
       });
     },
-    'dbSites': ['analyticSites', function(next, data) {
+    'allSites': ['analyticSites', function(next, data) {
       var urls = _.pluck(data.analyticSites, 'websiteUrl');
       urls = _.map(urls, function(item) {
         return _.trim(item, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
       });
-      app.models.sites.find({ siteUrl: { $in: urls } }, next);
+      next(null, urls);
+    }],
+    'dbSites': ['allSites', function(next, data) {
+      app.models.sites.find({ siteUrl: { $in: data.allSites } }, next);
     }],
     'saveTokens': ['dbSites', function(next, data) {
       var tokenSites = [];
-      async.each(data.analyticSites, function(site, next) {
+      async.each(data.dbSites, function(site, next) {
         site.websiteUrl = _.trim(site.websiteUrl, '/').toLowerCase().replace(/((http|https):\/\/)|www\./ig, "");
+
         var dbItem = _.find(data.dbSites, { siteUrl: site.websiteUrl });
 
         if (!dbItem || !site.profiles.length) {
           return next();
         }
-
-        tokenSites.push({siteUrl: dbItem.siteUrl, token: tokens.access_token});
         dbItem.services.analytics = true;
         dbItem.tokens = tokens;
         dbItem.analytics = {
           webPropertyId: site.id,
           profileId: site.profiles[0].id
         };
+
         dbItem.save(next);
-      }, function (err, data) {
-        if(err) return next(err);
-        
-        next(null, tokenSites);
+      }, next);
+    }],
+    'tempList': ['allSites', function(next, data) {
+      var tempList = data.allSites.map(site => {
+        return {siteUrl: site, token: tokens.access_token};
       });
+      
+      next(null, tempList);
     }]
   }, next);
 };

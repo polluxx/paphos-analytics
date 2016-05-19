@@ -67,7 +67,6 @@ function processGet(model, req, res, next) {
 
   var filter = getFilter(req),
     options = getDataOptions(req);
-  console.log(filter);
 
   if (req.params._id || req.query.alias) {
     model.findOne(filter, function (err, data) {
