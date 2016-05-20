@@ -30,10 +30,10 @@
 </div>
 
 <ul class="nav nav-tabs">
-  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.info({ projectId: project._id })" ui-sref-active="active">Общая информация</a></li>
-  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.pages({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })" ui-sref-active="active">Статистика страниц</a></li>
-  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.top({ projectId: project._id })" ui-sref-active="active">Топ страниц</a></li>
-  <li class="nav-item"><a class="nav-link" ui-sref="analytics.project.positions({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })" ui-sref-active="active">Позиции</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref-active="active" ui-sref="analytics.project.info({ projectId: project._id })">Общая информация</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref-active="active" ui-sref="analytics.project.pages({ projectId: project._id, paginationPage: paginationPage, paginationCount: paginationCount })">Статистика страниц</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref-active="active" ui-sref="analytics.project.top({ projectId: project._id })">Топ страниц</a></li>
+  <li class="nav-item"><a class="nav-link" ui-sref-active="active" ui-sref="analytics.project.positions({ projectId: project._id })">Позиции</a></li>
 </ul>
 
 <div class="tab-content" ui-view>
@@ -41,13 +41,13 @@
 
   <div class="row margin-top-table" ng-show="$data">
     <div class="col-xs-10">
-        <h2>Keywords</h2>
-        <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
-          <tr ng-repeat="row in $data">
-            <td data-title="'Фраза'" sortable="'word'">{{row.word}}</td>
-            <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
-          </tr>
-        </table>
-      </div>
+      <h2>Keywords</h2>
+      <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Фраза'" sortable="'word'">{{row.word}}</td>
+          <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </div>
