@@ -4,43 +4,31 @@ var async = require('async'),
   _ = require('lodash'),
   moment = require('moment');
 
-exports['sites.scanSite'] = function (app, msg, cb) {
+exports['sites.scanSites'] = function (app, msg, cb) {
   var log = app.log;
 
-  var endDate = moment().subtract(1, 'day'),
-    startDate = moment(endDate).subtract(90, 'day');
+  var startDate = moment().subtract(2, 'day'),
+    endDate = moment();
 
     async.auto({
-    'site': function (next) {
-      app.models.sites.findById(msg.body._id, next);
+    'sites': function (next) {
+      app.models.sites.find({}, next);
     },
-    'token': ['site', function (next, data) {
-      app.services.google.setCredentials(data.site.tokens);
-      if (data.site.tokens.refresh_token) {
-        app.services.google.refreshAccessToken(function (err, tokens) {
-          if(err || !tokens) {
-            return next(err || 'No tokens from GA refresh!');
-          }
-          app.services.google.setCredentials(tokens);
-          if (tokens.refresh_token) {
-            data.site.tokens = tokens;
+    'tokens': ['sites', function (next, data) {
+      if(!data.sites) return next();
 
-            log.info('Tokens refreshed: '+JSON.stringify(tokens));
-            return data.site.save(next);
-          }
-          next();
-        });
-        return;
-      }
-      next();
+      data.sites.forEach(site => {
+        setToken(app, site, next);
+      });
     }],
-    'reports': ['token', function (next, data) {
-      var currentDate = moment(startDate);
+    'reports': ['tokens', 'sites', function (next, data) {
       return next();
-      app.services.analytics.syncReports(data.site, startDate, endDate, next);
+      data.sites.forEach(site => {
+        app.services.analytics.syncReportsForSite(site, startDate, endDate, next);
+      });
     }],
-      
-    'query': ['token', function (next, data) {
+
+    'query': ['tokens', function (next, data) {
       var currentDate = moment(startDate);
       return next();
       async.whilst(function () {
@@ -54,21 +42,59 @@ exports['sites.scanSite'] = function (app, msg, cb) {
   }, cb);
 };
 
-exports['sites.scanAll'] = function (app, msg, cb) {
+exports['sites.analyticsSync'] = function (app, msg, cb) {
   var log = app.log;
 
+  var startDate = moment().subtract(2, 'day'),
+    endDate = moment();
+
   async.auto({
-    sites: function (next) {
+    'sites': function (next) {
       app.models.sites.find({}, next);
     },
-    scan: ['sites', (next, data) => {
-      if(!data.sites) return next('No data to process.');
-
-      data.sites.forEach(record => {
-        app.services.tasks.publish('sites.scanSite', { _id: record._id });
+    'tokens': ['sites', function (next, data) {
+      if(!data.sites) return next();
+      data.sites.forEach(site => {
+        setToken(app, site, next);
       });
-      next();
+    }],
+    'reports': ['sites', 'tokens', function (next, data) {
+      data.sites.forEach(site => {
+        app.services.analytics.syncReportsForSite(site, startDate, endDate, next);
+      });
     }]
   }, cb);
-
 };
+
+exports['sites.garbageClean'] = function(app, msg, cb) {
+  async.auto({
+    tmpSites: function (next) {
+      app.models.tempSites.find({}, next);
+    },
+    clear: ['tmpSites', (next, data) => {
+      if(data.tmpSites.length) return next();
+
+      data.tmpSites.forEach(site => {
+        app.models.tempSites.remove({_id: site._id}, next);
+      });
+    }]
+  }, cb);
+};
+
+function setToken(app, site, next) {
+  var log = app.log;
+  app.services.google.setCredentials(site.tokens);
+  if (!site.tokens.refresh_token) return;
+
+  app.services.google.refreshAccessToken(function (err, tokens) {
+    if(err || !tokens) {
+      return next(err || 'No tokens from GA refresh!');
+    }
+    app.services.google.setCredentials(tokens);
+    if (!tokens.refresh_token) return next();
+
+    site.tokens = tokens;
+    log.info('Tokens refreshed: '+JSON.stringify(tokens));
+    site.save(next);
+  });
+}

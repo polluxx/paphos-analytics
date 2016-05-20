@@ -13,6 +13,8 @@ var getPagesStat = function(app, siteId, startDate, endDate, next) {
     endDate2 = moment(endDate).subtract(diff, 'day');
 
   siteId = new mongoose.Types.ObjectId(siteId);
+
+  console.log('siteId', siteId);
   async.auto({
     'stats1': function(next) {
       app.models.visitStatistics.aggregate([
@@ -130,5 +132,64 @@ router.get('/drop-in', function (req, res, next) {
   });
 });
 
+router.get('/analytics', function (req, res, next) {
+  var params = req.query,
+    dateFromDef = params.dateFrom || moment(Date.now()).subtract(4, 'days'),
+    dateToDef = params.dateFrom || moment(Date.now()).add(1, 'days'),
+    dateFrom = moment(dateFromDef),
+    dateTo = moment(dateToDef);
+
+  async.auto({
+    sites: function(next) {
+      req.app.models.sites.find({_id: {$in: params.ids}}, next);
+    },
+    analytics: ['sites', function(next, data) {
+      if(!data.sites.length) return next();
+
+      var rawSitesData = {};
+      data.sites.forEach(site => {
+        req.app.models.visitStatistics.aggregate([
+          {
+            $match: {
+              'site._id': site._id,
+              date: { $gte: dateFrom.toDate(), $lt: dateTo.toDate()}
+            }
+          },
+          {
+            $group: {
+              _id: { date: '$date' },
+              sessions: { $sum: "$sessions" } ,
+              users: { $sum: "$users" }
+            }
+          }
+        ], function(err, resp) {
+          if(err) return next(err);
+
+          rawSitesData[site._id] = resp.map(record => {
+
+            record.date = moment(record['_id'].date).format('YYYY-MM-DD')
+            var positions = [], date, position;
+            for (date = moment(dateFrom); date.isSameOrBefore(dateTo); date.add(1, 'day')) {
+              position = _.find(record, { date: date.format('YYYY-MM-DD') });
+              console.log('position r', position);
+              positions.push(position ? {users: position.users, sessions: position.sessions}: 0);
+            }
+            record = positions;
+            // console.log(positions);
+            return record;
+          })
+
+          console.log(rawSitesData);
+        });
+      });
+      next();
+    }
+  ]}, function(err, data) {
+    if(err) return next(err);
+
+    res.json(data);
+  });
+
+});
 
 module.exports = router;

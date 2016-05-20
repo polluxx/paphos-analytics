@@ -4,6 +4,7 @@ export default
 
     $scope.signIn = () => {
       aAuthModel.signIn((resp) => {
+        $scope.loading = true;
         $timeout($scope.getTempSites, 1500);
       });
     };
@@ -37,37 +38,31 @@ export default
           if(!res.length) {
             var saved = savedItem.$create((res, err) => {
               aSiteModel.refresh({_id: res._id});
-              $scope.$close();
-            }, () => {
-              $scope.loading = false;
-              $scope.tableParams.reload();
             });
             savedSites.push(saved);
           } else {
-            aSiteModel.refresh({_id: res._id});
+            aSiteModel.refresh({_id: res[0]._id});
           }
 
           aSiteModel.deleteTemp({_id: site._id});
         });
       });
 
-      // Promise.all(savedSites)
-      //   .then((resp) => {
-      //     //$scope.$close();
-      //
-      //     console.log('all save', resp);
-      //   }, () => {
-      //     // $scope.loading = false;
-      //     // $scope.tableParams.reload();
-      //   })
-      //   .catch(function(err) {
-      //     console.log('all save', err);
-      //   });
+      Promise.all(savedSites)
+        .then((resp) => {
+          $scope.$close();
+          $scope.loading = false;
+          $scope.tableParams.reload();
+        })
+        .catch(function(err) {
+          console.log('all save', err);
+        });
 
     }
 
     $scope.getTempSites = function() {
       aTempSiteModel.query({page: 1, perPage: 100}, function (sites) {
+        $scope.loading = false;
         console.log(sites);
         $scope.sites = sites;
       });

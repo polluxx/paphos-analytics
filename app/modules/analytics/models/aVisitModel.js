@@ -10,7 +10,9 @@ function aVisitModel($resource, ANALYTICS_API) {
     'update': {method: 'PATCH'},
 
     'getGrownUp': {method: 'GET', params: { method: 'grown-up' }, isArray: true},
-    'getDropIn': {method: 'GET', params: { method: 'drop-in' }, isArray: true}
+    'getDropIn': {method: 'GET', params: { method: 'drop-in' }, isArray: true},
+
+    'analytics': {method: 'GET', params: { method: 'analytics' }, isArray: false}
   });
 
   return resource;

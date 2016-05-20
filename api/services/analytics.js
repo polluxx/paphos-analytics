@@ -86,11 +86,12 @@ AnalyticsService.prototype.syncReports = function(site, startDate, endDate, next
     api = this.api,
     app = self.app;
 
+
   var range = moment.range(startDate, endDate);
   var rateLimiter = limiter.RateLimiter,
     limitService = new rateLimiter(2, 'second');
 
-  range.by('days', function(moment) {
+  range.toArray('days').map(function(moment) {
 
     limitService.removeTokens(1, function(err) {
       if (err) { return next(err); }
@@ -106,6 +107,7 @@ AnalyticsService.prototype.syncReports = function(site, startDate, endDate, next
         if (err) { return next(err); }
 
         async.eachLimit(res.rows, 1, function(item, next) {
+          console.log('res.rows item', item);
           async.auto({
             'page': function(next) {
               app.models.pages.ensureExists(item[0], site, next);
@@ -116,10 +118,55 @@ AnalyticsService.prototype.syncReports = function(site, startDate, endDate, next
           }, function(err, data) {
             if (err) { return next(err); }
 
+            console.info('analytics page', item);
             data.visits.sessions = item[1];
             data.visits.users = item[2];
             data.visits.save(next);
           });
+        }, next);
+      });
+
+    });
+
+  });
+};
+
+
+AnalyticsService.prototype.syncReportsForSite = function(site, startDate, endDate, next) {
+  var self = this,
+    api = this.api,
+    app = self.app;
+
+
+  var range = moment.range(startDate, endDate);
+  var rateLimiter = limiter.RateLimiter,
+    limitService = new rateLimiter(2, 'second');
+
+  range.toArray('days').map(function(momentDate) {
+
+    limitService.removeTokens(1, function(err) {
+      if (err) { return next(err); }
+
+      api.data.ga.get({
+        'ids': 'ga:' + site.analytics.profileId,
+        'start-date': momentDate.format('YYYY-MM-DD'),
+        'end-date': momentDate.format('YYYY-MM-DD'),
+        'metrics': 'ga:sessions,ga:users',
+        'sort': '-ga:users'
+      }, function(err, res) {
+        if (err) { return next(err); }
+
+        var dateToSet = moment(momentDate.format('YYYY-MM-DD'));
+        async.eachLimit(res.rows, 1, function(item, next) {
+          app.models.visitStatistics.update({
+            'site._id': site._id,
+            date: dateToSet.toDate()
+          }, {
+            'site._id': site._id,
+            date: dateToSet.toDate(),
+            sessions: item[0],
+            users: item[1],
+          }, {upsert:true, multi:false}, next);
         }, next);
       });
 
