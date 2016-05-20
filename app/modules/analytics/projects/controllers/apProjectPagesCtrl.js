@@ -22,9 +22,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   count: $scope.paginationCount || $scope.counter
   }, {
     getData: function (params) {
-      return aPageModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: item._id}, function (resp, headers) {
+      return aPageModel.query({page: parseInt(params.page()), perPage: parseInt(params.count()), siteId: item._id, search: $scope.search}, function (resp, headers) {
         $scope.counter = params.count();
-        console.log(params.filter());
         $scope.paginationPage = params.page();
         $scope.paginationCount = params.count();
         $scope.pages = resp;

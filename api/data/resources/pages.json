@@ -1,6 +1,6 @@
 {
   "options": {
-    "searchFields": [],
+    "searchFields": ["title"],
     "maxPerPage": [
       {
         "role": "*",
