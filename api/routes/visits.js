@@ -179,7 +179,7 @@ router.get('/analytics', function (req, res, next) {
 
             for (date = moment(dateFrom); date.isSameOrBefore(dateTo); date.add(1, 'day')) {
               position = _.find(positions, {date: date.format('YYYY-MM-DD')});
-              collection.push(position ? position: {users: 0, sessions: 0, date: date.format('YYYY-MM-DD'), _id: {siteId: positions[0]._id.siteId}});
+              collection.push(position ? position: {users: 0, sessions: 0, date: date.format('YYYY-MM-DD'), _id: {siteId: positions[0] ? positions[0]._id.siteId : data.sites[index]}});
             }
 
             sites[collection[0]._id.siteId] = collection;

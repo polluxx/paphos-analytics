@@ -32,7 +32,7 @@
     "api": {
       "redirectUrl": "/api/auth/yandex/callback",
       "clientId": "0ef7db9c9c614dae92befc6b6004fd34",
-      "secret": "3dfb05844015407caa621f488045066a",
+      "secret": "b48cdaa475964f4ca38f99cf9c1262ff",
 
       "auth": "https://oauth.yandex.com/authorize"
     }
