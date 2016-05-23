@@ -17,9 +17,9 @@ function YandexWds(app) {
 YandexWds.prototype.init = function(token, next) {
   this.api = YandexDirect({
     token: token, // required.
-    locale: 'en', // optional; default is 'en'.
+    locale: 'ru', // optional; default is 'en'.
     live: true, // optional; default is false.
-    sandbox: false, // optional; default is false.
+    sandbox: true, // optional; default is false.
     version: 4 // optional; default is 4.
   });
 
@@ -30,7 +30,7 @@ YandexWds.prototype.authorize = function(app) {
   var config = app.config.get('yandex.api');
 
   var requestParams = {
-    response_type: 'code',
+    response_type: 'token',
     client_id: config.clientId
     //device_id: this.deviceId
   };
@@ -50,19 +50,21 @@ YandexWds.prototype.createWordstatReport = function(phrases, token, next) {
     "Phrases": phrases
   };
 
-  // var reqParams = {
-  //   "method": "GetClientInfo",
-  //   "param": {
-  //     "Phrases": phrases
-  //   },
-  //   "locale": "ru",
-  //   "token": token
-  // };
-
   var reqParams = {
-    "method": "PingAPI",
+    "method": "CreateNewWordstatReport",
+    "param": {
+      "Phrases": phrases,
+      "Login": 'yura-kosakivsky'
+    },
+    "locale": "ru",
     "token": token
   };
+
+  // var reqParams = {
+  //   "method": "CreateNewWordstatReport",
+  //   "token": token,
+  //   "param": 'yura-kosakivsky'
+  // };
   // console.log(reqParams);
   // request.post('https://api.direct.yandex.ru/v4/json/', {form: JSON.stringify(reqParams)}, next);
   //
@@ -77,10 +79,10 @@ YandexWds.prototype.createWordstatReport = function(phrases, token, next) {
   //   next(null, response)
   // });
   // Request with params.
-  this.api.call('PingAPI', reqParams, (error, response) => {
+  this.api.call('CreateNewWordstatReport', reqParams, (error, response) => {
     if(error) return next(error);
 
-    console.log('PingAPI', response);
+    console.log('CreateNewWordstatReport', response);
     this.reports.push(response.data);
     next(null, response)
   });
