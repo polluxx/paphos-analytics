@@ -41,7 +41,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   });
 
   $scope.$watch("search", function (search) {
-    if(search.length < 2) return;
+    if(search.length < 2 && search.length != 0) return;
 
     $scope.tableParams.reload();
   });

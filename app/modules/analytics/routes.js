@@ -67,10 +67,11 @@ function($stateProvider, $urlRouterProvider) {
       controller: 'apPagesTopCtrl',
       templateUrl: 'app/views/analytics/projects/page-top.html',
       resolve: {
-        items: (aPageModel, $stateParams) => aPageModel.query({page: 1, perPage: 10, sorting: {pageviews: 'desc'}}).$promise,
+        items: (aPageModel, $stateParams) => aPageModel.query({ page: 1, perPage: 10, siteId: $stateParams.projectId}).$promise,
         project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
     })
+
     .state('analytics.project.positions', {
       url: '/positions',
       params: {
@@ -83,8 +84,6 @@ function($stateProvider, $urlRouterProvider) {
         project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
       }
     })
-    
-
     .state('pages', {
       parent: 'analytics',
       url: '/project/:projectId/page/:pageId',

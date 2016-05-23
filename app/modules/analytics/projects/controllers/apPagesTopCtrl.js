@@ -26,7 +26,12 @@ function($scope, items, project, dateService) {
       ids: 'ga:' + (project.analytics !== undefined ? project.analytics.profileId : null),
       metrics: 'ga:pageviews',
       dimensions: 'ga:pagePath, ga:date',
-      filters: items.map(item => { return 'ga:pagePath==/' + item.url+".html"}).join(','),
+      filters: items.map(item => {
+        if(item.url[0] == '/'){
+          return 'ga:pagePath==' + item.url +".html"
+        }
+        return 'ga:pagePath==/' + item.url+".html"
+      }).join(','),
       sort: '-ga:pageviews, -ga:date',
       type: "plot",
       pure: true,

@@ -287,10 +287,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
 
       // listen to chart create event and get colors
       scope.$on('create', function(e, chart) {
-       if(scope.chart != undefined) {
-         scope.current.queries = [];
-         scope.current.chart = null;
-       }
         resetSeries(chart);
       });
 
