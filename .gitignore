@@ -12,6 +12,7 @@
 *.log
 
 # directories #
+.git/*
 node_modules/*
 .idea/*
 bower_components

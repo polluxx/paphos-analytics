@@ -135,7 +135,7 @@ router.get('/drop-in', function (req, res, next) {
 router.get('/analytics', function (req, res, next) {
   var params = req.query,
     dateFromDef = params.dateFrom || moment(Date.now()).subtract(4, 'days'),
-    dateToDef = params.dateFrom || moment(Date.now()).add(1, 'days'),
+    dateToDef = params.dateTo || moment(Date.now()).add(1, 'days'),
     dateFrom = moment(dateFromDef),
     dateTo = moment(dateToDef);
 
@@ -146,9 +146,8 @@ router.get('/analytics', function (req, res, next) {
     analytics: ['sites', function(next, data) {
       if(!data.sites.length) return next();
 
-      var rawSitesData = {};
-      data.sites.forEach(site => {
-        req.app.models.visitStatistics.aggregate([
+      var sitesData = data.sites.map(site => {
+        return req.app.models.visitStatistics.aggregate([
           {
             $match: {
               'site._id': site._id,
@@ -157,32 +156,41 @@ router.get('/analytics', function (req, res, next) {
           },
           {
             $group: {
-              _id: { date: '$date' },
+              _id: { date: '$date' , siteId: '$site._id'},
               sessions: { $sum: "$sessions" } ,
               users: { $sum: "$users" }
             }
           }
-        ], function(err, resp) {
+        ], function(err) {
           if(err) return next(err);
-
-          rawSitesData[site._id] = resp.map(record => {
-
-            record.date = moment(record['_id'].date).format('YYYY-MM-DD')
-            var positions = [], date, position;
-            for (date = moment(dateFrom); date.isSameOrBefore(dateTo); date.add(1, 'day')) {
-              position = _.find(record, { date: date.format('YYYY-MM-DD') });
-              console.log('position r', position);
-              positions.push(position ? {users: position.users, sessions: position.sessions}: 0);
-            }
-            record = positions;
-            // console.log(positions);
-            return record;
-          })
-
-          console.log(rawSitesData);
         });
       });
-      next();
+
+      Promise.all(sitesData)
+        .then((resp) => {
+          var sites = {};
+          resp.forEach((records, index) => {
+            var positions = [], collection = [], date, position;
+
+            positions = records.map(record => {
+              record.date = moment(record['_id'].date).format('YYYY-MM-DD');
+              return record;
+            });
+
+            for (date = moment(dateFrom); date.isSameOrBefore(dateTo); date.add(1, 'day')) {
+              position = _.find(positions, {date: date.format('YYYY-MM-DD')});
+              collection.push(position ? position: {users: 0, sessions: 0, date: date.format('YYYY-MM-DD'), _id: {siteId: positions[0]._id.siteId}});
+            }
+
+            sites[collection[0]._id.siteId] = collection;
+          });
+
+          res.json(sites);
+        }).catch((err) => {
+          next(err);
+        });
+
+      // next();
     }
   ]}, function(err, data) {
     if(err) return next(err);

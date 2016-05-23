@@ -23,7 +23,7 @@ YandexSvc.prototype.getApiUrl = function (site) {
 YandexSvc.prototype.searchByKeyword = function (site, keyword, options, next) {
   var url = this.getApiUrl(site),
     self = this;
-
+  
   yandex({url: url, query: keyword, groupby: {
     mode: 'deep',
     attr: 'd',
@@ -52,8 +52,14 @@ YandexSvc.prototype.getSitesByKeyword = function (site, keyword, options, next) 
     if (err) { return next(err); }
 
     var groups = result.grouping[0].group,
+      url,
       urls = _.map(groups, function(item) {
-        return item.doc[0].url[0];
+        url = item.doc[0].url[0];
+        if(options.regex !== undefined) {
+          var domain = url.match(options.regex);
+          url = domain ? domain[0] : url;
+        }
+        return url;
       });
 
     next(null, urls);

@@ -9,6 +9,8 @@ function($scope, project, NgTableParams, aKeywordModel, aPageModel, $stateParams
       to: moment()
     }
   };
+  
+  $scope.services = ['google', 'yandex'];
 
   $scope.refreshKeys = (cb) => {
     $scope.loading = true;

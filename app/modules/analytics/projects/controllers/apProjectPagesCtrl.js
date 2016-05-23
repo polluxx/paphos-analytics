@@ -54,7 +54,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
           console.log('reload');
           $scope.loading = false;
           $scope.tableParams.reload();
-        }, 2000);
+        }, 4000);
     });
   });
 }

@@ -100,26 +100,31 @@ exports['pages.keywords'] = function(app, message, callback) {
     limitService;
 
   var limitChance = 1;
-  // function yandexLimitResponse(err, response, cb) {
-  //   log.info("Get limit from yandex: attempt - "+limitChance);
-  //   if(err) {
-  //     if(limitChance >=3) {
-  //       log.info('More than 3 attempts failed when getting xml limits!');
-  //       return cb();
-  //     }
-  //     limitChance++;
-  //     return yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
-  //       return yandexLimitResponse(err, response, cb);
-  //     });
-  //   }
-  //
-  //   return cb(null, response);
-  // }
+  function yandexLimitResponse(err, response, cb) {
+    log.info("Get limit from yandex: attempt - "+limitChance);
+    if(err) {
+      if(limitChance >=3) {
+        log.info('More than 3 attempts failed when getting xml limits!');
+        return cb();
+      }
+      limitChance++;
+      return yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
+        return yandexLimitResponse(err, response, cb);
+      });
+    }
+
+    return cb(null, response);
+  }
 
 
   async.auto({
-    pages: (next) => {
-      var limit = 200;
+    limit: next => {
+      yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
+        yandexLimitResponse(err, response, next);
+      });
+    },
+    pages: ['limit', (next, data) => {
+      var limit = data.limit || 100;
       app.models.keywords.find(
         {
           $or:
@@ -127,19 +132,50 @@ exports['pages.keywords'] = function(app, message, callback) {
             {updated: {$lt: new Date(moment().format("MM/DD/YYYY"))}},
             {updated: {$exists: false}}
           ]}, next).limit(limit);
-    },
-    // yandex: ['pages', (next, data) => {
-    //   if(!data.pages.length) return next();
-    //
-    //   startYandexReport(app, data.pages.map(page => page.word));
-    //
-    //   next();
-    // }]
+    }],
+    yandexReport: ['pages', (next, data) => {
+      if(!data.pages || !data.pages.length) return next();
+
+      startYandexReport(app, data.pages.map(page => page.word));
+
+      next();
+    }],
+    yandexSearch: ['pages', (next, data) => {
+      if(!data.pages || !data.pages.length) return next();
+        var apiUrl =  app.config.get('yandex.xml.search'), siteUrl;
+
+        limitService = new rateLimiter(6, 'minute');
+
+        data.pages.forEach(page => {
+          limitService.removeTokens(1, function (err, remainingRequests) {
+            if (err) {
+              return next(err);
+            }
+
+            getSiteUrlByKeyword(app, page, (err, data) => {
+              if(err) return next(err);
+
+              siteUrl = data.siteUrl;
+              siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
+              var args = [{yandexXml: apiUrl}, siteUrl, page.word,
+                {
+                  count: 100,
+                  regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
+                }];
+
+              scanPosition(app, page, app.services.yandex, 'yandex', args);
+            });
+
+          });
+        });
+
+        next();
+    }],
     google: ['pages', (next, data) => {
       console.log(data.pages);
       if(!data.pages.length) return next();
-      limitService = new rateLimiter(10, 'minute');
-
+      limitService = new rateLimiter(6, 'minute');
+       var siteUrl;
       data.pages.forEach(page => {
 
         limitService.removeTokens(1, function (err, remainingRequests) {
@@ -148,8 +184,19 @@ exports['pages.keywords'] = function(app, message, callback) {
           }
 
           // GOOGLE
-          scanGooglePosition(app, page);
+          getSiteUrlByKeyword(app, page, (err, data) =>
+          {
+            if (err) return next(err);
 
+            siteUrl = data.siteUrl;
+            siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
+            var args = [siteUrl, encodeURIComponent(page.word),
+              {
+                count: 100,
+                regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
+              }];
+              scanPosition(app, page, app.services.googleSvc, 'google', args);
+          });
         });
       });
 
@@ -238,34 +285,27 @@ function sendTaskToProjects(task, app, callback) {
   }, callback);
 }
 
-function scanGooglePosition(app, keyword) {
+function scanPosition(app, keyword, service, serviceName, args) {
   var log = app.log, siteUrl;
-  // start getting dara from Google Search
+  // start getting data from Search
   async.auto({
-    project: next => {
-      app.models.sites.findOne({_id: keyword.siteId}, next);
+    position: (next) => {
+      console.log('keyword for service', keyword.word, serviceName);
+
+      args.push(next);
+      service.getUrlPosition.apply(service, args);
     },
-    position: ['project', (next, data) => {
-      console.log(keyword.word);
-
-      siteUrl = data.project.siteUrl;
-      siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
-
-      app.services.googleSvc.getUrlPosition(siteUrl, encodeURIComponent(keyword.word),
-        {
-          count: 100,
-          regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
-        }, next);
-    }],
     save: ['position', (next, data) => {
-      console.log(data.position);
+      console.log('position', data.position);
+
       app.models.keywords.update(
         {_id: keyword._id},
         {
           $addToSet: {
             positions: {
               date: moment(new Date()).format("YYYY-MM-DD"),
-              position: data.position
+              position: data.position,
+              service: serviceName
             }
           },
           updated: Date.now()
@@ -314,4 +354,8 @@ function startYandexReport(app, keywords) {
   }, error => {
     if(error) app.log.error("Error on yandex report:", error);
   });
+}
+
+function getSiteUrlByKeyword(app, keyword, next) {
+  app.models.sites.findOne({_id: keyword.siteId}, next);
 }

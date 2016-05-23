@@ -26,12 +26,20 @@ router.get('/', function (req, res, next) {
       if(err) return next(err);
 
       var result = data.keywords.map(function(record) {
-        var positions = [], date, position;
+        var positions = {
+          google: [],
+          yandex: []
+        }, date, positionGoogle, positionYandex;
+
         for (date = moment(dateFrom); date.isSameOrBefore(dateTo); date.add(1, 'day')) {
-          position = _.find(record.positions, { date: date.format('YYYY-MM-DD') });
-          positions.push(position ? position.position : 0);
+          positionGoogle = _.find(record.positions, { date: date.format('YYYY-MM-DD'), service: 'google' });
+          positionYandex = _.find(record.positions, { date: date.format('YYYY-MM-DD'), service: 'yandex' });
+
+          positions.google.push(positionGoogle ? positionGoogle.position : '-');
+          positions.yandex.push(positionYandex ? positionYandex.position : '-');
         }
         record.positions = positions;
+
         return record;
       });
       if (data.count !== -1) {

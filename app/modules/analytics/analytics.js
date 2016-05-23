@@ -5,6 +5,7 @@ import settings from './settings/settings';
 import statistic from './statistic/statistic';
 import experiments from './experiments/experiments';
 import directives from './directives/directives';
+import filters from './filters/filters';
 
 var appName = 'module.analytics';
 
@@ -16,7 +17,8 @@ var module = angular.module(appName, [
   settings,
   experiments,
   statistic,
-  directives
+  directives,
+  filters
 ]);
 
 import routes from './routes';
