@@ -368,6 +368,8 @@ function startYandexReport(app, keywords) {
         createReport: ['api', 'checkReport', (next, data) => {
           if(data.checkReport.length || data.checkReport === 'wait') return next();
 
+          console.log('slices left', slices);
+
           slices.forEach((slice, index) => {
             app.services.yandexWds.createWordstatReport(slice, data.api, (err, response) => {
               if(err) app.log.error(err);
@@ -377,7 +379,7 @@ function startYandexReport(app, keywords) {
           next();
         }],
         reports: ['checkReport', (next, data) => {
-          if(!data.checkReport.length || data.checkReport === 'wait' || !slices.length) return next();
+          if(!data.checkReport.length || data.checkReport === 'wait') return next();
           var reports = data.checkReport;
 
           reports.forEach(report => {
