@@ -46,58 +46,29 @@ YandexWds.prototype.authorize = function(app) {
 }
 
 YandexWds.prototype.createWordstatReport = function(phrases, token, next) {
-  var requestParams = {
-    "Phrases": phrases
-  };
 
   var reqParams = {
     "method": "CreateNewWordstatReport",
-    "param": {
-      "Phrases": phrases,
-      "Login": 'yura-kosakivsky'
-    },
+    "Phrases": phrases,
     "locale": "ru",
     "token": token
   };
 
-  // var reqParams = {
-  //   "method": "CreateNewWordstatReport",
-  //   "token": token,
-  //   "param": 'yura-kosakivsky'
-  // };
-  // console.log(reqParams);
-  // request.post('https://api.direct.yandex.ru/v4/json/', {form: JSON.stringify(reqParams)}, next);
-  //
-  // return;
-
-  // // Request with params.
-  // this.api.call('CreateNewWordstatReport', requestParams, (error, response) => {
-  //   if(error) return next(error);
-  //
-  //   console.log('CreateNewWordstatReport', response);
-  //   this.reports.push(response.data);
-  //   next(null, response)
-  // });
   // Request with params.
   this.api.call('CreateNewWordstatReport', reqParams, (error, response) => {
     if(error) return next(error);
 
-    console.log('CreateNewWordstatReport', response);
-    this.reports.push(response.data);
+    this.reports.push(response);
     next(null, response)
   });
 }
 
 YandexWds.prototype.deleteWordstatReport = function(id, next) {
-  var requestParams = {
-    param: id
-  };
-
-  this.api.call('DeleteWordstatReport', requestParams, (error, response) => {
+  this.api.call('DeleteWordstatReport', id, (error, response) => {
     if(error) return next(error);
 
     console.log('DeleteWordstatReport', response);
-    if(response.data !== 1) return next('Error when removing report ID: ' + id);
+    if(response !== 1) return next('Error when removing report ID: ' + id);
 
     this.reports.splice(this.reports.indexOf(id), 1);
     next(null, 'OK');
@@ -109,11 +80,7 @@ YandexWds.prototype.listWordstatReports = function(next) {
 }
 
 YandexWds.prototype.getWordstatReport = function(id, next) {
-  var requestParams = {
-    param: id
-  };
-
-  this.api.call('GetWordstatReport', requestParams, next);
+  this.api.call('GetWordstatReport', id, next);
 }
 
 YandexWds.prototype.getAuthCode = function(next, isRequest) {

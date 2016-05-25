@@ -158,7 +158,7 @@ router.get('/analytics', function (req, res, next) {
             $group: {
               _id: { date: '$date' , siteId: '$site._id'},
               sessions: { $sum: "$sessions" } ,
-              users: { $sum: "$users" }
+              pageviews: { $sum: "$pageviews" }
             }
           }
         ], function(err) {

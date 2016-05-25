@@ -133,28 +133,36 @@ exports['pages.keywords'] = function(app, message, callback) {
             {updated: {$exists: false}}
           ]}, next).limit(limit);
     }],
-    // yandexReport: ['pages', (next, data) => {
-    //   if(!data.pages || !data.pages.length) return next();
-    //
-    //   startYandexReport(app, data.pages.map(page => page.word));
-    //
-    //   next();
-    // }],
+    yandexReport: ['pages', (next, data) => {
+      if(!data.pages || !data.pages.length) return next();
+
+      var sliceLimit = 50,
+        keywords = data.pages.map(page => page.word),
+        slices = _.chunk(keywords, sliceLimit),
+        limitService = new rateLimiter(1, 300000);
+
+      slices.forEach(slice => {
+        limitService.removeTokens(1, function (err, remainingRequests) {
+          if(err) return next(err);
+          startYandexReport(app, slice);
+        });
+      });
+    }],
     yandexSearch: ['pages', (next, data) => {
       if(!data.pages || !data.pages.length) return next();
         var apiUrl =  app.config.get('yandex.xml.search'), siteUrl;
-    
+
         limitService = new rateLimiter(6, 'minute');
-    
+        
         data.pages.forEach(page => {
           limitService.removeTokens(1, function (err, remainingRequests) {
             if (err) {
               return next(err);
             }
-    
+
             getSiteUrlByKeyword(app, page, (err, data) => {
               if(err) return next(err);
-    
+
               siteUrl = data.siteUrl;
               siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
               var args = [{yandexXml: apiUrl}, siteUrl, page.word,
@@ -162,13 +170,13 @@ exports['pages.keywords'] = function(app, message, callback) {
                   count: 100,
                   regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
                 }];
-    
+
               scanPosition(app, page, app.services.yandex, 'yandex', args);
             });
-    
+
           });
         });
-    
+
         next();
     }],
     google: ['pages', (next, data) => {
@@ -177,17 +185,17 @@ exports['pages.keywords'] = function(app, message, callback) {
       limitService = new rateLimiter(6, 'minute');
        var siteUrl;
       data.pages.forEach(page => {
-    
+
         limitService.removeTokens(1, function (err, remainingRequests) {
           if (err) {
             return next(err);
           }
-    
+
           // GOOGLE
           getSiteUrlByKeyword(app, page, (err, data) =>
           {
             if (err) return next(err);
-    
+
             siteUrl = data.siteUrl;
             siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
             var args = [siteUrl, encodeURIComponent(page.word),
@@ -199,7 +207,7 @@ exports['pages.keywords'] = function(app, message, callback) {
           });
         });
       });
-    
+
       next();
     }]
   }, callback);
@@ -320,41 +328,88 @@ function scanPosition(app, keyword, service, serviceName, args) {
 
 function startYandexReport(app, keywords) {
   var rateLimiter = limiter.RateLimiter,
-  limitService = new rateLimiter(3, 'minute');
+  limitService = new rateLimiter(1, 'minute');
+  var slices = _.chunk(keywords, 10);
 
-  async.auto({
-    sitesTokens: next => {
-      app.models.sites.find({}, 'yandexTokens', next);
-    },
-    api: ['sitesTokens', (next, data) => {
-      var tokenObj = data.sitesTokens[0].yandexTokens;
+  slices.forEach(() => {
+    limitService.removeTokens(1, function (err, remainingRequests) {
+      async.auto({
+        sitesTokens: next => {
+          app.models.sites.find({}, 'yandexTokens', next);
+        },
+        api: ['sitesTokens', (next, data) => {
+          var tokenObj = data.sitesTokens[0].yandexTokens;
 
-      console.log('tokenObj', tokenObj);
-      app.services.yandexWds.init(tokenObj.token, next);
-    }],
-    createReport: ['api', (next, data) => {
-      app.services.yandexWds.createWordstatReport(keywords, data.api, next);
-    }],
-    checkReport: ['createReport', (next, data) => {
-      console.log(data);
-      // limitService.removeTokens(1, function (err, remainingRequests) {
-      //   app.services.yandexWds.listWordstatReports(data.data, function(error, response) {
-      //     if(error) return next(error);
-      //
-      //     console.log(response);
-      //     next()
-      //   });
-      // });
-      next();
-    }],
-    report: ['checkReport', (next, data) => {
-      next();
-    }],
-    deleteReport: ['report', (next, data) => {
-      next();
-    }]
-  }, error => {
-    if(error) app.log.error("Error on yandex report:", error);
+          app.services.yandexWds.init(tokenObj.token, next);
+        }],
+        checkReport: ['api', (next, data) => {
+          var successful = [], pending = [];
+
+          app.services.yandexWds.listWordstatReports(function(error, response) {
+            if(error) return next(error);
+
+            pending = response.filter(report => {
+              return report.StatusReport === 'Pending';
+            });
+            console.info('some pending items need to wait', pending);
+            if(pending.length) return next(null, 'wait');
+
+            successful = response.filter(report => {
+              return report.StatusReport === 'Done';
+            });
+
+            console.log('successful', successful);
+            next(null, successful);
+          });
+          //
+          // next();
+        }],
+        createReport: ['api', 'checkReport', (next, data) => {
+          if(data.checkReport.length || data.checkReport === 'wait') return next();
+
+          slices.forEach((slice, index) => {
+            app.services.yandexWds.createWordstatReport(slice, data.api, (err, response) => {
+              if(err) app.log.error(err);
+              slices.splice(index, 1);
+            });
+          });
+          next();
+        }],
+        reports: ['checkReport', (next, data) => {
+          if(!data.checkReport.length || data.checkReport === 'wait' || !slices.length) return next();
+          var reports = data.checkReport;
+
+          reports.forEach(report => {
+
+            async.auto({
+              report: innerNext => {
+                app.services.yandexWds.getWordstatReport(report.ReportID, (err, response) => {
+                  if(err) return innerNext(err);
+
+                  response.forEach(reportItem => {
+                    var phrase = {phrase: reportItem.Phrase, shows: reportItem.SearchedWith ? reportItem.SearchedWith[0].Shows : 0};
+
+                    app.models.keywords.update({word: phrase.phrase}, {frequency: phrase.shows}, {upsert: false, multi: false}, (err, result) => {
+                      if(err) app.log.error(err);
+                    });
+                    console.log('updated word', phrase.phrase);
+                  });
+                  innerNext(null, report);
+                });
+              },
+              remove: ['report', (innerNext, innerData) => {
+                if(!innerData.report) return innerNext();
+                app.services.yandexWds.deleteWordstatReport(innerData.report.ReportID, innerNext);
+              }]
+            });
+          });
+
+          next();
+        }]
+      }, error => {
+        if(error) app.log.error("Error on yandex report:", error);
+      });
+    });
   });
 }
 

@@ -42,7 +42,7 @@ exports['sites.scanSites'] = function (app, msg, cb) {
   }, cb);
 };
 
-exports['sites.analyticsSync'] = function (app, msg, cb) {
+  exports['sites.analyticsSync'] = function (app, msg, cb) {
   var log = app.log;
 
   var startDate = moment().subtract(2, 'day'),

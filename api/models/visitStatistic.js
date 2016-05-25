@@ -13,7 +13,7 @@ var schema = new mongoose.Schema({
   date: { type: Date, required: true },
 
   sessions: Number,
-  users: Number
+  pageviews: Number
 }, {
   versionKey: false,
 

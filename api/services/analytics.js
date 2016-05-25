@@ -151,8 +151,8 @@ AnalyticsService.prototype.syncReportsForSite = function(site, startDate, endDat
         'ids': 'ga:' + site.analytics.profileId,
         'start-date': momentDate.format('YYYY-MM-DD'),
         'end-date': momentDate.format('YYYY-MM-DD'),
-        'metrics': 'ga:sessions,ga:users',
-        'sort': '-ga:users'
+        'metrics': 'ga:sessions,ga:pageviews',
+        'sort': '-ga:pageviews'
       }, function(err, res) {
         if (err) { return next(err); }
 
@@ -165,7 +165,7 @@ AnalyticsService.prototype.syncReportsForSite = function(site, startDate, endDat
             'site._id': site._id,
             date: dateToSet.toDate(),
             sessions: item[0],
-            users: item[1],
+            pageviews: item[1],
           }, {upsert:true, multi:false}, next);
         }, next);
       });
