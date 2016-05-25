@@ -43,12 +43,12 @@
     </td>
     <td class="text-center">
 
-      {{analytics[site._id] | find:'date':'now':'pageviews'}}
+      {{analytics[site._id] | find:'date':'now':'sessions'}}
 
     </td>
     <td class="text-center">
 
-      {{analytics[site._id] | find:'date':-1:'pageviews'}}
+      {{analytics[site._id] | find:'date':-1:'sessions'}}
 
     </td>
   </tr>
