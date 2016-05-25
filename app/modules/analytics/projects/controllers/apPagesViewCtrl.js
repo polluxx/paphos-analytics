@@ -23,10 +23,10 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateSer
 
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
-  
+
   $scope.query = {
     ids: 'ga:' + ($scope.project.analytics !== undefined ? $scope.project.analytics.profileId : null),
-    metrics: 'ga:pageviews',
+    metrics: 'ga:organicSearches',
     dimensions: 'ga:source, ga:date',
     filters: 'ga:pagePath=@' + $scope.item.url,
     type: "plot",
@@ -48,5 +48,5 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateSer
   });
 
   console.log($scope.keywordsTableParams);
-  
+
 }

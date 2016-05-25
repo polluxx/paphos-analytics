@@ -3,7 +3,7 @@ export default
 function($scope, items, project, dateService) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
-  
+
   project.token = {profile_id: project.analytics !== undefined ? project.analytics.profileId : null};
   project.id = project._id;
   console.log(items);
@@ -15,7 +15,7 @@ function($scope, items, project, dateService) {
   });
 
   if(!items.length) return;
-  
+
   $scope.current = {
     project: project,
     date: {
@@ -24,7 +24,7 @@ function($scope, items, project, dateService) {
     },
     query: {
       ids: 'ga:' + (project.analytics !== undefined ? project.analytics.profileId : null),
-      metrics: 'ga:pageviews',
+      metrics: 'ga:organicSearches',
       dimensions: 'ga:pagePath, ga:date',
       filters: items.map(item => {
         if(item.url[0] == '/'){
@@ -32,7 +32,7 @@ function($scope, items, project, dateService) {
         }
         return 'ga:pagePath==/' + item.url+".html"
       }).join(','),
-      sort: '-ga:pageviews, -ga:date',
+      sort: '-ga:organicSearches, -ga:date',
       type: "plot",
       pure: true,
       legend:false,

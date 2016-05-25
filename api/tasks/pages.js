@@ -116,7 +116,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     return cb(null, response);
   }
 
-
+  return callback();
   async.auto({
     limit: next => {
       yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
@@ -152,18 +152,18 @@ exports['pages.keywords'] = function(app, message, callback) {
     yandexSearch: ['pages', (next, data) => {
       if(!data.pages || !data.pages.length) return next();
         var apiUrl =  app.config.get('yandex.xml.search'), siteUrl;
-    
+
         limitService = new rateLimiter(6, 'minute');
-    
+
         data.pages.forEach(page => {
           limitService.removeTokens(1, function (err, remainingRequests) {
             if (err) {
               return next(err);
             }
-    
+
             getSiteUrlByKeyword(app, page, (err, data) => {
               if(err) return next(err);
-    
+
               siteUrl = data.siteUrl;
               siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
               var args = [{yandexXml: apiUrl}, siteUrl, page.word,
@@ -171,13 +171,13 @@ exports['pages.keywords'] = function(app, message, callback) {
                   count: 100,
                   regex: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})/
                 }];
-    
+
               scanPosition(app, page, app.services.yandex, 'yandex', args);
             });
-    
+
           });
         });
-    
+
         next();
     }],
     google: ['pages', (next, data) => {
@@ -186,17 +186,17 @@ exports['pages.keywords'] = function(app, message, callback) {
       limitService = new rateLimiter(6, 'minute');
        var siteUrl;
       data.pages.forEach(page => {
-    
+
         limitService.removeTokens(1, function (err, remainingRequests) {
           if (err) {
             return next(err);
           }
-    
+
           // GOOGLE
           getSiteUrlByKeyword(app, page, (err, data) =>
           {
             if (err) return next(err);
-    
+
             siteUrl = data.siteUrl;
             siteUrl = /http/.test(siteUrl) ? siteUrl : "http://" + siteUrl;
             var args = [siteUrl, encodeURIComponent(page.word),
@@ -208,7 +208,7 @@ exports['pages.keywords'] = function(app, message, callback) {
           });
         });
       });
-    
+
       next();
     }]
   }, callback);

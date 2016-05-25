@@ -151,8 +151,8 @@ AnalyticsService.prototype.syncReportsForSite = function(site, startDate, endDat
         'ids': 'ga:' + site.analytics.profileId,
         'start-date': momentDate.format('YYYY-MM-DD'),
         'end-date': momentDate.format('YYYY-MM-DD'),
-        'metrics': 'ga:sessions,ga:pageviews',
-        'sort': '-ga:pageviews'
+        'metrics': 'ga:sessions,ga:organicSearches',
+        'sort': '-ga:organicSearches'
       }, function(err, res) {
         if (err) { return next(err); }
 

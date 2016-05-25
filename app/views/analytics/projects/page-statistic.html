@@ -39,7 +39,7 @@
 <div class="tab-content" ui-view>
   <div date="current.date" site="project" analytics-ga-report="query"></div>
 
-  <div class="row margin-top-table" ng-show="$data">
+  <div class="row margin-top-table" ng-show="keywordsTableParams.data.length">
     <div class="col-xs-10">
       <h2>Keywords</h2>
       <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">

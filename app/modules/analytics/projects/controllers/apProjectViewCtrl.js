@@ -9,7 +9,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   $scope.item = item;
   $scope.query = {
     ids: 'ga:' + profilesId,  // put your viewID here
-    metrics: 'ga:pageviews',
+    metrics: 'ga:organicSearches',
     dimensions: 'ga:source, ga:date',
     legend:false,
     type: "plot"
