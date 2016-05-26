@@ -116,7 +116,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     return cb(null, response);
   }
 
-  return callback();
+  
   async.auto({
     limit: next => {
       yandex.getLimits(config.xml.limits, new Date(), function (err, response) {
