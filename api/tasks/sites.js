@@ -81,6 +81,22 @@ exports['sites.garbageClean'] = function(app, msg, cb) {
   }, cb);
 };
 
+exports['sites.yandexUpdates'] = function (app, msg, next) {
+  app.services.analytics.getYandexUpdates(function (err, resp) {
+    if(err) return next(err);
+    var data = JSON.parse(resp.body);
+    var date = moment(data.data.index[0].upd_date[0], 'YYYYMMDD');
+    
+    app.models.yandexUpdates.update({date: date}, {date: date}, {
+      upsert: true,
+      multi: false
+    }, function (err) {
+      if (err) app.log.error("Error when trying to insert data to DB: " + err);
+    });
+    next();
+  });
+}
+
 function setToken(app, site, next) {
   var log = app.log;
   app.services.google.setCredentials(site.tokens);

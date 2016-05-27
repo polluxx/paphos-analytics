@@ -98,7 +98,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     group, updateFields, searchCondition,
     rateLimiter = limiter.RateLimiter,
     limitService;
-
+  return callback();
   var limitChance = 1;
   function yandexLimitResponse(err, response, cb) {
     log.info("Get limit from yandex: attempt - "+limitChance);
@@ -116,7 +116,7 @@ exports['pages.keywords'] = function(app, message, callback) {
     return cb(null, response);
   }
 
-  
+
   async.auto({
     limit: next => {
       yandex.getLimits(config.xml.limits, new Date(), function (err, response) {

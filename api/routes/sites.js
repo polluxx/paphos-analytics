@@ -49,11 +49,18 @@ router.post('/find', function (req, res, next) {
 });
 
 router.get('/yandexUpdates', function(req, res, next) {
-  req.app.services.analytics.getYandexUpdates(function (err, resp) {
+  var params = req.query,
+    dateFrom = moment(params.dateFrom, "YYYY-MM-DD"),
+    dateTo = moment(params.dateTo, "YYYY-MM-DD");
+  
+  req.app.models.yandexUpdates.find({date: {
+    $gte: dateFrom,
+    $lte: dateTo
+  }}, function (err, resp) {
     if(err) return next(err);
 
     res.json(resp);
-    next();
+    //next();
   });
 });
 

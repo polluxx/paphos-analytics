@@ -1,6 +1,7 @@
 */10 * * * * root /usr/local/bin/node /src/api/cli.js push-task sites.scanSites >> /var/log/cron.log 2>&1
 02 */1 * * * root /usr/local/bin/node /src/api/cli.js push-task sites.garbageClean >> /var/log/cron.log 2>&1
 01 */2 * * * root /usr/local/bin/node /src/api/cli.js push-task sites.analyticsSync >> /var/log/cron.log 2>&1
+01 2 * * * root /usr/local/bin/node /src/api/cli.js push-task sites.yandexUpdates >> /var/log/cron.log 2>&1
 
 01 */1 * * * root /usr/local/bin/node /src/api/cli.js push-task pages.keywords >> /var/log/cron.log 2>&1
 

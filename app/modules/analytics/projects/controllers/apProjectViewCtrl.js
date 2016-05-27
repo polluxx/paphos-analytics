@@ -1,7 +1,6 @@
 export default
 /*@ngInject*/
 function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, dateService) {
-  console.log(item);
   var profilesId = !item.analytics ? null : item.analytics.profileId;
 
   item.token = {profile_id: profilesId};
@@ -41,13 +40,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   });
 
   $scope.getYandexUpdates = () => {
-    aSiteModel.yandexUpdates(function (resp) {
-      if (!resp || resp.status != 200) {
-        console.error("Error on response");
-        return;
-      }
-
-      $scope.item.yandexUpdates = JSON.parse(resp.body);
+    aSiteModel.yandexUpdates({dateFrom: dateService.start, dateTo: dateService.end}, resp => {
+      $scope.item.yandexUpdates = resp;
     });
   };
 }

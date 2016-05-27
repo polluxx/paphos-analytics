@@ -16,7 +16,7 @@ function aSiteModel($resource, ANALYTICS_API) {
     'refresh': {method: 'POST', params: { method: 'refresh' }, isArray: false },
     'deleteTemp': {method: 'DELETE', params: { method: 'temp' }, isArray: false },
 
-    'yandexUpdates': {method: 'GET', params: { method: 'yandexUpdates' }, isArray: false}
+    'yandexUpdates': {method: 'GET', params: { method: 'yandexUpdates' }, isArray: true}
   });
 
   return resource;

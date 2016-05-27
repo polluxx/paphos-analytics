@@ -27,7 +27,8 @@ var app = {
     statistics: require('./models/statistic.js'),
     experiments: require('./models/experiment.js'),
     experimentUrls: require('./models/experimentUrl.js'),
-    visitStatistics: require('./models/visitStatistic.js')
+    visitStatistics: require('./models/visitStatistic.js'),
+    yandexUpdates: require('./models/yandexUpdates.js')
   }
 };
 

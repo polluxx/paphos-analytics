@@ -93,7 +93,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
         if (!report || !profileId) {
           return;
         }
-        
+
         scope.table = {
           headers: [],
           rows: [],
@@ -268,11 +268,14 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
             scope.$watch("site.yandexUpdates", function (yUpdate) {
               if(!yUpdate) return;
 
-              var dates = summa.map(summItem => {return summItem[1]}), updateDate = moment(yUpdate.data.index[0].upd_date[0], 'YYYYMMDD').format('DD/MM/YYYY'),
-                mostBigCoounter = summa[summa.length-2][2];
-
+              var dates = summa.map(summItem => {return summItem[1]}),
+              updateDates = yUpdate.map(date => {
+                return moment(date.date, moment.ISO_8601).format('DD/MM/YYYY');
+              }),
+              mostBigCoounter = Math.ceil(summa[summa.length-2][2] / 10), dateFound;
               dates.forEach(date => {
-                rows.push(["Yandex Update", date, updateDate === date ? Math.ceil(mostBigCoounter / 10) : 0]);
+                dateFound = updateDates.indexOf(date);
+                rows.push(["Yandex Update", date, dateFound !== -1 ? mostBigCoounter : 0]);
               });
 
               groupByRows(rows);
