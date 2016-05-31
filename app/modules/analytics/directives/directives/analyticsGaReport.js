@@ -1,24 +1,31 @@
+import chartCustomTooltip from '../../../../../app/libs/chart-custom-tooltip';
+
 export default
 /*@ngInject*/
-function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateService) {
+function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
   var number = 0;
   Chart.defaults.global.responsive = true;
+  Chart.defaults.global.customTooltips = chartCustomTooltip;
+
   var defaultLineOptions = {
     datasetStrokeWidth: 2,
     bezierCurve: true,
     datasetFill: true
   };
 
+
   return {
     restrict: 'A',
     scope: {
       'report': '=analyticsGaReport',
       'date': '=',
-      'site': '='
+      'site': '=',
+      'dateService': '='
     },
     templateUrl: '/app/views/analytics/directives/analytics-report.html',
     link: function (scope, element, attrs) {
       scope.reportData = {};
+      scope.mainFolders = ["google", "yandex", "Yandex Update"];
 
       if(!scope.report) return;
 
@@ -34,6 +41,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
       };
       scope.chartLines = {};
       scope.checkedBoxes = [];
+      scope.queries = [];
 
       scope.current = {
         queries: [],
@@ -77,19 +85,27 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
         return ctx;
       }
 
-      scope.date.startDate = dateService.start;
-      scope.date.endDate = dateService.end;
+      scope.$watch(() => scope.dateService, dateServiceChange => {
+        console.log('dateServiceChange', dateServiceChange);
+        scope.date.startDate = dateServiceChange.start;
+        scope.date.endDate = dateServiceChange.end;
 
-      scope.$on('daterange', function(event, dateStart, dateEnd) {
-        scope.date.startDate = dateStart;
-        scope.date.endDate = dateEnd;
-        scope.$apply();
-      });
+        if (!scope.site) {
+          return;
+        }
+        profileId = scope.site.token.profile_id;
+        scope.current.queries = [];
+        scope.current.chart = null;
+        scope.chartLines = {};
+        scope.checkedBoxes = [];
+
+        showReport();
+      }, true);
 
       scope.seriesColours = {};
 
       var showReport = () => {
-        var report = scope.report;
+        var report = angular.copy(scope.report);
         if (!report || !profileId) {
           return;
         }
@@ -102,10 +118,10 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
 
         scope.current.columns = (report.dimensions.split(',') || []).concat(report.metrics.split(',') || []);
 
-        var chartOptions = scope.report.chart || {'width': '100%'};
+        var chartOptions = report.chart || {'width': '100%'};
 
         $timeout(() => {
-
+          console.log('Chart.defaults.Line', Chart.defaults.Line);
           if(scope.report.pure !== undefined) {
             Chart.defaults.Line.datasetStrokeWidth = 1.5;
             Chart.defaults.Line.bezierCurve = false;
@@ -154,6 +170,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
             }
           }];
 
+          scope.queries = angular.copy(scope.current.queries);
+
         }, 100);
 
         scope.number = number;
@@ -161,16 +179,17 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
       };
 
       var profileId;
-      scope.$watchGroup(['site.id', 'date.startDate', 'date.endDate'], () => {
-        if (!scope.site) {
-          return;
-        }
-
-        profileId = scope.site.token.profile_id;
-        scope.current.queries = [];
-        scope.current.chart = null;
-        showReport();
-      }, true);
+      // scope.$watchGroup(['date.startDate', 'date.endDate'], () => {
+      //   if (!scope.site) {
+      //     return;
+      //   }
+      //
+      //   profileId = scope.site.token.profile_id;
+      //   scope.current.queries = [];
+      //   scope.current.chart = null;
+      //   //
+      //   showReport();
+      // }, true);
 
       var chart, rows = [], headers = [];
       scope.$on('$gaReportSuccess', function (event, gaReport, element) {
@@ -206,7 +225,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
 
           if(!scope.report.pure) {
             var indRows = 0, rowsLen = rows.length, row,
-              insert, resultsFolded = [], tmpData = {}, folders = ["google", "yandex", "Yandex Update"];
+              insert, resultsFolded = [], tmpData = {}, folders = scope.mainFolders;
             for (indRows; indRows < rowsLen; indRows++) {
               row = rows[indRows];
               if (~folders.indexOf(row[0])) {
@@ -248,8 +267,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
             return rows.map(row => parseInt(row[1 + n]))
           });
 
-          scope.initialChartData = angular.copy(scope.chart);
-
           if (dimensions.length == 2) {
 
             if(!scope.report.pure) {
@@ -281,6 +298,41 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
               groupByRows(rows);
             });
 
+            scope.$watch("site.keywords", function (keywords) {
+              if(!keywords) return;
+
+              var dates = summa.map(summItem => {return summItem[1]}),
+              dateFound, keywordsGroupTmp = _.groupBy(keywords, item => item[0]),
+                keywordsGrouped = [], keywordsIndexes = Object.keys(keywordsGroupTmp),
+                keywordsGroup = {};
+
+              if(scope.report.intersections && keywordsIndexes.length > 1) {
+                var intersection = scope.report.intersections;
+                keywordsIndexes.sort(keyword => {
+                  return ~intersection.indexOf(keyword) ? -1 : 1;
+                });
+
+                keywordsIndexes.slice(0,10).forEach(keyword => {
+                  keywordsGroup[keyword] = keywordsGroupTmp[keyword];
+                });
+              } else {
+                keywordsGroup = keywordsGroupTmp;
+              }
+
+              _.forEach(keywordsGroup, (groupItem, keyword) => {
+                var collectionByDates = [];
+                dates.forEach(date => {
+                  dateFound = _.find(groupItem, {1: date}) || [keyword, date, 0];
+                  collectionByDates.push(dateFound);
+                });
+
+                keywordsGrouped = keywordsGrouped.concat(collectionByDates);
+              });
+
+              rows = rows.concat(keywordsGrouped);
+              groupByRows(rows);
+            });
+
             groupByRows(rows);
           }
           scope.hideChart = dimensions.length > 2;
@@ -294,7 +346,39 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
       });
 
       function resetSeries(chart) {
+
+        var mainLabels = angular.copy(scope.mainFolders).concat(["Весь трафик", "Другой трафик"]),
+          color, _savedColor;
+
         if(chart !== undefined) {
+
+          if(scope.report.colors && scope.report.intersections) {
+
+            chart.datasets = chart.datasets.map(dataItem => {
+              color = dataItem.strokeColor;
+              if (~mainLabels.indexOf(dataItem.label)) return dataItem;
+
+              color = scope.report.colors[0];
+              if(~scope.report.intersections.indexOf(dataItem.label)) {
+                color = scope.report.colors[1];
+              }
+              dataItem.strokeColor = color;
+              dataItem.pointColor = color;
+              dataItem.fillColor = color.replace(/(\d{1})+(?=\))/, "0.2");
+
+              dataItem.points = dataItem.points.map(point => {
+                _savedColor = color.replace(/(\d{1})+(?=\))/, "0.8");
+                point._saved.fillColor = color;
+                point._saved.highlightStroke = _savedColor;
+                point.fillColor = color;
+                point.highlightStroke = _savedColor;
+
+                return point;
+              });
+              return dataItem;
+            });
+          }
+
           chart.datasets.forEach(dataset => {
             scope.seriesColours[dataset.label] = dataset.strokeColor;
           });
@@ -360,6 +444,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter, $q, dateSer
       };
 
       scope.$on('$gaReportError', function (e, gaReport, element) {
+        scope.loading = false;
         scope.report.$error = gaReport.error;
         toaster.pop('error', gaReport.error.message);
       });

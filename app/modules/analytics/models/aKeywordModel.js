@@ -7,7 +7,8 @@ function aKeywordModel($resource, ANALYTICS_API) {
     'get': {method: 'GET'},
     'save': {method: 'PUT'},
     'create': {method: 'POST'},
-    'update': {method: 'PATCH'}
+    'update': {method: 'PATCH'},
+    'analytics': {method: 'GET', params : {pageId: '@pageId', dateFrom: '@dateFrom', dateTo: '@dateTo', method: 'pageAnalytics' }, isArray: true}
   });
 
   return resource;

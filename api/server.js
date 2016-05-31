@@ -73,11 +73,6 @@ exports.init = function (next) {
       });
       mongoose.set('debug', false);
     },
-    'migration': ['mongoose', function (next) {
-      //return next();
-      app.log.info('Load migrations:', path.join(__dirname, 'migrations'));
-      paphos.migrations.migrateToActual(mongoose, app, path.join(__dirname, 'migrations'), next);
-    }],
     'tasks': function(next) {
       if (!config.get('tasks.enabled')) {
         app.log.info('Tasks processing disabled');
@@ -105,6 +100,11 @@ exports.start = function (next) {
       }
       app.services.tasks.start(next);
     },
+    'migration': ['tasks', function (next) {
+      //return next();
+      app.log.info('Load migrations:', path.join(__dirname, 'migrations'));
+      paphos.migrations.migrateToActual(mongoose, app, path.join(__dirname, 'migrations'), next);
+    }],
     'google': function(next) {
       app.services.google.start(next);
     },

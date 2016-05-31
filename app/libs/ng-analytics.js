@@ -336,6 +336,7 @@
                                     * Create report
                                     */
                                     var tasks = [];
+                                  console.log('reports quieries', $scope.queries);
                                     angular.forEach($scope.queries, function (query) {
                                         tasks.push(getReport(query));
                                     });

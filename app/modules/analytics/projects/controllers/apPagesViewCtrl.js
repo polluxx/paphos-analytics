@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateService) {
+function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParams, dateService, aKeywordModel) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -21,17 +21,35 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateSer
     }
   };
 
+  $scope.dateService = dateService;
+
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
   $scope.query = {
-    ids: 'ga:' + ($scope.project.analytics !== undefined ? $scope.project.analytics.profileId : null),
-    metrics: 'ga:organicSearches',
+    ids: 'ga:' + $scope.project.analytics.profileId,
+    metrics: 'ga:users',
     dimensions: 'ga:source, ga:date',
     filters: 'ga:pagePath=@' + $scope.item.url,
     type: "plot",
-    legend:false
+    legend:false,
+    colors: [
+      // for keywords
+      'rgba(148,159,177,1)',
+      'rgba(77,83,96,1)'
+      // 'rgba(151,187,205,1)',
+      // 'rgba(247,70,74,1)',
+      // 'rgba(70,191,189,1)',
+      // 'rgba(253,180,92,1)',
+    ],
+    intersections: keywords.map(keyword => keyword.word)
   };
+
+  $scope.$watch(() => dateService, dateServiceChange => {
+    aKeywordModel.analytics({pageId: item._id, dateFrom:dateServiceChange.start, dateTo:dateServiceChange.end}, result => {
+      $scope.project.keywords = result;
+    });
+  }, true);
 
   $scope.keywordsTableParams = new NgTableParams({
     page: 1,
@@ -40,13 +58,7 @@ function($scope, item, project, aPageModel, NgTableParams, $stateParams, dateSer
       frequency: 'desc'
     }
   }, {
-    getData: function(params) {
-      var res = aPageModel.keywords({_id:$scope.item._id}, function(resp) { return resp; });
-      console.log(res);
-      return res;
-    }
+    data: keywords
   });
-
-  console.log($scope.keywordsTableParams);
 
 }

@@ -50,4 +50,51 @@ router.get('/', function (req, res, next) {
 
 });
 
+router.get('/pageAnalytics', function(req, res, next) {
+  var params = req.query,
+    date = {
+      startDate: params.dateFrom,
+      endDate: params.dateTo
+    },
+    pageId = params.pageId;
+    if(!pageId) return next('No pageId param!');
+    async.auto({
+      page: next => {
+        req.app.models.pages.findOne({_id: params.pageId}, next);
+      },
+      project: ['page', (next, data) => {
+        if(!data.page) return next('No page found.');
+        req.app.models.sites.findOne({_id: data.page.siteId}, next);
+      }],
+      keywords: ['page', (next, data) => {
+        if(!data.page) return next('No page found.');
+        req.app.models.keywords.find({word: {$in: data.page.keywords}}, next);
+      }],
+      analytics: ['page', 'project', 'keywords', (next, data) => {
+        if(!data.page || !data.project || !data.keywords) return next('No data.');
+
+        var options = {
+          profileId: data.project.analytics.profileId,
+          metrics: ['ga:pageviews'],
+          dimensions: ['ga:keyword', 'ga:date'],
+          filters: 'ga:pagePath=@' + data.page.url,
+          date: date,
+          sort: '-ga:pageviews, -ga:date'
+        }, filter = ['(not provided)', '(not set)'];
+
+        req.app.services.analytics.getMetricsByUrl(options, (err, response) => {
+          if(err) return next(err);
+          res.json(response.rows.filter(keyword => {
+            return !~filter.indexOf(keyword[0]);
+          }).map(keyword => {
+            return [keyword[0], moment(keyword[1], 'YYYYMMDD').format('DD/MM/YYYY'), keyword[2]];
+            // return {keyword: keyword[0], date:moment(keyword[1], 'YYYYMMDD').format('DD/MM/YYYY'), pageviews: keyword[2]};
+          }));
+        });
+      }]
+    }, (err) => {
+      if(err) res.json(err);
+    });
+});
+
 module.exports = router;

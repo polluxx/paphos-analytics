@@ -8,11 +8,10 @@ function($scope, items, project, dateService) {
   project.id = project._id;
   console.log(items);
 
-  $scope.$on('daterange', function(event, dateStart, dateEnd) {
-    $scope.startDate = dateStart;
-    $scope.endDate = dateEnd;
-    $scope.$apply();
-  });
+  $scope.startDate = dateService.start;
+  $scope.endDate = dateService.end;
+
+  $scope.dateService = dateService;
 
   if(!items.length) return;
 
@@ -24,7 +23,7 @@ function($scope, items, project, dateService) {
     },
     query: {
       ids: 'ga:' + (project.analytics !== undefined ? project.analytics.profileId : null),
-      metrics: 'ga:organicSearches',
+      metrics: 'ga:users',
       dimensions: 'ga:pagePath, ga:date',
       filters: items.map(item => {
         if(item.url[0] == '/'){
@@ -32,7 +31,7 @@ function($scope, items, project, dateService) {
         }
         return 'ga:pagePath==/' + item.url+".html"
       }).join(','),
-      sort: '-ga:organicSearches, -ga:date',
+      sort: '-ga:users, -ga:date',
       type: "plot",
       pure: true,
       legend:false,

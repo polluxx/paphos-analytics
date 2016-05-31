@@ -96,7 +96,8 @@ function($stateProvider, $urlRouterProvider) {
       },
       resolve: {
         item: (aPageModel, $stateParams) => aPageModel.get({ _id: $stateParams.pageId }).$promise,
-        project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise
+        project: (aSiteModel, $stateParams) => aSiteModel.get({ _id: $stateParams.projectId }).$promise,
+        keywords: (aPageModel, $stateParams) => aPageModel.keywords({_id:$stateParams.pageId}).$promise
       }
     })
 

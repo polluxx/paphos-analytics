@@ -20,7 +20,7 @@ function($rootScope, $stateParams, dateService) {
       }, function (start, end) {
         dateService.start = moment(start, 'DD/MM/YYYY').format('YYYY-MM-DD');
         dateService.end = moment(end, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        $rootScope.$broadcast('daterange', dateService.start, dateService.end);
+        scope.$apply();
       });
     }
   };

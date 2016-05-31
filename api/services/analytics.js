@@ -151,8 +151,8 @@ AnalyticsService.prototype.syncReportsForSite = function(site, startDate, endDat
         'ids': 'ga:' + site.analytics.profileId,
         'start-date': momentDate.format('YYYY-MM-DD'),
         'end-date': momentDate.format('YYYY-MM-DD'),
-        'metrics': 'ga:sessions,ga:organicSearches',
-        'sort': '-ga:organicSearches'
+        'metrics': 'ga:sessions,ga:users',
+        'sort': '-ga:users'
       }, function(err, res) {
         if (err) { return next(err); }
 
@@ -233,6 +233,7 @@ AnalyticsService.prototype.getMetricsByUrl = function (options, next) {
     'metrics': metrics.join(','),
     'dimensions': dimensions.join(','),
     filters: options.filters || '',
+    sort: options.sort || null
   }, function(err, res) {
     if (err) {
       return next(err);
@@ -259,8 +260,6 @@ AnalyticsService.prototype.getYandexUpdates = function(next) {
       next(null, response);
     });
   })
-
-
 }
 
 module.exports = AnalyticsService;
