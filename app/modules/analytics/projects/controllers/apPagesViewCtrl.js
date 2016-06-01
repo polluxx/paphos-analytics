@@ -19,9 +19,12 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
   }
 
   $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
+
     if (isReady) {
       if (!project.tokens) return console.error('No tokens provided!');
 
+      if(ngAnalyticsService.ga.auth.isAuthorized()) return;
+      
       ngAnalyticsService.setToken(project.tokens.access_token);
       ngAnalyticsService.authorize();
     }

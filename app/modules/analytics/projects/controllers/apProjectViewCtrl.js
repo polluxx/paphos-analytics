@@ -7,8 +7,10 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   item.id = item._id;
   $scope.item = item;
 
-  $templateCache.remove('/app/views/analytics/directives/analytics-report.html');
-  console.log('$templateCache', $templateCache.get('/app/views/analytics/directives/analytics-report.html'));
+  //$scope.query = null;
+
+  // $templateCache.remove('/app/views/analytics/directives/analytics-report.html');
+  // console.log('$templateCache', $templateCache.get('/app/views/analytics/directives/analytics-report.html'));
 
   $scope.query = {
     ids: 'ga:' + profilesId,  // put your viewID here
@@ -37,6 +39,8 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
   $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
     if (isReady) {
       if (!item.tokens) return console.error('No tokens provided!');
+
+      if(ngAnalyticsService.ga.auth.isAuthorized()) return;
 
       ngAnalyticsService.setToken(item.tokens.access_token);
       ngAnalyticsService.authorize();
