@@ -33,9 +33,6 @@
           <tr ng-repeat="row in $data">
             <td sortable="'word'">{{row.word}}</td>
             <td sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
-            <!--<td>-->
-              <!--<td ng-repeat="service in services">-->
-              <!--{{row.positions[0][service]}}-->
 
             <td ng-repeat="position in row.positions[0]['google'] track by $index" sortable="'position'">
               <div class="pull-left">
@@ -63,8 +60,6 @@
               </div>
             </td>
 
-            <!--</td>-->
-            <!--</td>-->
           </tr>
         </table>
       </div>

@@ -7,6 +7,7 @@ var schema = new mongoose.Schema({
   frequency: {type: Number},
   importance: {type: Number},
   siteId: mongoose.Schema.Types.ObjectId,
+  pageId: mongoose.Schema.Types.ObjectId,
   positions: {type: Array},
 
   removed: {type: Date},

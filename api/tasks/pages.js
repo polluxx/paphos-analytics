@@ -70,15 +70,19 @@ exports['pages.scan'] = function(app, message, callback) {
                     keywords: page.seo.keywords.map(keyword => {return keyword.title;})
                   };
 
-                  app.models.pages.update(insertCondition, insertData, insertOptions, function (err) {
-                    if (err) log.error("Error when trying to insert data to DB: " + err);
-                  });
-
-                  page.seo.keywords.forEach(word => {
-                    word.siteId = project._id;
-                    app.models.keywords.update({word: word.title}, word, insertOptions, function (err) {
-                      if (err) log.error("Error when trying to insert data to DB: " + err);
-                    });
+                  async.auto({
+                    page: innerNext => {
+                      app.models.pages.findAndModify(insertCondition, {}, insertData, {upsert: true, update: true, multi:false, new:true}, innerNext);
+                    },
+                    keywords: ['page', (innerNext, data) => {
+                      page.seo.keywords.forEach(word => {
+                        word.siteId = project._id;
+                        word.pageId = data.page.value._id;
+                        app.models.keywords.update({word: word.title}, word, insertOptions, function (err) {
+                          if (err) log.error("Error when trying to insert data to DB: " + err);
+                        });
+                      });
+                    }]
                   });
                 });
 

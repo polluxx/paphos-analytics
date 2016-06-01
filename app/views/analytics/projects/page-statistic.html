@@ -43,9 +43,52 @@
     <div class="col-xs-10">
       <h2>Keywords</h2>
       <table ng-table="keywordsTableParams" class="table table-condensed table-bordered table-striped">
+        <thead>
+        <colgroup></colgroup>
+        <colgroup></colgroup>
+        <colgroup span="{{dates.length}}"></colgroup>
+        <colgroup span="{{dates.length}}"></colgroup>
+        <tr>
+          <th rowspan="2">Фраза</th>
+          <th rowspan="2">Частотность</th>
+          <th ng-repeat="service in services" colspan="{{dates.length}}">{{service | uppercase}}</th>
+        </tr>
+        <tr>
+          <td ng-repeat="date in dates">{{date | datestring : "DD-MM-YYYY" : "DD/MM"}}</td>
+          <td ng-repeat="date in dates">{{date | datestring : "DD-MM-YYYY" : "DD/MM"}}</td>
+        </tr>
+        </thead>
+
         <tr ng-repeat="row in $data">
-          <td data-title="'Фраза'" sortable="'word'">{{row.word}}</td>
-          <td data-title="'Частотность'" sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
+          <td sortable="'word'">{{row.word}}</td>
+          <td sortable="'frequency'">{{row.frequency || 'N/A'}}</td>
+
+          <td ng-repeat="position in row.positions[0]['google'] track by $index" sortable="'position'">
+            <div class="pull-left">
+              {{ position }}
+            </div>
+            <div class="pull-right" ng-if="!$first && position != '-' && row.positions[0]['google'][$index-1] != '-'">
+              <div class="position-index" ng-init="compared = position - row.positions[0]['google'][$index-1]">
+                <i ng-if="compared !== 0" class="fa" ng-class="(compared <= 0) ? 'fa-angle-up color-green' : 'fa-angle-down color-red'">
+                  <span>{{compared}}</span>
+                </i>
+              </div>
+            </div>
+          </td>
+
+          <td ng-repeat="position in row.positions[0]['yandex'] track by $index" sortable="'position'">
+            <div class="pull-left">
+              {{ position }}
+            </div>
+            <div class="pull-right" ng-if="!$first && position != '-' && row.positions[0]['yandex'][$index-1] != '-'">
+              <div class="position-index" ng-init="compared = position - row.positions[0]['yandex'][$index-1]">
+                <i ng-if="compared !== 0" class="fa" ng-class="(compared <= 0) ? 'fa-angle-up color-green' : 'fa-angle-down color-red'">
+                  <span>{{compared}}</span>
+                </i>
+              </div>
+            </div>
+          </td>
+
         </tr>
       </table>
     </div>

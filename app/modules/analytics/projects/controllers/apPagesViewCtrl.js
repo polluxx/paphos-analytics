@@ -26,6 +26,14 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
   $scope.paginationPage = $stateParams.paginationPage;
   $scope.paginationCount = $stateParams.paginationCount;
 
+  $scope.services = ['google', 'yandex'];
+
+  var dates = [], dateFromForKeywords = moment().subtract(5, 'days'), dateToForKeywords = moment();
+  for (var date = angular.copy(dateFromForKeywords); date.isSameOrBefore(dateToForKeywords); date.add(1, 'day')) {
+    dates.push(date.format('DD.MM.YYYY'))
+  }
+  $scope.dates = dates;
+
   $scope.query = {
     ids: 'ga:' + $scope.project.analytics.profileId,
     metrics: 'ga:users',
@@ -58,7 +66,22 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
       frequency: 'desc'
     }
   }, {
-    data: keywords
+    getData: params => {
+      return aKeywordModel.query({
+        page: parseInt(params.page()),
+        perPage: parseInt(params.count()),
+        pageId: item._id,
+        dateFrom: dateFromForKeywords,
+        dateTo: dateToForKeywords
+      }, function (resp, headers) {
+        $scope.loading = false;
+        $scope.pages = resp;
+
+        params.total(parseInt(headers('x-total-count')));
+        return $scope.pages;
+
+      }).$promise;
+    }
   });
 
 }

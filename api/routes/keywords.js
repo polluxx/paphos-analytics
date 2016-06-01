@@ -8,11 +8,15 @@ var router = require('express').Router(),
 router.get('/', function (req, res, next) {
   var params = req.query,
     dateFrom = moment(params.dateFrom, "YYYY-MM-DD"),
-    dateTo = moment(params.dateTo, "YYYY-MM-DD");
-
+    dateTo = moment(params.dateTo, "YYYY-MM-DD"),
+    searchParams = {siteId: params.siteId};
+    if(params.pageId) {
+      searchParams = {pageId: params.pageId};
+    }
+    console.log('searchParams', searchParams);
     async.auto({
       count: function(next) {
-        req.app.models.keywords.count({siteId: params.siteId}, next);
+        req.app.models.keywords.count(searchParams, next);
       },
       keywords: function(next) {
         var opts = {};
@@ -20,7 +24,7 @@ router.get('/', function (req, res, next) {
           opts.skip = req.query['page'] ? (req.query['page'] - 1) * req.query['perPage'] : "-";
           opts.limit = req.query['perPage'];
         }
-        req.app.models.keywords.find({siteId: params.siteId}, {}, opts, next);
+        req.app.models.keywords.find(searchParams, {}, opts, next);
       }
     }, function(err, data) {
       if(err) return next(err);
