@@ -15,16 +15,7 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     metrics: 'ga:users',
     dimensions: 'ga:source, ga:date',
     legend:false,
-    type: "plot",
-    colors: [
-      'rgba(151,187,205,1)',
-      'rgba(247,70,74,1)',
-      'rgba(70,191,189,1)',
-      'rgba(253,180,92,1)',
-      // for keywords
-      'rgba(77,83,96,1)',
-      'rgba(148,159,177,1)'
-    ]
+    type: "plot"
   };
 
   $scope.current = {

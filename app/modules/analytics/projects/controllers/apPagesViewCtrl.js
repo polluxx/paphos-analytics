@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParams, dateService, aKeywordModel) {
+function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParams, dateService, aKeywordModel, ngAnalyticsService) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -12,6 +12,20 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
 
   console.log(project);
   console.log(item);
+
+  if (!project.analytics) {
+    $scope.query.$error= {code: 404, message:"Нет токена авторизации. Авторизируйтесь в сервисе GA."};
+    return;
+  }
+
+  $scope.$watch(() => ngAnalyticsService.isReady, isReady => {
+    if (isReady) {
+      if (!project.tokens) return console.error('No tokens provided!');
+
+      ngAnalyticsService.setToken(project.tokens.access_token);
+      ngAnalyticsService.authorize();
+    }
+  });
 
   $scope.current = {
     site: $scope.item.url,
