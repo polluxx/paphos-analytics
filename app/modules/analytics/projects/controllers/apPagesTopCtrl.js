@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, items, project, dateService) {
+function($scope, items, project, dateService, aSiteModel) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -44,4 +44,6 @@ function($scope, items, project, dateService) {
       }
     }
   };
+
+  aSiteModel.yandex($scope, dateService, $scope.current.project);
 }

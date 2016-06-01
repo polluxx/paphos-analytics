@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParams, dateService, aKeywordModel, ngAnalyticsService) {
+function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParams, dateService, aKeywordModel, ngAnalyticsService, aSiteModel) {
 
   if(!project.analytics) console.error('No analytics provided! Have you add credentials?');
 
@@ -24,7 +24,7 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
       if (!project.tokens) return console.error('No tokens provided!');
 
       if(ngAnalyticsService.ga.auth.isAuthorized()) return;
-      
+
       ngAnalyticsService.setToken(project.tokens.access_token);
       ngAnalyticsService.authorize();
     }
@@ -67,7 +67,8 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
       // 'rgba(70,191,189,1)',
       // 'rgba(253,180,92,1)',
     ],
-    intersections: keywords.map(keyword => keyword.word)
+    intersections: keywords.map(keyword => keyword.word),
+    fillDates: true
   };
 
   $scope.$watch(() => dateService, dateServiceChange => {
@@ -100,5 +101,7 @@ function($scope, item, project, keywords, aPageModel, NgTableParams, $stateParam
       }).$promise;
     }
   });
+
+  aSiteModel.yandex($scope, dateService, $scope.project);
 
 }

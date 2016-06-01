@@ -223,6 +223,16 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
               return item;
             });
 
+          // _.forEach(keywordsGroup, (groupItem, keyword) => {
+          //   var collectionByDates = [];
+          //   dates.forEach(date => {
+          //     dateFound = _.find(groupItem, {1: date}) || [keyword, date, 0];
+          //     collectionByDates.push(dateFound);
+          //   });
+          //
+          //   keywordsGrouped = keywordsGrouped.concat(collectionByDates);
+          // });
+
           if(!scope.report.pure) {
             var indRows = 0, rowsLen = rows.length, row,
               insert, resultsFolded = [], tmpData = {}, folders = scope.mainFolders;
@@ -285,16 +295,21 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
             scope.$watch("site.yandexUpdates", function (yUpdate) {
               if(!yUpdate) return;
 
-              var dates = summa.map(summItem => {return summItem[1]}),
-              updateDates = yUpdate.map(date => {
+              var dates = [], date, endDate = moment(scope.date.endDate), startDate = moment(scope.date.startDate);
+              for (date = angular.copy(startDate); date.isSameOrBefore(endDate); date.add(1, 'day')) {
+                dates.push(date.format('DD/MM/YYYY'));
+              }
+
+              var updateDates = yUpdate.map(date => {
                 return moment(date.date, moment.ISO_8601).format('DD/MM/YYYY');
               }),
-              mostBigCoounter = Math.ceil(summa[summa.length-2][2] / 10), dateFound;
+              mostBigPoint = (scope.chart.data && scope.chart.data[0]) ? scope.chart.data[0][0] : 10,
+              mostBigCoounter = Math.ceil(mostBigPoint / 10), dateFound;
               dates.forEach(date => {
                 dateFound = updateDates.indexOf(date);
+
                 rows.push(["Yandex Update", date, dateFound !== -1 ? mostBigCoounter : 0]);
               });
-
               groupByRows(rows);
             });
 
@@ -403,7 +418,19 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
       function groupByRows(rows) {
         var groups = _.groupBy(rows, item => item[0]);
         var dates = _.groupBy(rows, item => item[1]),
-          n = 0;
+          n = 0, keywordsGrouped = [], dateFound, dateIndexes = Object.keys(dates),
+          collectionByDates = {};
+
+        if(scope.report.fillDates) {
+          _.forEach(groups, (groupItem, keyword) => {
+            collectionByDates[keyword] = [];
+            dateIndexes.forEach(date => {
+              dateFound = _.find(groupItem, {1: date}) || [keyword, date, 0];
+              collectionByDates[keyword].push(dateFound);
+            });
+          });
+          groups = collectionByDates;
+        }
 
         scope.chart.labels = Object.keys(dates).sort((a,b) => {
           var first = moment(a, 'DD/MM/YYYY'), second = moment(b, 'DD/MM/YYYY');

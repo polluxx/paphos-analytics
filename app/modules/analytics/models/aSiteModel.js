@@ -19,5 +19,17 @@ function aSiteModel($resource, ANALYTICS_API) {
     'yandexUpdates': {method: 'GET', params: { method: 'yandexUpdates' }, isArray: true}
   });
 
+  resource.yandex = ($scope, dateService, context) => {
+    $scope.$watch(() => dateService, () => {
+      $scope.getYandexUpdates();
+    }, true);
+
+    $scope.getYandexUpdates = () => {
+      resource.yandexUpdates({dateFrom: dateService.start, dateTo: dateService.end}, resp => {
+        context.yandexUpdates = resp;
+      });
+    };
+  }
+
   return resource;
 }

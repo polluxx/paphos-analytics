@@ -1,6 +1,6 @@
 export default
 /*@ngInject*/
-function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, dateService, $templateCache) {
+function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParams, dateService) {
   var profilesId = !item.analytics ? null : item.analytics.profileId;
 
   item.token = {profile_id: profilesId};
@@ -47,13 +47,6 @@ function ($scope, item, ngAnalyticsService, aSiteModel, aPageModel, NgTableParam
     }
   });
 
-  $scope.$watch(() => dateService, () => {
-    $scope.getYandexUpdates();
-  }, true);
+  aSiteModel.yandex($scope, dateService, $scope.item);
 
-  $scope.getYandexUpdates = () => {
-    aSiteModel.yandexUpdates({dateFrom: dateService.start, dateTo: dateService.end}, resp => {
-      $scope.item.yandexUpdates = resp;
-    });
-  };
 }
