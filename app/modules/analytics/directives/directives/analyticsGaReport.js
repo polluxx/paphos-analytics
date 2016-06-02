@@ -7,6 +7,32 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
   Chart.defaults.global.responsive = true;
   Chart.defaults.global.customTooltips = chartCustomTooltip;
 
+  Chart.types.Line.extend({
+    name: "yandex",
+    draw: function () {
+      //Chart.types.Line.prototype.draw.apply(this, arguments);
+      if(!this.options.lineAtIndex || !(this.options.lineAtIndex instanceof Array)) return;
+        this.options.lineAtIndex.forEach(line => {
+          var pointIndex = _.findIndex(this.datasets[0].points, {label: line});
+          if(pointIndex === -1) return;
+          var  point = this.datasets[0].points[pointIndex],
+            scale = this.scale;
+          // draw line
+          this.chart.ctx.beginPath();
+          this.chart.ctx.moveTo(point.x, scale.startPoint + 24);
+          this.chart.ctx.strokeStyle = '#ff0000';
+          this.chart.ctx.lineTo(point.x, scale.endPoint);
+          this.chart.ctx.stroke();
+
+          // write TODAY
+          this.chart.ctx.textAlign = 'center';
+          this.chart.ctx.font="12px Helvetica Neue";
+          this.chart.ctx.fillStyle = "rgba(70,191,189,1)";
+          this.chart.ctx.fillText("YANDEX UPD.", point.x, scale.startPoint + 12);
+        });
+    }
+  });
+
   var defaultLineOptions = {
     datasetStrokeWidth: 2,
     bezierCurve: true,
@@ -42,6 +68,8 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
       scope.chartLines = {};
       scope.checkedBoxes = [];
       scope.queries = [];
+      scope.chartOptions = {};
+
 
       scope.current = {
         queries: [],
@@ -223,16 +251,6 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
               return item;
             });
 
-          // _.forEach(keywordsGroup, (groupItem, keyword) => {
-          //   var collectionByDates = [];
-          //   dates.forEach(date => {
-          //     dateFound = _.find(groupItem, {1: date}) || [keyword, date, 0];
-          //     collectionByDates.push(dateFound);
-          //   });
-          //
-          //   keywordsGrouped = keywordsGrouped.concat(collectionByDates);
-          // });
-
           if(!scope.report.pure) {
             var indRows = 0, rowsLen = rows.length, row,
               insert, resultsFolded = [], tmpData = {}, folders = scope.mainFolders;
@@ -294,23 +312,10 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
 
             scope.$watch("site.yandexUpdates", function (yUpdate) {
               if(!yUpdate) return;
-
-              var dates = [], date, endDate = moment(scope.date.endDate), startDate = moment(scope.date.startDate);
-              for (date = angular.copy(startDate); date.isSameOrBefore(endDate); date.add(1, 'day')) {
-                dates.push(date.format('DD/MM/YYYY'));
-              }
-
               var updateDates = yUpdate.map(date => {
                 return moment(date.date, moment.ISO_8601).format('DD/MM/YYYY');
-              }),
-              mostBigPoint = (scope.chart.data && scope.chart.data[0]) ? scope.chart.data[0][0] : 10,
-              mostBigCoounter = Math.ceil(mostBigPoint / 10), dateFound;
-              dates.forEach(date => {
-                dateFound = updateDates.indexOf(date);
-
-                rows.push(["Yandex Update", date, dateFound !== -1 ? mostBigCoounter : 0]);
               });
-              groupByRows(rows);
+              drawUpdates(updateDates, rows);
             });
 
             scope.$watch("site.keywords", function (keywords) {
@@ -357,8 +362,36 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
 
       // listen to chart create event and get colors
       scope.$on('create', function(e, chart) {
+        scope.chartOptions = chart.options;
         resetSeries(chart);
       });
+
+      function drawUpdates(yandexRows, rows) {
+        var ctx = document.querySelector(".chart").getContext("2d");
+
+        scope.chart.datasets = scope.chart.data.map((dataset, index) => {return {data: dataset, label: scope.chart.series[index]}});
+
+
+        //groupByRows(rows);
+        var yandexOverlapChart = angular.copy(scope.chart);
+        if(scope.yandexChart) scope.yandexChart.destroy();
+        scope.$watch("chartOptions", options => {
+          if(!Object.keys(options).length) return;
+
+
+          console.log('scope.yandexChart', scope.yandexChart);
+          if(scope.yandexChart) scope.yandexChart.destroy();
+
+          console.log(options);
+          yandexOverlapChart.options = options;
+          yandexOverlapChart.options.lineAtIndex = yandexRows;
+          scope.yandexChart = new Chart(ctx).yandex(yandexOverlapChart, {
+            datasetFill : false,
+            lineAtIndex: yandexRows,
+            scaleFontSize: 12
+          });
+        });
+      }
 
       function resetSeries(chart) {
 
@@ -418,11 +451,17 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
       function groupByRows(rows) {
         var groups = _.groupBy(rows, item => item[0]);
         var dates = _.groupBy(rows, item => item[1]),
-          n = 0, keywordsGrouped = [], dateFound, dateIndexes = Object.keys(dates),
+          n = 0, keywordsGrouped = [],
+          //mainLabels = angular.copy(scope.mainFolders).concat(["Весь трафик", "Другой трафик"]),
+          dateFound, dateIndexes = Object.keys(dates),
           collectionByDates = {};
 
         if(scope.report.fillDates) {
           _.forEach(groups, (groupItem, keyword) => {
+            if(~["Yandex Update"].indexOf(keyword)) {
+              collectionByDates[keyword] = groupItem;
+              return;
+            }
             collectionByDates[keyword] = [];
             dateIndexes.forEach(date => {
               dateFound = _.find(groupItem, {1: date}) || [keyword, date, 0];

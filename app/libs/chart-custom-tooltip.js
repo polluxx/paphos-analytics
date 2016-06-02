@@ -16,11 +16,13 @@ function (context) {
     ctx.closePath();
   };
 
+  if(!context.labels) return;
+
   context.labels = context.labels.filter(label => {
     labelSlice = label.split(" ");
     return parseInt(labelSlice[labelSlice.length-1]);
   });
-  
+
   drawRoundedRectangle(context.ctx,context.x,context.y - context.height/2,context.width, (context.labels.length+1) * (20+context.yPadding),context.cornerRadius);
   var ctx = context.ctx;
   ctx.fillStyle = context.fillColor;
