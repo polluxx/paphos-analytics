@@ -1,7 +1,8 @@
 export default
 /*@ngInject*/
 function (context) {
-  if(!context) return;
+  if(!context || !context.legendColors[0] || !context.legendColors[0].fill) return;
+
   var drawRoundedRectangle = function(ctx,x,y,width,height,radius){
     ctx.beginPath();
     ctx.moveTo(x + radius, y);

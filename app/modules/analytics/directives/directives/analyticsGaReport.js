@@ -10,7 +10,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
   Chart.types.Line.extend({
     name: "yandex",
     draw: function () {
-      //Chart.types.Line.prototype.draw.apply(this, arguments);
+      // Chart.types.Line.prototype.draw.apply(this, arguments);
       if(!this.options.lineAtIndex || !(this.options.lineAtIndex instanceof Array)) return;
         this.options.lineAtIndex.forEach(line => {
           var pointIndex = _.findIndex(this.datasets[0].points, {label: line});
@@ -24,11 +24,12 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
           this.chart.ctx.lineTo(point.x, scale.endPoint);
           this.chart.ctx.stroke();
 
-          // write TODAY
+          // write YANDEX
           this.chart.ctx.textAlign = 'center';
           this.chart.ctx.font="12px Helvetica Neue";
           this.chart.ctx.fillStyle = "rgba(70,191,189,1)";
-          this.chart.ctx.fillText("YANDEX UPD.", point.x, scale.startPoint + 12);
+          this.chart.ctx.fillText("YANDEX", point.x, scale.startPoint + 12);
+          this.chart.ctx.closePath();
         });
     }
   });
@@ -315,7 +316,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
               var updateDates = yUpdate.map(date => {
                 return moment(date.date, moment.ISO_8601).format('DD/MM/YYYY');
               });
-              drawUpdates(updateDates, rows);
+              scope.yandexRows = updateDates;
             });
 
             scope.$watch("site.keywords", function (keywords) {
@@ -363,34 +364,38 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
       // listen to chart create event and get colors
       scope.$on('create', function(e, chart) {
         scope.chartOptions = chart.options;
+        scope.drawedChart = chart;
         resetSeries(chart);
       });
 
-      function drawUpdates(yandexRows, rows) {
+
+      scope.$watchGroup(['yandexRows', 'chart.data'], () => {
+        if(!scope.yandexRows) return;
         var ctx = document.querySelector(".chart").getContext("2d");
 
-        scope.chart.datasets = scope.chart.data.map((dataset, index) => {return {data: dataset, label: scope.chart.series[index]}});
-
-
-        //groupByRows(rows);
-        var yandexOverlapChart = angular.copy(scope.chart);
-        if(scope.yandexChart) scope.yandexChart.destroy();
-        scope.$watch("chartOptions", options => {
-          if(!Object.keys(options).length) return;
-
-
-          console.log('scope.yandexChart', scope.yandexChart);
-          if(scope.yandexChart) scope.yandexChart.destroy();
-
-          console.log(options);
-          yandexOverlapChart.options = options;
-          yandexOverlapChart.options.lineAtIndex = yandexRows;
-          scope.yandexChart = new Chart(ctx).yandex(yandexOverlapChart, {
-            datasetFill : false,
-            lineAtIndex: yandexRows,
-            scaleFontSize: 12
-          });
+        scope.chart.datasets = scope.chart.data.map((dataset, index) => {
+          var color = scope.chartOptions.colours[index];
+          return {data: dataset, label: scope.chart.series[index]}
         });
+        if(scope.yandexChart) scope.yandexChart.destroy();
+        draw(scope.drawedChart);
+      });
+
+      function draw(chart) {
+        if(!Object.keys(chart.options).length || !scope.yandexRows.length) return;
+        var ctx = document.querySelector(".chart").getContext("2d");
+        var yandexOverlapChart = angular.copy(scope.chart);
+        yandexOverlapChart.options = chart.options;
+        yandexOverlapChart.options.lineAtIndex = _.unique(scope.yandexRows);
+
+        scope.yandexChart = new Chart(ctx).yandex(yandexOverlapChart, {
+          datasetFill : false,
+          lineAtIndex: _.unique(scope.yandexRows),
+          showTooltips: true
+        });
+        console.log('scope.yandexChart', scope.yandexChart);
+        scope.yandexChart.update();
+        scope.yandexChart.resize();
       }
 
       function resetSeries(chart) {
@@ -402,7 +407,7 @@ function ($parse, $modal, toaster, $timeout, NgTableParams, $filter) {
 
           if(scope.report.colors && scope.report.intersections) {
 
-            chart.datasets = chart.datasets.map(dataItem => {
+            scope.chart.datasets = chart.datasets = chart.datasets.map(dataItem => {
               color = dataItem.strokeColor;
               if (~mainLabels.indexOf(dataItem.label)) return dataItem;
 
